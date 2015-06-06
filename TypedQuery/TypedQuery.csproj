@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{26510351-8210-4210-A00B-4777974345F3}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sql</RootNamespace>
+    <AssemblyName>TypedQuery</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <NoWin32Manifest>True</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>3</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\TypedQuery.xml</DocumentationFile>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AColumn.cs" />
+    <Compile Include="ADatabase.cs" />
+    <Compile Include="ARow.cs" />
+    <Compile Include="AStoredProc.cs" />
+    <Compile Include="ATable.cs" />
+    <Compile Include="BulkInsert.cs" />
+    <Compile Include="Column\BigIntegerColumn.cs" />
+    <Compile Include="Column\BinaryColumn.cs" />
+    <Compile Include="Column\BoolColumn.cs" />
+    <Compile Include="Column\ByteColumn.cs" />
+    <Compile Include="Column\DateTime2Column.cs" />
+    <Compile Include="Column\DateTimeColumn.cs" />
+    <Compile Include="Column\DateTimeOffsetColumn.cs" />
+    <Compile Include="Column\DecimalColumn.cs" />
+    <Compile Include="Column\DoubleColumn.cs" />
+    <Compile Include="Column\EnumColumn.cs" />
+    <Compile Include="Column\FloatColumn.cs" />
+    <Compile Include="Column\GuidColumn.cs" />
+    <Compile Include="Column\IntegerColumn.cs" />
+    <Compile Include="Column\KeyColumns\BigIntegerKeyColumn.cs" />
+    <Compile Include="Column\KeyColumns\GuidKeyColumn.cs" />
+    <Compile Include="Column\KeyColumns\IntegerKeyColumn.cs" />
+    <Compile Include="Column\KeyColumns\NBigIntegerColumn.cs" />
+    <Compile Include="Column\KeyColumns\NGuidKeyColumn.cs" />
+    <Compile Include="Column\KeyColumns\NIntegerKeyColumn.cs" />
+    <Compile Include="Column\KeyColumns\NSmallIntColumn.cs" />
+    <Compile Include="Column\KeyColumns\SmallIntKeyColumn.cs" />
+    <Compile Include="Column\KeyColumns\StringKeyColumn.cs" />
+    <Compile Include="Column\NBigIntegerColumn.cs" />
+    <Compile Include="Column\NBinaryColumn.cs" />
+    <Compile Include="Column\NBoolColumn.cs" />
+    <Compile Include="Column\NByteColumn.cs" />
+    <Compile Include="Column\NDateTime2Column.cs" />
+    <Compile Include="Column\NDateTimeColumn.cs" />
+    <Compile Include="Column\NDateTimeOffsetColumn.cs" />
+    <Compile Include="Column\NDecimalColumn.cs" />
+    <Compile Include="Column\NDoubleColumn.cs" />
+    <Compile Include="Column\NFloatColumn.cs" />
+    <Compile Include="Column\NGuidColumn.cs" />
+    <Compile Include="Column\NIntegerColumn.cs" />
+    <Compile Include="Column\NSmallIntColumn.cs" />
+    <Compile Include="Column\SmallIntColumn.cs" />
+    <Compile Include="Column\StringColumn.cs" />
+    <Compile Include="Condition.cs" />
+    <Compile Include="Core\AlaisCounter.cs" />
+    <Compile Include="Core\DeleteBuilder.cs" />
+    <Compile Include="Core\InsertBuilder.cs" />
+    <Compile Include="Core\InsertSelectBuilder.cs" />
+    <Compile Include="Core\Parameters.cs" />
+    <Compile Include="Core\QueryBuilder.cs" />
+    <Compile Include="Core\QueryResult.cs" />
+    <Compile Include="Core\TruncateBuilder.cs" />
+    <Compile Include="Core\UpdateBuilder.cs" />
+    <Compile Include="Database\AliasManager.cs" />
+    <Compile Include="Database\CheckDefinitions.cs" />
+    <Compile Include="Database\GenerateCode.cs" />
+    <Compile Include="Database\GenerateMetaDataSql.cs" />
+    <Compile Include="Database\GeneratePermissionsSql.cs" />
+    <Compile Include="Database\GenertateSql.cs" />
+    <Compile Include="Database\PostgreSql\DatabaseDetails.cs" />
+    <Compile Include="Database\PostgreSql\GenerateSql.cs" />
+    <Compile Include="Database\SqlServer\DatabaseDetails.cs" />
+    <Compile Include="Database\SqlServer\GenerateSql.cs" />
+    <Compile Include="Database\SqlServer\Permissions.cs" />
+    <Compile Include="Database\SqlServer\SqlServerDatabase.cs" />
+    <Compile Include="Database\SqlServer\TableHints.cs" />
+    <Compile Include="Database\StoredProcedure.cs" />
+    <Compile Include="Database\Table.cs" />
+    <Compile Include="Function\ADateTimeFunction.cs" />
+    <Compile Include="Function\ANumericFunction.cs" />
+    <Compile Include="Function\Avg.cs" />
+    <Compile Include="Function\Count.cs" />
+    <Compile Include="Function\CurrentDate.cs" />
+    <Compile Include="Function\CurrentDateOffset.cs" />
+    <Compile Include="Function\CustomSql.cs" />
+    <Compile Include="Function\DenseRank.cs" />
+    <Compile Include="Function\Max.cs" />
+    <Compile Include="Function\Min.cs" />
+    <Compile Include="Function\Rank.cs" />
+    <Compile Include="Function\RowNumber.cs" />
+    <Compile Include="Function\Sum.cs" />
+    <Compile Include="Function\DateFunction.cs" />
+    <Compile Include="Function\WindowFunction.cs" />
+    <Compile Include="IResult.cs" />
+    <Compile Include="Interfaces\IDelete.cs" />
+    <Compile Include="Interfaces\IFunction.cs" />
+    <Compile Include="Interfaces\IInsert.cs" />
+    <Compile Include="Interfaces\IInsertSelect.cs" />
+    <Compile Include="Interfaces\IQuery.cs" />
+    <Compile Include="Interfaces\ITruncate.cs" />
+    <Compile Include="Interfaces\IUpdate.cs" />
+    <Compile Include="ISelectable.cs" />
+    <Compile Include="MetaData.cs" />
+    <Compile Include="Permission.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SqlHelper.cs" />
+    <Compile Include="Transaction.cs" />
+    <None Include="COPYING.LESSER">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="COPYING">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Documentation\documentation.html" />
+    <Content Include="Documentation\documentation_style.css" />
+  </ItemGroup>
+</Project>

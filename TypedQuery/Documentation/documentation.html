@@ -1,0 +1,1458 @@
+<html>
+
+<head>
+	<title>C# Typed Query Documentation</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content="Typed Query documentation" />
+	<meta name="keywords" content="C#, Sql, Type Safe, Database, Query Library" />
+	
+	<link rel="stylesheet" type="text/css" href="documentation_style.css">
+</head>
+
+<body>
+
+<h1>C# Typed Query Documentation</h1>
+
+<hr size="1"/>
+
+<h2>Index</h2>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#getting_started">Getting Started</a></li>
+<li><a href="#defining_a_table">Defining a Table</a></li>
+<li><a href="#defining_a_row">Defining a Row</a></li>
+<li><a href="#insert_rows">Insert Rows</a></li>
+<li><a href="#update_rows">Update Rows</a></li>
+<li><a href="#delete_rows">Delete Rows</a></li>
+<li><a href="#select_queries">Select Queries</a></li>
+<li><a href="#conditions">Conditions</a></li>
+<li><a href="#numeric_conditions">Numeric Conditions</a></li>
+<li><a href="#dynamic_conditions">Dynamic Conditions</a></li>
+<li><a href="#select_fields">Select Fields</a></li>
+<li><a href="#select_options">Select Options</a></li>
+<li><a href="#joins">Joins</a></li>
+<li><a href="#group_by_and_having">Group By And Having</a></li>
+<li><a href="#order_by">Order By</a></li>
+<li><a href="#query_hints">Query Hints</a></li>
+<li><a href="#aggregate_functions">Aggregate Functions</a></li>
+<li><a href="#date_functions">Date Functions</a></li>
+<li><a href="#query_time_out_and_parameters">Query Time Out And Parameters</a></li>
+<li><a href="#execute_uncommitted_query">Execute Uncommitted Query</a></li>
+<li><a href="#query_within_a_transaction">Query Within a Transaction</a></li>
+<li><a href="#transaction_isolation_levels">Transaction Isolation levels</a></li>
+<li><a href="#commit_and_rollback">Commit And RollBack</a></li>
+<li><a href="#row_rollback">Row Rollback</a></li>
+<li><a href="#field_types">Field Types</a></li>
+<li><a href="#key_columns">Key Columns</a></li>
+<li><a href="#enum_fields">Enum Fields</a></li>
+<li><a href="#database_compatibility">Database Compatibility</a></li>
+<li><a href="#global_settings">Global Settings</a></li>
+<li><a href="#temp_tables">Temp Tables</a></li>
+<li><a href="#custom_tsql">Custom TSql</a></li>
+<li><a href="#plain_text_queries">Plain Text Queries</a></li>
+<li><a href="#sql_helper_class">Sql Helper Class</a></li>
+<li><a href="#insert_select">Insert Select</a></li>
+<li><a href="#bulk_insert">Bulk Inserts</a></li>
+<li><a href="#join_update">Join Update</a></li>
+<li><a href="#nested_queries">Nested Queries</a></li>
+<li><a href="#union_except">Union, Except</a></li>
+<li><a href="#stored_procedures">Stored Procedures</a></li>
+<li><a href="#thread_safety">Thread Safety</a></li>
+<li><a href="#force_transaction_on_current_thread">Force Transaction On Current Thread</a></li>
+<li><a href="#window_functions">Window Functions</a></li>
+<li><a href="#readonly_connections">Read Only Connection Security Feature</a></li>
+<li><a href="#table_and_Column_comments">Table And Column Comments</a></li>
+
+</ul>
+<h2 id="introduction">Introduction</h2>
+
+	Typed Query (TQ) is a type safe (i.e. No sql strings in code) database query api that sits on top of Ado.net. Written in C# it is designed to have a simple api that closely maps to standard sql.<br/>
+	TQ is designed to be database independent. Currently SqlServer and PostgreSql are supported. (Note: There are some features that are database dependent like string comparison and query hints).<br/>
+	<br/>
+	Pros<br/>
+	<ul>
+		<li>Table and Row mappings are in code not xml or config file - Mappings can be validated against database at runtime</li>
+		<li>TypeSafe queries and data access</li>
+		<li>API gives lower level query control compared to other APIs like Linq and ORMs
+		i.e. You know what your query really looks like</li>
+		<li>Complex query features supported like unions, nested queries, query hints, temp tables, functions, window functions, stored procedures.</li>
+		<li>Transactions with standard isolation levels</li>
+		<li>Parameterised Queries (Configurable for debugging ease)</li>
+		<li>API can notify you of each query performed before and after they happen</li>
+		<li>Good for debugging and logging</li>
+		<li>No strings or sql injection attacks</li>
+		<li>Because tables scehmas are defined in code any field changes are verified by the compiler</li>
+		<li>UI tools to generate Table and Row definitions and validate existing definitions</li>
+		<li>Open source with a small code base</li>
+	</ul>
+	
+<h2 id="getting_started">Getting Started</h2>
+	One database class must be defined for each database your code is connecting to. The database class must inherit from Sql.ADatabase. Table objects will reference this class to create connections to the database.<br/>
+	Example:<br/>
+
+	<div class="code">
+	<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;MainDatabase&nbsp;:&nbsp;Sql.ADatabase&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;<span class="Modifier">static</span>&nbsp;Sql.ADatabase&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;MainDatabase();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">private</span>&nbsp;MainDatabase()&nbsp;:&nbsp;<span class="Keyword">base</span>(<span class="String">"db_name"</span>,&nbsp;Sql.DatabaseType.Mssql)&nbsp;{&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">protected</span>&nbsp;<span class="Modifier">override</span>&nbsp;<span class="ReferenceType">string</span>&nbsp;ConnectionString&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;<span class="String">"user&nbsp;id=sa;password=pwd;server=localhost\\SQLEXPRESS;"</span>&nbsp;+<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="String">"Trusted_Connection=no;database=db_name;"</span>&nbsp;+<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="String">"connection&nbsp;timeout=30"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">override</span>&nbsp;System.Data.Common.DbConnection&nbsp;GetConnection()&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SqlConnection&nbsp;connection&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;SqlConnection(ConnectionString);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connection.Open();<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;connection;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+	
+<h2 id="defining_a_table">Defining a Table</h2>
+Table classes should be generated using the Table Generator UI tool (To make life easy). Here is  example code for the UserTable. Table classes inherit from Sql.ATable.<br/>
+
+Sql (For Sql Server):<br/>
+	<div class="code">
+	<span class="ReservedKeyword">CREATE</span>&nbsp;<span class="ReservedKeyword">TABLE</span>&nbsp;Sec_User&nbsp;(<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userId&nbsp;INTEGER&nbsp;<span class="ReservedKeyword">IDENTITY</span>&nbsp;<span class="Operator">NOT</span>&nbsp;<span class="Operator">NULL</span>&nbsp;<span class="ReservedKeyword">PRIMARY</span>&nbsp;<span class="ReservedKeyword">KEY</span>,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userCode&nbsp;<span class="DataType">NVARCHAR</span>(100)&nbsp;<span class="Operator">NOT</span>&nbsp;<span class="Operator">NULL</span>,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userPassword&nbsp;<span class="DataType">NVARCHAR</span>(100)&nbsp;<span class="Operator">NOT</span>&nbsp;<span class="Operator">NULL</span>,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userFirstName&nbsp;<span class="DataType">NVARCHAR</span>(100)&nbsp;<span class="Operator">NOT</span>&nbsp;<span class="Operator">NULL</span>,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userLastName&nbsp;<span class="DataType">NVARCHAR</span>(100)&nbsp;<span class="Operator">NOT</span>&nbsp;<span class="Operator">NULL</span><br />
+	);
+	</div>
+	
+Code definition:<br/>
+	<div class="code">
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Table&nbsp;:&nbsp;Sql.ATable&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Table&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Single&nbsp;table&nbsp;instance</span><br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.IntegerColumn&nbsp;Id;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.StringColumn&nbsp;Code;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.StringColumn&nbsp;Password;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.StringColumn&nbsp;FirstName;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.StringColumn&nbsp;LastName;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">internal</span>&nbsp;Table()&nbsp;:&nbsp;<span class="Keyword">base</span>(MainDatabase.INSTANCE,&nbsp;<span class="String">"Sec_User"</span>,&nbsp;<span class="Keyword">typeof</span>(Row))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Id&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.IntegerColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"userId"</span>,&nbsp;<span class="Keyword">true</span>,&nbsp;<span class="Keyword">true</span>);&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Auto&nbsp;Id</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Code&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"userCode"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Password&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"userPassword"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FirstName&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"userFirstName"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LastName&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"userLastName"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddColumns(Id,&nbsp;Code,&nbsp;Password,&nbsp;FirstName,&nbsp;LastName);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row&nbsp;<span class="Keyword">this</span>[<span class="ValueType">int</span>&nbsp;pIndex,&nbsp;Sql.IResult&nbsp;pQueryResult]&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Row)pQueryResult.GetRow(<span class="Keyword">this</span>,&nbsp;pIndex);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+	
+<h2 id="defining_a_row">Defining a Row</h2>
+Row classes should be generated using the Table Generator UI tool (To make life easy). Here is  example code for the UserTable Row. Row classes inherit from Sql.ARow.<br/>
+	<div class="code">
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Row&nbsp;:&nbsp;Sql.ARow&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">private</span>&nbsp;<span class="Keyword">new</span>&nbsp;Table&nbsp;Tbl&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Table)<span class="Keyword">base</span>.Tbl;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row()&nbsp;:&nbsp;<span class="Keyword">base</span>(Table.INSTANCE)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ValueType">int</span>&nbsp;Id&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Auto&nbsp;id&nbsp;has&nbsp;no&nbsp;setter</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.Id.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">string</span>&nbsp;Code&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.Code.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.Code.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">string</span>&nbsp;Password&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.Password.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.Password.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">string</span>&nbsp;FirstName&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.FirstName.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.FirstName.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">string</span>&nbsp;LastName&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.LastName.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.LastName.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+	
+<h2 id="insert_rows">Insert Rows</h2>
+With TQ there are two ways to insert rows. The first is by using the Row object and the second is using an insert query.
+<h3>Row object insert</h3>
+First create an instance of the user Row class. Set fields with data. Calling Update(...) on the row writes the row to the database. When the row is written to the database it loads any auto id fields.<br/>
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Row();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Code&nbsp;=&nbsp;<span class="String">"user_code"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Password&nbsp;=&nbsp;<span class="String">"password"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.FirstName&nbsp;=&nbsp;<span class="String">"first_name"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.LastName&nbsp;=&nbsp;<span class="String">"last_name"</span>;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Update(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;autoId&nbsp;=&nbsp;userRow.Id;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Retrieve&nbsp;auto&nbsp;generated&nbsp;id</span><br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+<h3>Query Insert</h3>
+Rows can be inserted using a normal sql insert query.<br/>
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Insert(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Code,&nbsp;<span class="String">"user_code"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Password,&nbsp;<span class="String">"password"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.FirstName,&nbsp;<span class="String">"first_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.LastName,&nbsp;<span class="String">"last_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+	
+	Returning insert syntax is also supported<br/>
+	
+	<div class="code">
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Insert(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Code,&nbsp;<span class="String">"user_code"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Password,&nbsp;<span class="String">"password"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.FirstName,&nbsp;<span class="String">"first_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.LastName,&nbsp;<span class="String">"last_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Returning(userTable.Id,&nbsp;userTable.Code)&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Returns&nbsp;the&nbsp;provided&nbsp;fields&nbsp;in&nbsp;the&nbsp;result</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;autoId&nbsp;=&nbsp;userTable[0,&nbsp;result].Id;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Get&nbsp;the&nbsp;returned&nbsp;auto&nbsp;id</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ReferenceType">string</span>&nbsp;code&nbsp;=&nbsp;userTable[0,&nbsp;result].Code;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Get&nbsp;code&nbsp;field&nbsp;to&nbsp;show&nbsp;that&nbsp;multiple&nbsp;fields&nbsp;can&nbsp;be&nbsp;returned</span><br />
+	}
+	</div>
+	
+<h2 id="update_rows">Update Rows</h2>
+With TQ there are two ways to update rows. The first is by using the Row object and the second is using an update query.<br/>
+
+<h3>Row object update</h3>
+
+First the row must be loaded from the database. In order for the row to be update-able every field in the row must be selected in the load query.<br/>
+
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Load&nbsp;row</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;==&nbsp;2)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;userTable[0,&nbsp;result];&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Get&nbsp;first&nbsp;row</span><br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Code&nbsp;=&nbsp;<span class="String">"user_code"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Password&nbsp;=&nbsp;<span class="String">"password"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.FirstName&nbsp;=&nbsp;<span class="String">"first_name"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.LastName&nbsp;=&nbsp;<span class="String">"last_name"</span>;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Update(transaction);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+	
+<h2>Update query</h2>
+Rows can be updated using a normal sql update query.<br/>
+	<div class="code">
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query.Update(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Code,&nbsp;<span class="String">"user_code"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Password,&nbsp;<span class="String">"password"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.FirstName,&nbsp;<span class="String">"first_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.LastName,&nbsp;<span class="String">"last_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;==&nbsp;2)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>(result.RowsEffected&nbsp;&gt;&nbsp;0)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Do&nbsp;something</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+
+Returning update syntax:<br/>
+	<div class="code">
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query.Update(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Code,&nbsp;<span class="String">"user_code"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Password,&nbsp;<span class="String">"password"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.FirstName,&nbsp;<span class="String">"first_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.LastName,&nbsp;<span class="String">"last_name"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;==&nbsp;2)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Returning(userTable.Id)&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Returns&nbsp;Id&nbsp;field&nbsp;of&nbsp;rows&nbsp;updated&nbsp;in&nbsp;result</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">for</span>(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;result.Count;&nbsp;index++)&nbsp;{&nbsp;<span class="InlineComment">//Get&nbsp;returned&nbsp;fields&nbsp;from&nbsp;result</span><br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;userTable[index,&nbsp;result];<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;autoIdsUpdated&nbsp;=&nbsp;userRow.Id;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+	
+<h2 id="delete_rows">Delete Rows</h2>
+With TQ there are two ways to delete rows. The first is by using the Row object and the second is using a delete query.
+
+<h3>Row object delete</h3>
+First load row with all fields selected. Then flag row to be deleted. Call Update(...) to write the change to the database.<br/><br/>
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Load&nbsp;row</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;==&nbsp;2)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;userTable[0,&nbsp;result];<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Delete();&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Flag&nbsp;to&nbsp;be&nbsp;deleted</span><br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;userRow.Update(transaction);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+
+<h2>Delete query</h2>
+Rows can be deleted using a normal sql delete query.<br/>
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;rows&nbsp;=&nbsp;Sql.Query.Delete(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;==&nbsp;2)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+Returning delete syntax:<br/>
+	<div class="code">
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Delete(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;==&nbsp;2)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Returning(userTable.Id,&nbsp;userTable.Code)&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Return&nbsp;id&nbsp;and&nbsp;code&nbsp;of&nbsp;deleted&nbsp;row(s)</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">for</span>(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;result.Count;&nbsp;index++)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Get&nbsp;id&nbsp;and&nbsp;code&nbsp;of&nbsp;deleted&nbsp;row(s)</span><br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;userTable[index,&nbsp;result];<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;autoId&nbsp;=&nbsp;userRow.Id;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ReferenceType">string</span>&nbsp;code&nbsp;=&nbsp;userRow.Code;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+	
+<h2 id="select_queries">Select Queries</h2>
+Select queries in TQ are very similar to standard sql.
+<h3>Simiple Select (3 Fields)</h3>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.Id,&nbsp;userTable.FirstName,&nbsp;userTable.LastName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.FirstName&nbsp;==&nbsp;<span class="String">"james"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	<span class="Statement">for</span>&nbsp;(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;result.Count;&nbsp;index++)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;userTable[index,&nbsp;result];<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>?&nbsp;id&nbsp;=&nbsp;userRow.Id;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ReferenceType">string</span>&nbsp;firstName&nbsp;=&nbsp;userRow.FirstName;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ReferenceType">string</span>&nbsp;lastName&nbsp;=&nbsp;userRow.LastName;<br />
+	}
+	</div>
+
+<h2 id="conditions">Conditions</h2>
+In TQ the SQL condition operators 'AND' and 'OR' map to the C# operators '&' and '|'. (Note: the operators && and || are reserved in C# so these cannot be used).<br/>
+As a rule of thumb always surround an 'OR' operator with brackets.<br/>
+Example:<br/>
+	<div class="code">
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.Id,&nbsp;userTable.FirstName,&nbsp;userTable.LastName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userTable.LastName&nbsp;==&nbsp;<span class="String">"smith"</span>&nbsp;&amp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(userTable.FirstName.Like(<span class="String">"j%"</span>)&nbsp;|&nbsp;userTable.FirstName.Like(<span class="String">"s%"</span>))<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+	
+<h2 id="numeric_conditions">Numeric Conditions</h2>
+TQ supports numeric operators in conditions using numeric fields.<br/>
+	<div class="code">
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;%&nbsp;2&nbsp;!=&nbsp;0)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id&nbsp;+&nbsp;5&nbsp;&gt;&nbsp;0&nbsp;&amp;&nbsp;(userTable.Id&nbsp;*&nbsp;userTable.Id)&nbsp;&gt;&nbsp;userTable.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.GroupBy(userTable.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Having((userTable.Id&nbsp;*&nbsp;userTable.Id)&nbsp;-&nbsp;2&nbsp;&gt;&nbsp;0)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+<h2 id="dynamic_conditions">Dynamic conditions</h2>
+There are cases where the condition needs to differ depending on certain inputs. This can be achieved by using the Condition class to build up the condition dynamically.<br/>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	Sql.Condition&nbsp;condition&nbsp;=&nbsp;userTable.LastName&nbsp;==&nbsp;<span class="String">"smith"</span>&nbsp;&amp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(userTable.FirstName.Like(<span class="String">"j%"</span>)&nbsp;|&nbsp;userTable.FirstName.Like(<span class="String">"s%"</span>));<br />
+	<br />
+	<span class="Statement">if</span>&nbsp;(pId&nbsp;!=&nbsp;<span class="Keyword">null</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;=&nbsp;condition&nbsp;&amp;&nbsp;userTable.Id&nbsp;==&nbsp;pId;<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.Id,&nbsp;userTable.FirstName,&nbsp;userTable.LastName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(condition)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+<br/>
+Example 2: Using 'AndIf' condition. (Also "AndOr(...)"). This will only include the condition if the first parameter is true.<br/>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	Sql.Condition&nbsp;condition&nbsp;=&nbsp;userTable.LastName&nbsp;==&nbsp;<span class="String">"smith"</span>&nbsp;&amp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(userTable.FirstName.Like(<span class="String">"j%"</span>)&nbsp;|&nbsp;userTable.FirstName.Like(<span class="String">"s%"</span>));<br />
+	<br />
+	condition&nbsp;=&nbsp;condition.AndIf(pId&nbsp;!=&nbsp;<span class="Keyword">null</span>,&nbsp;userTable.Id&nbsp;==&nbsp;pId);&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Condition is only included if Pid != null</span><br/>
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.Id,&nbsp;userTable.FirstName,&nbsp;userTable.LastName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(condition)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+
+<h2 id="select_fields">Select Fields</h2>
+The TQ select query can take a number of different field inputs. It can take whole tables, individual fields and functions all within the same method.<br/>
+Example: This selected every column in the userTable and the id field (A second time).<br/>
+	<div class="code">
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable,&nbsp;userTable.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+
+<h2 id="select_options">Select options</h2>
+TQ supports 3 select options. Distinct, TOP (Translates to LIMIT) and INTO.<br/>
+Example:<br/>
+	<div class="code">
+	Sql.Query.Select(userTable).Distinct<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	Sql.Query.Select(userTable).Top(1)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	Sql.Query.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Into(tempTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+
+<h2 id="joins">Joins</h2>
+TQ supports three joins types. Join, Left Join and Right Join.<br/>
+Example: Self join<br/>
+(Please note with self joins (i.e. Joining to the same table) different table object instances are required. This is because each instance has its own unique alias. If the query uses the same table object for a self join the sql aliasing will clash and cause an error.<br/>
+	<div class="code">
+	Table&nbsp;userTableA&nbsp;=&nbsp;Table.INSTANCE;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Instance&nbsp;one</span><br />
+	Table&nbsp;userTableB&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Instance&nbsp;two</span><br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTableA)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTableA)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Join(userTableB,&nbsp;userTableA.Id&nbsp;==&nbsp;userTableB.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTableA)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTableA)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.LeftJoin(userTableB,&nbsp;userTableA.Id&nbsp;==&nbsp;userTableB.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTableA)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTableA)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.RightJoin(userTableB,&nbsp;userTableA.Id&nbsp;==&nbsp;userTableB.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+
+<h2 id="group_by_and_having">Group By And Having</h2>
+	<div class="code">
+	Sql.Function.CountAll&nbsp;count&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.CountAll();<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.FirstName,&nbsp;count)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.GroupBy(userTable.FirstName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Having(count&nbsp;&gt;&nbsp;1)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+
+<h2 id="order_by">Order By</h2>
+TQ sorts fields either by the default sort of the database or by the defined value e.g. ASC or DESC.<br/>
+	<div class="code">
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.OrderBy(userTable.FirstName,&nbsp;userTable.LastName.ASC,&nbsp;userTable.Code.DESC)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+
+<h2 id="query_hints">Query Hints (Append)</h2>
+Query hints can be added using the Append(...) method.<br/>
+	<div class="code">
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Append(<span class="String">"OPTION(MAXDOP&nbsp;1)"</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+
+<h2 id="aggregate_functions">Aggregate Functions</h2>
+Example: SUM(usrId) grouped by first name.<br/>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	Sql.Function.SumInt&nbsp;sum&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.SumInt(userTable.Id);<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.FirstName,&nbsp;sum)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.GroupBy(userTable.FirstName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.ExecuteUncommitted();<br />
+	<br />
+	<span class="ValueType">int</span>&nbsp;sumValue&nbsp;=&nbsp;sum[0,&nbsp;result].Value;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Get&nbsp;first&nbsp;value&nbsp;for&nbsp;example</span>
+	</div>
+	
+TQ supports a number of standard functions. Custom function classes can be written by implementing the IFunction interface.<br/>
+Supported Functions<br/>
+AVG, MIN, MAX, SUM<br/>
+CURRENT_DATE<br/>
+COUNT<br/>
+Example: Count(*) from userTable<br/>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	Sql.Function.CountAll&nbsp;count&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.CountAll();<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(count)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.ExecuteUncommitted();<br />
+	<br />
+	<span class="ValueType">int</span>&nbsp;countValue&nbsp;=&nbsp;count[0,&nbsp;result].Value;
+	</div>
+
+<h2 id="date_functions">Date functions</h2>
+TQ supports date functions Year, Month, DayOfMonth, Hour, Minute, Second.<br/>
+Example:<br/>
+	<div class="code">
+	Tables.DateTimeTable.Table&nbsp;table&nbsp;=&nbsp;Tables.DateTimeTable.Table.INSTANCE;<br />
+	<br />
+	Sql.Function.DateFunction&nbsp;year&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.DateFunction(table.Dt,&nbsp;DatePart.Year);<br />
+	Sql.Function.DateFunction&nbsp;month&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.DateFunction(table.Dt,&nbsp;DatePart.Month);<br />
+	Sql.Function.DateFunction&nbsp;day&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.DateFunction(table.Dt,&nbsp;DatePart.DayOfMonth);<br />
+	Sql.Function.DateFunction&nbsp;hour&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.DateFunction(table.Dt,&nbsp;DatePart.Hour);<br />
+	Sql.Function.DateFunction&nbsp;minute&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.DateFunction(table.Dt,&nbsp;DatePart.Minute);<br />
+	Sql.Function.DateFunction&nbsp;second&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.DateFunction(table.Dt,&nbsp;DatePart.Second);<br />
+	<br />
+	IResult&nbsp;result&nbsp;=&nbsp;Query.Select(year,&nbsp;month,&nbsp;day,&nbsp;hour,&nbsp;minute,&nbsp;second)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(table)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(year&nbsp;&gt;&nbsp;10)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.GroupBy(year,&nbsp;month,&nbsp;day,&nbsp;hour,&nbsp;minute,&nbsp;second)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Having(year&nbsp;&gt;&nbsp;20&nbsp;&amp;&nbsp;year&nbsp;&lt;&nbsp;3000)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.OrderBy(year,&nbsp;month,&nbsp;day,&nbsp;hour,&nbsp;minute,&nbsp;second)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	<span class="ValueType">int</span>?&nbsp;yearValue&nbsp;=&nbsp;year[0,&nbsp;result];<br />
+	<span class="ValueType">int</span>?&nbsp;monthValue&nbsp;=&nbsp;month[0,&nbsp;result];<br />
+	<span class="ValueType">int</span>?&nbsp;dayValue&nbsp;=&nbsp;day[0,&nbsp;result];<br />
+	<span class="ValueType">int</span>?&nbsp;hourValue&nbsp;=&nbsp;hour[0,&nbsp;result];<br />
+	<span class="ValueType">int</span>?&nbsp;minuteValue&nbsp;=&nbsp;minute[0,&nbsp;result];<br />
+	<span class="ValueType">int</span>?&nbsp;secondValue&nbsp;=&nbsp;second[0,&nbsp;result];
+	</div>
+
+<h2 id="query_time_out_and_parameters">Query Time Out And Parameters</h2>
+The default time out can be overridden for a particular query. This overrides the global setting in Sql.Settings.DefaultTimeout. In this example the query will timeout after 60 seconds:<br/>
+	<div class="code">
+	Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Timeout(60)&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//60&nbsp;seconds</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+	
+Parameters can be turned on or off on a query. This overrides the global setting in Sql.Settings.UseParameters. This can be useful when using parameters produces an undesirable query plan.<br/>
+	<div class="code">
+	Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.UseParameters(<span class="Keyword">false</span>)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();
+	</div>
+	
+<h2 id="execute_uncommitted_query">Execute Uncommitted Query</h2>
+Execute a query as read uncommitted without having to use a Sql.Transaction object.<br/>
+	<div class="code">
+	Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.ExecuteUncommitted();
+	</div>
+	
+<h2 id="query_within_a_transaction">Query Within a Transaction</h2>
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">for</span>&nbsp;(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;100;&nbsp;index++)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Delete&nbsp;row&nbsp;one&nbsp;at&nbsp;a&nbsp;time</span><br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Select(userTable).Top(1)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;userTable[0,&nbsp;result];<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userRow.Delete();<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userRow.Update(transaction);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+
+<h2 id="transaction_isolation_levels">Transaction Isolation levels</h2>
+TQ supports the standard ado.net database isolation levels. Not all of these are supported by non sqlserver databases.<br/>
+	<div class="code">
+	<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE, System.Data.IsolationLevel.ReadUncommitted);<br />
+	<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE, System.Data.IsolationLevel.ReadCommitted);<br />
+	<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE, System.Data.IsolationLevel.RepeatableRead);<br />
+	<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE, System.Data.IsolationLevel.Serializable);
+	</div>
+
+<h2 id="commit_and_rollback">Commit and RollBack</h2>
+If a transaction is used in a resource block it is automatically rolled back if it is not committed when the code exits the block.<br/>
+Example:<br/>
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Do&nbsp;something</span><br />
+	}<span class="InlineComment">//Will&nbsp;rollback&nbsp;here&nbsp;because&nbsp;transaction&nbsp;has&nbsp;not&nbsp;been&nbsp;committed</span>
+	</div>
+Transactions can be committed by calling the Commit(...) method on the transaction. They can be rolled back by calling Rollback(...) on the transaction.<br/>
+Example:<br/>
+	<div class="code">
+	transaction.Commit();<br />
+	transaction.Rollback();
+	</div>
+
+<h2 id="row_rollback">Row Rollback</h2>
+When a transaction is rolled back rows saved to the database within that transaction will retain their most recent column values and stay in the same state.
+So for example if a row is set to be deleted and the transaction is rolled back it will stay in the to be deleted state.
+
+<h2 id="field_types">Field Types</h2>
+These are currently supported field types:<br/>
+<br/>
+
+<table border="1" cellpadding="2" width="500">
+	<tr><td>BigIntegerColumn</td>
+	<td>Int64 Not Null</td></tr>
+	<tr><td>BinaryColumn</td>
+	<td>Binary Field Not Null</td></tr>
+	<tr><td>BoolColumn</td>
+	<td>Bool or TinyInt Not Null</td></tr>
+	<tr><td>ByteColumn</td>
+	<td>Byte or Bool Not Null</td></tr>
+	<tr><td>DateTimeColumn</td>
+	<td>DateTime Not Null</td></tr>
+	<tr><td>DateTime2Column</td>
+	<td>DateTime Not Null</td></tr>
+	<tr><td>DateTimeOffsetColumn</td>
+	<td>NDateTimeOffsetColumn
+	DateTimeOffset. Note the behaviour of this field differs between sql and postgreSql. PostgreSql doesn't store an offset so retrieved values are converted into local time. Sql server returns retrieved values in the offset time they were stored.</td></tr>
+	<tr><td>DecimalColumn</td>
+	<td>Decimal Not Null</td></tr>
+	<tr><td>DoubleColumn</td>
+	<td>Double Not Null</td></tr>
+	<tr><td>FloatColumn</td>
+	<td>Float Not Null</td></tr>
+	<tr><td>EnumColumn</td>
+	<td>Integer Not Null. Maps to C# enum</td></tr>
+	<tr><td>GuidColumn</td>
+	<td>Guid Not Null</td></tr>
+	<tr><td>IntegerColumn</td>
+	<td>Int Not Null</td></tr>
+	<tr><td>NBigIntegerColumn</td>
+	<td>Int64? Null</td></tr>
+	<tr><td>NBinaryColumn</td>
+	<td>Binary Field Null</td></tr>
+	<tr><td>NBoolColumn</td>
+	<td>Bool? or TinyInt Null</td></tr>
+	<tr><td>NByteColumn</td>
+	<td>Byte? or Bool? Null</td></tr>
+	<tr><td>NDateTimeColumn</td>
+	<td>DateTime? Null</td></tr>
+	<tr><td>NDateTime2Column</td>
+	<td>DateTime? Null</td></tr>
+	<tr><td>NDecimalColumn</td>
+	<td>Decimal? Null</td></tr>
+	<tr><td>NDoubleColumn</td>
+	<td>Double? Null</td></tr>
+	<tr><td>NfloatColumn</td>
+	<td>Float? Null</td></tr>
+	<tr><td>NGuidColumn</td>
+	<td>Guid? Null</td></tr>
+	<tr><td>NIntegerColumn</td>
+	<td>Int? Null</td></tr>
+	<tr><td>NSmallIntColumn</td>
+	<td>Int16 Null</td></tr>
+	<tr><td>SmallIntColumn</td>
+	<td>Int16 Not Null</td></tr>
+	<tr><td>StringColumn</td>
+	<td>String Null and Null</td></tr>
+</table>
+
+<h2 id="key_columns">Key Columns</h2>
+'Key Columns' are columns that are used to map the primary and foreign key relationship between tables. These columns should be used for fields that are either a primary key field or a forgein key field.
+Key columns allow the compiler to check that join conditions on those fields are only between the primary and foreign key columns. Joins to non key columns of the same type are disallowed by the compiler.<br/>
+<br/>
+Currently only a subset of Column types are supported
+<br/>
+<br/>
+
+<table border="1" cellpadding="2" width="500">
+
+	<tr><td>GuidKeyColumn</td>
+	<td>Guid Not Null</td></tr>
+	<tr><td>NGuidKeyColumn</td>
+	<td>Guid? Null</td></tr>
+	
+	<tr><td>BigIntegerKeyColumn</td>
+	<td>Int64 Not Null</td></tr>
+	<tr><td>NBigIntegerKeyColumn</td>
+	<td>Int64? Null</td></tr>
+	
+	<tr><td>IntegerKeyColumn</td>
+	<td>Int Not Null</td></tr>
+	<tr><td>NIntegerKeyColumn</td>
+	<td>Int? Null</td></tr>
+	
+	<tr><td>SmallIntKeyColumn</td>
+	<td>Int16 Not Null</td></tr>
+	<tr><td>NSmallIntKeyColumn</td>
+	<td>Int16 Null</td></tr>
+	
+</table>
+<br/>
+Code Example:<br/>
+Here we have two tables, the PersonTable and the OrderLogTable. The OrderLogTable has a foreign key to the PersonTable. This is mapped using a 'GuidKeyColumn' to the Person table using a generic argument.<br/>
+<br/>
+Sql:<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;CREATE TABLE PersonId (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perId INTEGER NOT NULL IDENTITY PRIMARY KEY,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perFirstName NVARCHAR(100) NOT NULL,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perSurname NVARCHAR(100) NOT NULL<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;CREATE TABLE OrderLogId (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ordId INTEGER NOT NULL IDENTITY PRIMARY KEY,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ordPersonId INTEGER NOT NULL,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ordItem NVARCHAR(100) NOT NULL,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CONSTRAINT fk_OrderId_PersonId FOREIGN KEY(ordPersonId) REFERENCES PersonId(perId)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br/>
+<br/>
+Code Definition:<br/>
+	<div class="code">
+	<span class="Namespace">namespace</span>&nbsp;Sql.Tables.Person&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//&nbsp;&nbsp;&nbsp;&nbsp;PersonTable</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Table&nbsp;:&nbsp;Sql.ATable&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Table&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Sql.Column.GuidKeyColumn&lt;Table&gt;&nbsp;Key&nbsp;{&nbsp;get;&nbsp;<span class="Modifier">private</span>&nbsp;set;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Primary&nbsp;Key&nbsp;Column</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Sql.Column.StringColumn&nbsp;FirstName&nbsp;{&nbsp;get;&nbsp;<span class="Modifier">private</span>&nbsp;set;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Sql.Column.StringColumn&nbsp;Surname&nbsp;{&nbsp;get;&nbsp;<span class="Modifier">private</span>&nbsp;set;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Table()&nbsp;:&nbsp;<span class="Keyword">base</span>(Database,&nbsp;<span class="String">"Person"</span>,&nbsp;<span class="Keyword">typeof</span>(Row))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Key&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.GuidKeyColumn&lt;Table&gt;(<span class="Keyword">this</span>,&nbsp;<span class="String">"perKey"</span>,&nbsp;<span class="Keyword">true</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FirstName&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"perFirstName"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Surname&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"perSurname"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddColumns(Key,FirstName,Surname);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row&nbsp;<span class="Keyword">this</span>[<span class="ValueType">int</span>&nbsp;pIndex,&nbsp;Sql.IResult&nbsp;pResult]{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Row)pResult.GetRow(<span class="Keyword">this</span>,&nbsp;pIndex);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}<br />
+	<span class="Namespace">namespace</span>&nbsp;Sql.Tables.OrderLog&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//&nbsp;&nbsp;&nbsp;&nbsp;OrderLogTable</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Table&nbsp;:&nbsp;Sql.ATable&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Table&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Sql.Column.GuidColumn&nbsp;Key&nbsp;{&nbsp;get;&nbsp;<span class="Modifier">private</span>&nbsp;set;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Sql.Column.GuidKeyColumn&lt;Sql.Tables.Person.Table&gt;&nbsp;PersonKey&nbsp;{&nbsp;get;&nbsp;<span class="Modifier">private</span>&nbsp;set;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Foreign&nbsp;Key&nbsp;Column&nbsp;To&nbsp;Person&nbsp;Table</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Sql.Column.StringColumn&nbsp;Item_&nbsp;{&nbsp;get;&nbsp;<span class="Modifier">private</span>&nbsp;set;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Table()&nbsp;:&nbsp;<span class="Keyword">base</span>(Database,&nbsp;<span class="String">"OrderLog"</span>,&nbsp;<span class="Keyword">typeof</span>(Row))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Key&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.GuidColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"ordKey"</span>,&nbsp;<span class="Keyword">true</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PersonKey&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.GuidKeyColumn&lt;Sql.Tables.Person.Table&gt;(<span class="Keyword">this</span>,&nbsp;<span class="String">"ordPersonKey"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Item_&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"ordItem"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddColumns(Key,PersonKey,Item_);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row&nbsp;<span class="Keyword">this</span>[<span class="ValueType">int</span>&nbsp;pIndex,&nbsp;Sql.IResult&nbsp;pResult]{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Row)pResult.GetRow(<span class="Keyword">this</span>,&nbsp;pIndex);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+
+
+<h2 id="enum_fields">Enum Fields</h2>
+An enum field is an interger field that is mapped to an integer enum in C#. There is a special AColumn field to map this in a type safe way.<br/>
+Full Example:<br/>
+	<div class="code">
+	<span class="Modifier">public</span>&nbsp;<span class="ValueType">void</span>&nbsp;Example()&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;enumTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Select(enumTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.From(enumTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(enumTable.EnumValue&nbsp;==&nbsp;EnumTypes.A)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">for</span>(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;result.Count;&nbsp;index++)&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EnumTypes&nbsp;value&nbsp;=&nbsp;enumTable[index,&nbsp;result].EnumValue;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}<br />
+	<br />
+	<span class="Modifier">public</span>&nbsp;<span class="ValueType">enum</span>&nbsp;EnumTypes&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;=&nbsp;1,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;=&nbsp;2,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;=&nbsp;3<br />
+	}<br />
+	<br />
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Table&nbsp;:&nbsp;Sql.ATable&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Table&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.EnumColumn&lt;EnumTypes&gt;&nbsp;EnumValue;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Table()<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<span class="Keyword">base</span>(MyDatabase.INSTANCE,&nbsp;<span class="String">"EnumTable"</span>,&nbsp;<span class="Keyword">typeof</span>(Row))&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EnumValue&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.EnumColumn&lt;EnumTypes&gt;(<span class="Keyword">this</span>,&nbsp;<span class="String">"EnumValue"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddColumns(EnumValue);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row&nbsp;<span class="Keyword">this</span>[<span class="ValueType">int</span>&nbsp;pIndex,&nbsp;Sql.IResult&nbsp;pQueryResult]&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Row)pQueryResult.GetRow(<span class="Keyword">this</span>,&nbsp;pIndex);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}<br />
+	<br />
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Row&nbsp;:&nbsp;Sql.ARow&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">private</span>&nbsp;<span class="Keyword">new</span>&nbsp;Table&nbsp;Tbl&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Table)<span class="Keyword">base</span>.Tbl;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row()&nbsp;:&nbsp;<span class="Keyword">base</span>(Table.INSTANCE)&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;EnumTypes&nbsp;EnumValue&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.EnumValue.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.EnumValue.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+
+<h2 id="database_compatibility">Database Compatibility</h2>
+Most of TQ is database independent. The main areas where functionality may differ are:<br/>
+
+	<ul>
+		<li>String compare and LIKE operator - Some databases are case sensitive</li>
+		<li>Query hints are generally database specific</li>
+		<li>DateTimeOffset and NdateTimeOffset have slightly different behaviour. This is due to the way each database stores time zones datetime values.<br/>
+			PostgreSql stores 'TIMESTAMPE WITH TIME ZONE' type as UTC without any offset information. SqlServer stores 'DateTimeOffset' as UTC with offset. This means that when retrieving a date postgreSql will return the value converted into local time where as sql server will return it as the original offset time.</li>
+		<li>Aggregate functions like AVG(...) output different values between Sql Server and PostgreSql. Sql server rounds integer averages where as postgreSql does not.</li>
+		<li>Window function syntax differs between Sql Server and PostgreSql. Generally sql server has tighter rules around the use of the 'Order By' clause.</li>
+	</ul>
+
+<h2 id="global_settings">Global Settings</h2>
+
+There is a global settings class to set defaults on the following:<br/>
+	<ul>
+		<li><em>UseParameters</em> - Turn query parameters on or off</li><br/>
+		<li><em>UseConcurrenyChecking</em> - This is used for row object updates and deletes. If set true then every field in the row is used to identify the row during an update or delete. If it is set to false then only the primary key fields are used to find the row. This can be overridden on the Table definition if needed.</li><br/>
+		<li><em>DefaultTimeout</em> - Sets the default query time out on the client in seconds. This can be overridden on particular queries if needed.</li><br/>
+		<li><em>QueryExecuting event</em> - This fires before a query is executed. Can be used for debugging.</li><br/>
+		<li><em>QueryPerformed event</em> - This event fires every time a query is executed. Can be used for debugging.</li><br/>
+	</ul>
+	<div class="code">
+	<span class="Modifier">static</span>&nbsp;<span class="ValueType">void</span>&nbsp;Main(<span class="ReferenceType">string</span>[]&nbsp;args)&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.DefaultTimeout&nbsp;=&nbsp;30;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//30&nbsp;Second&nbsp;default&nbsp;timeout</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.QueryExecuting&nbsp;+=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Settings.QueryExecutingDelegate(QueryExecuting);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.QueryPerformed&nbsp;+=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Settings.QueryPerformedDelegate(QueryPerformed);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.ReturnResultSize&nbsp;=&nbsp;<span class="Keyword">true</span>;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Setting&nbsp;to&nbsp;populate&nbsp;the&nbsp;result&nbsp;size&nbsp;field&nbsp;on&nbsp;query&nbsp;results</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.UseConcurrenyChecking&nbsp;=&nbsp;<span class="Keyword">true</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.UseParameters&nbsp;=&nbsp;<span class="Keyword">true</span>;<br />
+	}<br />
+	<br />
+	<span class="Modifier">private</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="ValueType">void</span>&nbsp;QueryPerformed(<span class="ReferenceType">string</span>&nbsp;pSql,&nbsp;<span class="ValueType">int</span>&nbsp;pRows,&nbsp;Sql.QueryType&nbsp;pQueryType,&nbsp;DateTime?&nbsp;pStart,&nbsp;DateTime?&nbsp;pEnd,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exception&nbsp;pException,&nbsp;System.Data.IsolationLevel&nbsp;pIsolationLevel,&nbsp;<span class="ValueType">int</span>?&nbsp;pResultSize,&nbsp;<span class="ValueType">ulong</span>?&nbsp;pTransactionId)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	}<br />
+	<br />
+	<span class="Modifier">private</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="ValueType">void</span>&nbsp;QueryExecuting(<span class="ReferenceType">string</span>&nbsp;pSql,&nbsp;Sql.QueryType&nbsp;pQueryType,&nbsp;DateTime?&nbsp;pStart,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.Data.IsolationLevel&nbsp;pIsolationLevel,&nbsp;<span class="ValueType">ulong</span>?&nbsp;pTransactionId)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	}
+	</div>
+	
+<h2 id="temp_tables">Temp Tables</h2>
+To use a temp table you first need to define a table and row object for the table. By not providing a table name in the table class TQ treats it as a temp table.<br/>
+	<div class="code">
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Table&nbsp;:&nbsp;Sql.ATable&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Table&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.StringColumn&nbsp;Str;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Notice&nbsp;no&nbsp;table&nbsp;name&nbsp;is&nbsp;provided&nbsp;for&nbsp;a&nbsp;temp&nbsp;table&nbsp;definition</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Table()&nbsp;:&nbsp;<span class="Keyword">base</span>(MainDatabase.INSTANCE,&nbsp;<span class="Keyword">typeof</span>(Row))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Str&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.StringColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"Str"</span>,&nbsp;<span class="Keyword">true</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddColumns(Str);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row&nbsp;<span class="Keyword">this</span>[<span class="ValueType">int</span>&nbsp;pIndex,&nbsp;Sql.IResult&nbsp;pQueryResult]&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Row)pQueryResult.GetRow(<span class="Keyword">this</span>,&nbsp;pIndex);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}<br />
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Row&nbsp;:&nbsp;Sql.ARow&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">private</span>&nbsp;<span class="Keyword">new</span>&nbsp;Table&nbsp;Tbl&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Table)<span class="Keyword">base</span>.Tbl;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row()&nbsp;:&nbsp;<span class="Keyword">base</span>(Table.INSTANCE)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">string</span>&nbsp;Str&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.Str.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.Str.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+	
+Query example: Insert into temp table<br/>
+
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	TempTable.Table&nbsp;tempTable&nbsp;=&nbsp;TempTable.Table.INSTANCE;<br />
+	<br />
+	Sql.Query.Select(userTable.FirstName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Into(tempTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	<br />
+	<span class="InlineComment">//Query&nbsp;temp&nbsp;table</span><br />
+	Sql.IResult&nbsp;result&nbsp;=<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Select(tempTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(tempTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);
+	</div>
+	
+<h2 id="custom_tsql">Custom TSql</h2>
+Custom sql can be used by using the class Sql.Function.CustomSql(...). This can be used when TQ doesn't support database functions features that you want to use.<br/>
+<em>Warning: Remember to validate against sql injection attacks when using custom sql.</em><br/>
+	<div class="code">
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE)){<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Insert(table)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(table.Id,&nbsp;Guid.NewGuid())<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(table.Dt,&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.CustomSql(<span class="String">"GETDATE()"</span>))<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+Example: Send custom TSql query.<br/>
+	<div class="code">
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ReferenceType">string</span>&nbsp;sql&nbsp;=&nbsp;<span class="String">"DECLARE&nbsp;@dt&nbsp;DATETIME;SET&nbsp;@dt=GETDATE();"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;sql&nbsp;+=&nbsp;Sql.Query.Insert(table)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(table.Id,&nbsp;Guid.NewGuid())<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(table.Dt,&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.CustomSql(<span class="String">"@dt"</span>))<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.GetSql();<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.ExecuteNonQuery(sql,&nbsp;table.Database,&nbsp;transaction);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+
+<h2 id="plain_text_queries">Plain Text Queries</h2>
+TQ allows you to send non select plain text queries.<br/>
+<em>Warning: Remember to validate against sql injection attacks when using plain text queries.</em><br/>
+	<div class="code">
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ReferenceType">string</span>&nbsp;sql&nbsp;=&nbsp;<span class="String">"UPDATE&nbsp;userTable&nbsp;SET&nbsp;password&nbsp;=&nbsp;NULL;"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.ExecuteNonQuery(sql,&nbsp;MainDatabase.INSTANCE,&nbsp;transaction);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+	
+<h2 id="sql_helper_class">Sql Helper Class</h2>
+The class Sql.SqlHelper contains static methods that help load query results into lists, dictionaries and to format sql to be more human readable.<br/>
+
+<h2 id="insert_select">Insert Select</h2>
+TQ allows insert select queries.<br/>
+	<div class="code">
+	Tables.BigIntTable.Table&nbsp;table&nbsp;=&nbsp;Tables.BigIntTable.Table.INSTANCE;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.InsertSelect(table)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Columns(table.IntValue)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Query(Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Select(table.IntValue)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.From(table))<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>
+
+<h2 id="bulk_insert">Bulk Inserts</h2>
+	TQ has a bulk insert class that can but used when performing a large number of insert queries against a table. This functionality takes advantage of the insert 'values' syntax to reduce the number of network round trips between the client and the database.
+	<div class="code">
+	<span class="Namespace">using</span>(Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Tables.User.Table&nbsp;userTable&nbsp;=&nbsp;Tables.User.Table.INSTANCE;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;BulkInsert&nbsp;bulkInsert&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;BulkInsert();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">foreach</span>(User&nbsp;user&nbsp;<span class="Statement">in</span>&nbsp;userList)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bulkInsert.AddValues(<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Insert(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Code,&nbsp;user.Code)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.FirstName,&nbsp;user.FirstName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.LastName,&nbsp;user.LastName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(userTable.Password,&nbsp;user.Password)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;bulkInsert.Execute(transaction);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	}
+	</div>	
+	
+<h2 id="join_update">Join Update</h2>
+TQ supports update join syntax<br/>
+	<div class="code">
+	Table&nbsp;tableA&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	Table&nbsp;tableB&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query.Update(tableA)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(tableA.Code,&nbsp;tableB.Code)&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Set&nbsp;tableB&nbsp;code&nbsp;to&nbsp;tableA&nbsp;code</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Set(tableA.FirstName,&nbsp;<span class="ReferenceType">string</span>.Empty)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Join(tableB,&nbsp;tableA.FirstName&nbsp;==&nbsp;tableB.FirstName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(tableB.Id&nbsp;&gt;&nbsp;25)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Execute(transaction);<br />
+	}
+	</div>
+
+<h2 id="nested_queries">Nested Queries</h2>
+When using nested queries it is important to use different instances of tables. In this example we must have two different instances of userTable. This is so the sql table aliases are correct when executing the query.<br/>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	Table&nbsp;userTableB&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	Sql.Query.Select(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTable.Id.In(<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTableB.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.From(userTableB)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Where(userTableB.FirstName&nbsp;==&nbsp;<span class="String">"james"</span>))<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;).Execute();
+	</div>
+	
+<h2 id="union_except">Union, Except</h2>
+When using union queries it is important to use different instances of table classes so the sql aliasing works correctly.<br/>
+Also due to implementation limitations the union result is only accessible from tables defined in the last union query (e.g. UserTableB in this example).<br/>
+<em>Union, Union All, Interset and Except syntax is supported</em><br/>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	Table&nbsp;userTableB&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Select(userTable.FirstName,&nbsp;userTable.LastName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Union(userTableB.FirstName,&nbsp;userTableB.LastName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTableB)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.OrderBy(userTableB.FirstName)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	<span class="Statement">for</span>&nbsp;(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;result.Count;&nbsp;index++)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Note&nbsp;result&nbsp;is&nbsp;only&nbsp;accessable&nbsp;from&nbsp;the&nbsp;last&nbsp;query&nbsp;tables</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;userRow&nbsp;=&nbsp;userTableB[index,&nbsp;result];<br />
+	}
+	</div>
+
+<h2 id="stored_procedures">Stored Procedures</h2>
+To execute stored procedures you must create a stored procedure class definition by implementing the abstract class Sql.AStoredProc. This can be generated using the code generator.<br/>
+In and out parameters are supported as well as returned row results<br/>
+<br/>
+<em>(Note: The code generater tool can not generate return column fields for stored procedures so you will need to add them manually like on a table definition).</em><br/>
+<br/>
+Full Example:<br/>
+	<div class="code">
+	<span class="Namespace">using</span>&nbsp;System;<br />
+	<span class="Namespace">using</span>&nbsp;System.Data;<br />
+	<span class="Namespace">using</span>&nbsp;System.Data.SqlClient;<br />
+	&nbsp;<br />
+	<span class="Namespace">namespace</span>&nbsp;SP_Test_In_Out&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Test&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">static</span>&nbsp;<span class="ValueType">void</span>&nbsp;Main(<span class="ReferenceType">string</span>[]&nbsp;args)&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="PreProcessorDirective">#region</span>&nbsp;Turn&nbsp;<span class="Linq">on</span>&nbsp;global&nbsp;debugging&nbsp;features<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Set&nbsp;up&nbsp;to&nbsp;QueryPerformed&nbsp;event&nbsp;to&nbsp;show&nbsp;queries&nbsp;executing&nbsp;in&nbsp;real&nbsp;time.&nbsp;Debugging&nbsp;feature.</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.QueryPerformed&nbsp;+=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Settings.QueryPerformedDelegate(QueryPerformed);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.UseParameters&nbsp;=&nbsp;<span class="Keyword">false</span>;&nbsp;<span class="InlineComment">//Turn&nbsp;off&nbsp;parameters&nbsp;so&nbsp;queries&nbsp;are&nbsp;easier&nbsp;to&nbsp;read.</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.Settings.ReturnResultSize&nbsp;=&nbsp;<span class="Keyword">true</span>;<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="PreProcessorDirective">#endregion</span><br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Namespace">using</span>(Sql.Transaction&nbsp;transaction&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Transaction(MainDatabase.INSTANCE))&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Proc&nbsp;proc&nbsp;=&nbsp;Proc.INSTANCE;&nbsp;&nbsp;<span class="InlineComment">//Get&nbsp;instance&nbsp;of&nbsp;stored&nbsp;procedure&nbsp;object</span><br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;inParam&nbsp;=&nbsp;25;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;outParam&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Note:&nbsp;Out&nbsp;parameter</span><br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=&nbsp;proc.Execute(inParam,&nbsp;<span class="MethodParameter">ref</span>&nbsp;outParam,&nbsp;transaction);&nbsp;&nbsp;<span class="InlineComment">//Execute&nbsp;stored&nbsp;procedure&nbsp;and&nbsp;get&nbsp;result&nbsp;back.</span><br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">for</span>(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;result.Count;&nbsp;index++)&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Row&nbsp;row&nbsp;=&nbsp;proc[index,&nbsp;result];<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Guid&nbsp;id&nbsp;=&nbsp;row.Id;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;intValue&nbsp;=&nbsp;row.IntValue;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transaction.Commit();<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">private</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="ValueType">void</span>&nbsp;QueryPerformed(<span class="ReferenceType">string</span>&nbsp;pSql,&nbsp;<span class="ValueType">int</span>&nbsp;pRows,&nbsp;Sql.QueryType&nbsp;pQueryType,&nbsp;DateTime?&nbsp;pStart,&nbsp;DateTime?&nbsp;pEnd,&nbsp;Exception&nbsp;pException,&nbsp;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IsolationLevel&nbsp;pIsolationLevel,&nbsp;<span lass="ValueType">int</span>?&nbsp;pResultSize,&nbsp;<span class="ValueType">ulong</span>?&nbsp;pTransactionId)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.Console.WriteLine(pSql);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<span class="BlockComment">/*<br />
+	--<br />
+	--&nbsp;&nbsp;Sql&nbsp;to&nbsp;create&nbsp;stored&nbsp;procedure<br />
+	--<br />
+	CREATE&nbsp;TABLE&nbsp;IntTable&nbsp;(<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;Id&nbsp;UNIQUEIDENTIFIER&nbsp;NOT&nbsp;NULL&nbsp;PRIMARY&nbsp;KEY,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;IntValue&nbsp;INTEGER&nbsp;NOT&nbsp;NULL&nbsp;&nbsp;&nbsp;<br />
+	);<br />
+	GO<br />
+	CREATE&nbsp;PROCEDURE&nbsp;SP_Test_In_Out&nbsp;(@In_param&nbsp;INTEGER,&nbsp;@Out_param&nbsp;INTEGER&nbsp;OUT)AS<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;SET&nbsp;@Out_param&nbsp;=&nbsp;@In_param;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;DELETE&nbsp;FROM&nbsp;IntTable;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;INSERT&nbsp;INTO&nbsp;IntTable&nbsp;(Id,&nbsp;IntValue)&nbsp;VALUES(NEWID(),&nbsp;12345);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;INSERT&nbsp;INTO&nbsp;IntTable&nbsp;(Id,&nbsp;IntValue)&nbsp;VALUES(NEWID(),&nbsp;123456);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;INSERT&nbsp;INTO&nbsp;IntTable&nbsp;(Id,&nbsp;IntValue)&nbsp;VALUES(NEWID(),&nbsp;1234567);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;INSERT&nbsp;INTO&nbsp;IntTable&nbsp;(Id,&nbsp;IntValue)&nbsp;VALUES(NEWID(),&nbsp;12345678);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;SELECT&nbsp;Id,&nbsp;IntValue&nbsp;FROM&nbsp;dbo.IntTable&nbsp;ORDER&nbsp;BY&nbsp;IntValue&nbsp;ASC;<br />
+	&nbsp;<br />
+	GO<br />
+	*/</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//&nbsp;&nbsp;Generated&nbsp;stored&nbsp;procedure&nbsp;definitions</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Proc&nbsp;:&nbsp;Sql.AStoredProc&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Proc&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Proc();<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.GuidColumn&nbsp;Id;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.IntegerColumn&nbsp;IntValue;<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Proc()<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<span class="Keyword">base</span>(MyDatabase.INSTANCE,&nbsp;<span class="String">"SP_Test_In_Out"</span>,&nbsp;<span class="Keyword">typeof</span>(Row))&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Id&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.GuidColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"Id"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IntValue&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.IntegerColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"IntValue"</span>,&nbsp;<span class="Keyword">false</span>);<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddColumns(Id,&nbsp;IntValue);&nbsp;<span class="InlineComment">//--&gt;Note:&nbsp;Columns&nbsp;can&nbsp;be&nbsp;added&nbsp;to&nbsp;proc&nbsp;in&nbsp;the&nbsp;same&nbsp;way&nbsp;as&nbsp;a&nbsp;table&nbsp;definition.</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Sql.IResult&nbsp;Execute(<span class="ValueType">int</span>&nbsp;@In_param,&nbsp;<span class="MethodParameter">ref</span>&nbsp;<span class="ValueType">int</span>&nbsp;@Out_param,&nbsp;Sql.Transaction&nbsp;pTransaction)&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SqlParameter&nbsp;p0&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;SqlParameter(<span class="String">"@In_param"</span>,&nbsp;SqlDbType.Int);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p0.Direction&nbsp;=&nbsp;ParameterDirection.Input;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p0.Value&nbsp;=&nbsp;@In_param;<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SqlParameter&nbsp;p1&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;SqlParameter(<span class="String">"@Out_param"</span>,&nbsp;SqlDbType.Int);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p1.Direction&nbsp;=&nbsp;ParameterDirection.InputOutput;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p1.Value&nbsp;=&nbsp;@Out_param;<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sql.IResult&nbsp;result&nbsp;=&nbsp;ExecuteProcedure(pTransaction,&nbsp;p0,&nbsp;p1);<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Out_param&nbsp;=&nbsp;(<span class="ValueType">int</span>)p1.Value;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;result;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row&nbsp;<span class="Keyword">this</span>[<span class="ValueType">int</span>&nbsp;pIndex,&nbsp;Sql.IResult&nbsp;pResult]&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Row)pResult.GetRow(<span class="Keyword">this</span>,&nbsp;pIndex);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Row&nbsp;:&nbsp;Sql.ARow&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">private</span>&nbsp;<span class="Keyword">new</span>&nbsp;Proc&nbsp;Tbl&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Proc)<span class="Keyword">base</span>.Tbl;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Guid&nbsp;Id&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.Id.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.Id.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ValueType">int</span>&nbsp;IntValue&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;Tbl.IntValue.ValueOf(<span class="Keyword">this</span>);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;{&nbsp;Tbl.IntValue.SetValue(<span class="Keyword">this</span>,&nbsp;value);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row()<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<span class="Keyword">base</span>(Proc.INSTANCE)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//Database&nbsp;definition&nbsp;class.&nbsp;Note&nbsp;only&nbsp;one&nbsp;instance&nbsp;is&nbsp;required&nbsp;in&nbsp;your&nbsp;application</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;MyDatabase&nbsp;:&nbsp;Sql.ADatabase&nbsp;{<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;<span class="Modifier">static</span>&nbsp;Sql.ADatabase&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;MyDatabase();<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">private</span>&nbsp;MyDatabase()&nbsp;:&nbsp;<span class="Keyword">base</span>(<span class="String">"&lt;&lt;db&gt;&gt;"</span>,&nbsp;Sql.DatabaseType.Mssql)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">protected</span>&nbsp;<span class="Modifier">override</span>&nbsp;<span class="ReferenceType">string</span>&nbsp;ConnectionString&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;&nbsp;&nbsp;<span class="InlineComment">//***&nbsp;Note:&nbsp;Connection&nbsp;details&nbsp;here&nbsp;***//</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;<span class="String">"Data&nbsp;Source=localhost\\SQLEXPRESS;User&nbsp;Id=login;Password=password;database=db_name;"</span>;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">override</span>&nbsp;System.Data.Common.DbConnection&nbsp;GetConnection()&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">lock</span>(<span class="Keyword">this</span>)&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SqlConnection&nbsp;connection&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;SqlConnection(ConnectionString);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connection.Open();<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;connection;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+	
+<h2 id="thread_safety">Thread Safety</h2>
+You can execute queries that don't have a transaction from multiple threads without a problem.<br/>
+Transactions are not thread safe because the underlying ado connection is not thread safe. You can not execute queries in parallel on a single transaction instance. You can execute queries on separate transaction instances in parallel though.<br/>
+ATable classes are immutable so they are thread safe. IResult class is not thread safe (But reading should work multi threaded).<br/>
+
+<h2 id="force_transaction_on_current_thread">Force Transaction on current thread</h2>
+When creating a new transaction you can set a parameter to check that every query running on the current thread executes using that transaction. If there is a query that doesn't execute on that transaction an exception is thrown. This feature is used to help identify dead lock bugs. A good example would be a service thread that is doing a particular task and you want to catch any executing queries on that thread and make sure they are running in the transaction.<br/>
+
+<h2 id="window_functions">Window Functions</h2>
+TQ has syntax support for window functions. This includes 'OVER', 'PARTITION BY' and 'ORDER BY' syntax.<br/>
+<br/>
+<em>Note: Sql Server and PostgreSql have slightly different syntax rules for window functions. Mostly around the use of the order by clause.</em><br/>
+<br/>
+	<div class="code">
+	Table&nbsp;userTable&nbsp;=&nbsp;Table.INSTANCE;<br />
+	<br />
+	Sql.Function.AvgInteger&nbsp;avg&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.AvgInteger(userTable.Id);<br />
+	Sql.Function.MinInteger&nbsp;min&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.MinInteger(userTable.Id);<br />
+	Sql.Function.MaxInt&nbsp;max&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.MaxInt(userTable.Id);<br />
+	Sql.Function.SumInteger&nbsp;sum&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.SumInteger(userTable.Id);<br />
+	Sql.Function.RowNumber&nbsp;rowNumber&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.RowNumber();<br />
+	Sql.Function.Rank&nbsp;rank&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.Rank();<br />
+	Sql.Function.DenseRank&nbsp;denseRank&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Function.DenseRank();<br />
+	<br />
+	Sql.IResult&nbsp;result&nbsp;=&nbsp;Sql.Query.Select(<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userTable.Id,<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;avg.OverPartitionBy(userTable.Id).OrderBy(userTable.Id),<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min.OverPartitionBy(userTable.Id),<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max.OverPartitionBy(userTable.Id),<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum.OverPartitionBy(userTable.Id),<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rowNumber.Over(),<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rank.Over().OrderBy(userTable.Id),<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;denseRank.Over().OrderBy(userTable.Id)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.From(userTable)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.OrderBy(userTable.Id.ASC)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;.Execute();<br />
+	<br />
+	<span class="Statement">for</span>(<span class="ValueType">int</span>&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;result.Count;&nbsp;index++)&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>&nbsp;id&nbsp;=&nbsp;userTable[index,&nbsp;result].Id;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">decimal</span>?&nbsp;avgValue&nbsp;=&nbsp;avg[0,&nbsp;result];<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="ValueType">int</span>?&nbsp;rankValue&nbsp;=&nbsp;rank[index,&nbsp;result];<br />
+	}
+	</div>
+
+<h2 id="readonly_connections">Read Only Connection Security Feature</h2>
+TQ has a security feature that allows queries that run outside of a transaction to be run on a read only connection. For example: Select queries that are run without having a transaction object passed in the Execute(...) method are run with a readonly connection if the database class provides one.<br/>
+<br/>
+To enable this feature the method <em>GetConnection(...)</em> in the database class needs to be altered to return a readonly connection when the parameter <em>pCanBeReadonly</em> is true.<br/>
+
+	<div class="code">
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">override</span>&nbsp;System.Data.Common.DbConnection&nbsp;GetConnection(<span class="ValueType">bool</span>&nbsp;pCanBeReadonly)&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;SqlConnection&nbsp;connection;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="InlineComment">//If&nbsp;the&nbsp;connection&nbsp;can&nbsp;be&nbsp;readonly&nbsp;then&nbsp;return&nbsp;a&nbsp;readonly&nbsp;connection</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>(!pCanBeReadonly)<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connection&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;SqlConnection(ConnectionString);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">else</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connection&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;SqlConnection(ReadonlyConnectionString);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;connection.Open();<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;connection;<br />
+	}
+	</div>
+
+
+<h2 id="table_and_Column_comments">Table and Column Comments</h2>
+<p>
+TQ supports meta data comments against tables and columns. These are added to the table definition in code as attributes. TQ can generate sql to create and update these comments in the database.
+</p>
+<p>
+Once the comments are assigned to the database a third party tool can be used to generate schema documentation.
+</p>
+Attribute Example:<br/>
+	<div class="code">
+	[Sql.TableAttribute(<span class="String">"Table&nbsp;description&nbsp;does&nbsp;here"</span>)]<br />
+	<span class="Modifier">public</span>&nbsp;<span class="Modifier">sealed</span>&nbsp;<span class="ReferenceType">class</span>&nbsp;Table&nbsp;:&nbsp;Sql.ATable&nbsp;{<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">static</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Table&nbsp;INSTANCE&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Table();<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;[Sql.ColumnAttribute(<span class="String">"Column&nbsp;description&nbsp;goes&nbsp;here"</span>)]<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;<span class="Modifier">readonly</span>&nbsp;Sql.Column.GuidColumn&nbsp;Id;<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Table()&nbsp;:&nbsp;<span class="Keyword">base</span>(DB.TestDB,&nbsp;<span class="String">"GuidTable"</span>,&nbsp;<span class="Keyword">typeof</span>(Row))&nbsp;{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Id&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Column.GuidColumn(<span class="Keyword">this</span>,&nbsp;<span class="String">"Id"</span>,&nbsp;<span class="Keyword">true</span>);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddColumns(Id);<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;<span class="Modifier">public</span>&nbsp;Row&nbsp;<span class="Keyword">this</span>[<span class="ValueType">int</span>&nbsp;pIndex,&nbsp;Sql.IResult&nbsp;pQueryResult]{<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;{&nbsp;<span class="Statement">return</span>&nbsp;(Row)pQueryResult.GetRow(<span class="Keyword">this</span>,&nbsp;pIndex);&nbsp;}<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+	}
+	</div>
+	<p>
+	To generate comment sql call the following method and pass the table definition class.
+	</p>
+<div class="code">
+Tables.GuidTable.Table&nbsp;table&nbsp;=&nbsp;Tables.GuidTable.Table.INSTANCE;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+Sql.Database.GenerateMetaDataSql&nbsp;metaData&nbsp;=&nbsp;<span class="Keyword">new</span>&nbsp;Sql.Database.GenerateMetaDataSql();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+<span class="ReferenceType">string</span>&nbsp;commentSql&nbsp;=&nbsp;metaData.GenerateSql(table);
+</div>
+	</body>
+</html>

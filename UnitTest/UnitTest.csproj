@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2D9CC127-F04B-4BD8-BB32-5E1C7BFF8940}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sql</RootNamespace>
+    <AssemblyName>UnitTest</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Library\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=2.2.3.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Library\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="Tables\AutoTable.cs" />
+    <Compile Include="Tables\BigIntTable.cs" />
+    <Compile Include="Tables\BinaryTable.cs" />
+    <Compile Include="Tables\BooleanTable.cs" />
+    <Compile Include="Tables\DateTime2Table.cs" />
+    <Compile Include="Tables\DateTimeOffsetTable.cs" />
+    <Compile Include="Tables\DateTimeTable.cs" />
+    <Compile Include="Tables\DecimalTable.cs" />
+    <Compile Include="Tables\DoubleTable.cs" />
+    <Compile Include="Tables\EarthquakeTable.cs" />
+    <Compile Include="Tables\EnumTable.cs" />
+    <Compile Include="Tables\FloatTable.cs" />
+    <Compile Include="Tables\GuidTable.cs" />
+    <Compile Include="Tables\IntTable.cs" />
+    <Compile Include="Tables\NDateTime2Table.cs" />
+    <Compile Include="Tables\NDateTimeTable.cs" />
+    <Compile Include="Tables\NDecimalTable.cs" />
+    <Compile Include="Tables\NIntTable.cs" />
+    <Compile Include="Tables\OrderLog.cs" />
+    <Compile Include="Tables\OrderLogId.cs" />
+    <Compile Include="Tables\Person.cs" />
+    <Compile Include="Tables\PersonId.cs" />
+    <Compile Include="Tables\SmallIntTable.cs" />
+    <Compile Include="Tables\SP.cs" />
+    <Compile Include="Tables\SP\StoredProc.cs" />
+    <Compile Include="Tables\StringTable.cs" />
+    <Compile Include="Tables\TempStringTable.cs" />
+    <Compile Include="TesterDatabase.cs" />
+    <Compile Include="Tests\AutoBigIntTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\AutoSmallIntTest.cs" />
+    <Compile Include="Tests\AutoTest.cs" />
+    <Compile Include="Tests\BinaryTest.cs" />
+    <Compile Include="Tests\BitIntTest.cs" />
+    <Compile Include="Tests\BooleanTest.cs" />
+    <Compile Include="Tests\BulkInsertTest.cs" />
+    <Compile Include="Tests\DateTime2Test.cs" />
+    <Compile Include="Tests\DateTimeOffsetTest.cs" />
+    <Compile Include="Tests\DateTimeTest.cs" />
+    <Compile Include="Tests\DecimalTest.cs" />
+    <Compile Include="Tests\DoubleTest.cs" />
+    <Compile Include="Tests\EnumTest.cs" />
+    <Compile Include="Tests\FloatTest.cs" />
+    <Compile Include="Tests\ForceThreadTest.cs" />
+    <Compile Include="Tests\FunctionTest.cs" />
+    <Compile Include="Tests\GuidTests.cs" />
+    <Compile Include="Tests\InsertSelectTest.cs" />
+    <Compile Include="Tests\IntegerTest.cs" />
+    <Compile Include="Tests\KeyColumnTests.cs" />
+    <Compile Include="Tests\MetaDataTest.cs" />
+    <Compile Include="Tests\MultithreadTest.cs" />
+    <Compile Include="Tests\NDateTime2Test.cs" />
+    <Compile Include="Tests\NDateTimeTest.cs" />
+    <Compile Include="Tests\NDecimalTest.cs" />
+    <Compile Include="Tests\NIntegerTest.cs" />
+    <Compile Include="Tests\NumericConditions.cs" />
+    <Compile Include="Tests\QueryTest.cs" />
+    <Compile Include="Tests\RollbackTest.cs" />
+    <Compile Include="Tests\SelectDistinct.cs" />
+    <Compile Include="Tests\SmallIntTest.cs" />
+    <Compile Include="Tests\StoredProcTest.cs" />
+    <Compile Include="Tests\StringTests.cs" />
+    <Compile Include="Tests\TableCheckerTest.cs" />
+    <Compile Include="Tests\TempTableTest.cs" />
+    <Compile Include="Tests\TruncateTest.cs" />
+    <Compile Include="Tests\UnionTest.cs" />
+    <Compile Include="Tests\UpdateJoinTest.cs" />
+    <Compile Include="Tests\WindowFunctionTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TypedQuery\TypedQuery.csproj">
+      <Project>{26510351-8210-4210-a00b-4777974345f3}</Project>
+      <Name>TypedQuery</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Create Tables PostgreSql.sql" />
+    <None Include="Library\COPYING" />
+    <None Include="Library\COPYING.LESSER" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CreateTables Sql Server.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Library\License.txt" />
+    <Content Include="Library\Mono.Security.dll" />
+    <Content Include="Library\Npgsql.dll" />
+    <Content Include="Library\Npgsql.pdb" />
+    <Content Include="Library\Npgsql.XML" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
