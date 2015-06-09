@@ -14,6 +14,9 @@ Typed Query (TQ) is a C# API for querying databases in a type safe manor. The ai
 * TQ can output query details as they are executed. These details include - sql, query duration, result size, exception, isolation level, transaction id
 * Set transaction to be only one used on current thread. (Great for finding potential dead locks in code)
 
+##Documentation
+Documentation can be found here https://endsoftheearth.github.io/documentation.html
+
 ##Examples
 ###Select Query
 ```C#
