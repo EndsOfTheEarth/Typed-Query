@@ -197,15 +197,15 @@ namespace TypedQuery {
 					string errorText;
 					new Logic.PostgreSqlSchema().GetTableDetails(table.TableName, table.Schema, out tableDetails, out errorText);	//TODO: Show any errors
 
-					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked);
-					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, columnPrefix);
+					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked);
+					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, columnPrefix, chkRemoveUnderscores.Checked);
 				}
 				else if(table.DatabaseType == Sql.DatabaseType.Mssql) {
 					
 					string errorText;
 					new Logic.SqlServerSchema().GetTableDetails(SqlServer.SqlServerDatabase.Instance, table.TableName, table.Schema, out tableDetails, out errorText);	//TODO: Show any errors
-					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked);
-					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, columnPrefix);
+					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked);
+					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, columnPrefix, chkRemoveUnderscores.Checked);
 				}
 				else
 					throw new Exception("Unnknown database type: " + table.DatabaseType.ToString());
