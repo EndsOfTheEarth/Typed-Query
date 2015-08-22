@@ -282,5 +282,11 @@ namespace TypedQuery {
 			else
 				lblConnections.BackColor = System.Drawing.SystemColors.Control;
 		}
-	}
+
+        private void chkRemoveUnderscores_CheckedChanged(object sender, EventArgs e) {
+            if (tvwSchema.SelectedNode != null && tvwSchema.SelectedNode is TableNode) {
+                GenerateCodeDefintion(true);
+            }
+        }
+    }
 }

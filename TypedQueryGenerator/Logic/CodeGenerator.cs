@@ -263,14 +263,16 @@ namespace TypedQuery.Logic {
 
 			string value;
 
-			if(!string.IsNullOrEmpty(pColumnPrefix) && pColumn.ColumnName.ToLower().StartsWith(pColumnPrefix.ToLower()))
-				value = pColumn.ColumnName.Substring(pColumnPrefix.Length);
-			else
-				value = pColumn.ColumnName;
-
-            StringBuilder name = new StringBuilder();
+            if (!string.IsNullOrEmpty(pColumnPrefix) && pColumn.ColumnName.ToLower().StartsWith(pColumnPrefix.ToLower())) {
+                value = pColumn.ColumnName.Substring(pColumnPrefix.Length);
+            }
+            else {
+                value = pColumn.ColumnName;
+            }
 
             if (pRemoveUnderscores) {
+
+                StringBuilder name = new StringBuilder();
 
                 bool upperCaseNextChar = true;
 
@@ -291,8 +293,9 @@ namespace TypedQuery.Logic {
                         }
                     }
                 }
+                return name.ToString();
             }
-			return name.ToString();
+            return value;
 		}
 
 		private static string FormatName(string pString) {

@@ -252,6 +252,7 @@
             this.chkRemoveUnderscores.TabIndex = 8;
             this.chkRemoveUnderscores.Text = "Remove Underscores";
             this.chkRemoveUnderscores.UseVisualStyleBackColor = true;
+            this.chkRemoveUnderscores.CheckedChanged += new System.EventHandler(this.chkRemoveUnderscores_CheckedChanged);
             // 
             // TableGeneratorForm
             // 
