@@ -56,14 +56,16 @@ namespace Sql.Column {
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			
-			if (pReader.IsDBNull(pColumnIndex))
+
+			if(pReader.IsDBNull(pColumnIndex)) {
 				return null;
+			}
 			
 			Type dataType = pReader.GetFieldType(pColumnIndex);
-			
-			if(dataType != typeof(byte[]) && dataType != typeof(byte?[]))
-				throw new Exception("Row column data is not of the correct type. Expected byte[] or byte?[] value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+			if(dataType != typeof(byte[]) && dataType != typeof(byte?[])) {
+				throw new Exception($"Row column data is not of the correct type. Expected byte[] or byte?[] value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+			}
 			
 			return (byte[])pReader.GetValue(pColumnIndex);
 		}

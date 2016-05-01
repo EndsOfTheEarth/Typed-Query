@@ -28,82 +28,83 @@ namespace Sql.Column {
 		
 		public StringColumn(ATable pTable, string pColumnName, int pMaxLength)
 			: base(pTable, pColumnName, false, false) {
-			
-			if(pMaxLength <= 0)
-				throw new Exception("pMaxLength must be >= 1");
+
+			if(pMaxLength <= 0) {
+				throw new Exception($"{nameof(pMaxLength)} must be >= 1");
+			}
 			
 			MaxLength = pMaxLength;
 		}
 		public StringColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength)
 			: base(pTable, pColumnName, pIsPrimaryKey, false) {
-			
-			if(pMaxLength <= 0)
-				throw new Exception("pMaxLength must be >= 1");
+
+			if(pMaxLength <= 0) {
+				throw new Exception($"{nameof(pMaxLength)} must be >= 1");
+			}
 			
 			MaxLength = pMaxLength;
 		}
 
 		public static Condition operator ==(StringColumn pColumnA, StringColumn pColumnB) {
-			
-			if(((object)pColumnB) == null)
-				throw new NullReferenceException("pColumnB cannot be null");
+
+			if(((object)pColumnB) == null) {
+				throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+			}
 			
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
 		}
 		
 		public static Condition operator !=(StringColumn pColumnA, StringColumn pColumnB) {
-			
-			if(((object)pColumnB) == null)
-				throw new NullReferenceException("pColumnB cannot be null");
+
+			if(((object)pColumnB) == null) {
+				throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+			}
 			
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
 		
 		public static Condition operator ==(StringColumn pColumnA, string pValue) {
-			
-			if(pValue == null)
-				throw new NullReferenceException("pValue cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'stringColumn = null' is an undefined condition in sql so this library disallows it.");
+
+			if(pValue == null) {
+				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'stringColumn = null' is an undefined condition in sql so this library disallows it.");
+			}
 			
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
 		}
 		
 		public static Condition operator !=(StringColumn pColumnA, string pValue) {
-			
-			if(pValue == null)
-				throw new NullReferenceException("pValue cannot be null when using the != operator. Use .IsNull() method if a null condition is required. 'stringColumn != null' is an undefined condition in sql so this library disallows it.");
+
+			if(pValue == null) {
+				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the != operator. Use .IsNull() method if a null condition is required. 'stringColumn != null' is an undefined condition in sql so this library disallows it.");
+			}
 			
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
 		}
 
 		public Condition Like(string pValue) {
-			
-			if(pValue == null)
-				throw new NullReferenceException("pValue cannot be null when using the 'like' operator. 'stringColumn like null' is an undefined condition in sql so this library disallows it.");
+
+			if(pValue == null) {
+				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'like' operator. 'stringColumn like null' is an undefined condition in sql so this library disallows it.");
+			}
 			
 			return new ColumnCondition(this, Operator.LIKE, pValue);
 		}
 
-//		public Condition ILike(string pValue) {
-//			return new ColumnCondition(this, Operator.ILIKE, pValue);
-//		}
-
 		public Condition NotLike(string pValue) {
-			
-			if(pValue == null)
-				throw new NullReferenceException("pValue cannot be null when using the 'not like' operator. 'stringColumn not like null' is an undefined condition in sql so this library disallows it.");
+
+			if(pValue == null) {
+				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'not like' operator. 'stringColumn not like null' is an undefined condition in sql so this library disallows it.");
+			}
 			
 			return new ColumnCondition(this, Operator.NOT_LIKE, pValue);
 		}
 
-//		public Condition NotILike(string pValue) {
-//			return new ColumnCondition(this, Operator.NOT_ILIKE, pValue);
-//		}
-
 		public Condition In(List<string> pList) {
 			
 			foreach(string value in pList) {
-				if(value == null)
-					throw new NullReferenceException("A value in pList is null. 'stringColumn IN (null)' is an undefined condition in sql so this library disallows it.");
+				if(value == null) {
+					throw new NullReferenceException($"A value in { nameof(pList) } is null. 'stringColumn IN (null)' is an undefined condition in sql so this library disallows it.");
+				}
 			}
 				
 			return new InCondition<string>(this, pList);
@@ -111,8 +112,9 @@ namespace Sql.Column {
 		public Condition NotIn(List<string> pList) {
 			
 			foreach(string value in pList) {
-				if(value == null)
-					throw new NullReferenceException("A value in pList is null. 'stringColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
+				if(value == null) {
+					throw new NullReferenceException($"A value in { nameof(pList) } is null. 'stringColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
+				}
 			}
 			
 			return new NotInCondition<string>(this, pList);
@@ -126,25 +128,29 @@ namespace Sql.Column {
 		}
 
 		public Condition In(params string[] pValues) {
-			
-			if(pValues == null)
-				throw new NullReferenceException("pValues cannot be null");
+
+			if(pValues == null) {
+				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
+			}
 			
 			foreach(string value in pValues) {
-				if(value == null)
-					throw new NullReferenceException("A value in pValues is null. 'stringColumn IN (null)' is an undefined condition in sql so this library disallows it.");
+				if(value == null) {
+					throw new NullReferenceException($"A value in { nameof(pValues) } is null. 'stringColumn IN (null)' is an undefined condition in sql so this library disallows it.");
+				}
 			}
 			
 			return new InCondition<string>(this, pValues);
 		}
 		public Condition NotIn(params string[] pValues) {
-			
-			if(pValues == null)
-				throw new NullReferenceException("pValues cannot be null");
+
+			if(pValues == null) {
+				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
+			}
 			
 			foreach(string value in pValues) {
-				if(value == null)
-					throw new NullReferenceException("A value in pValues is null. 'stringColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
+				if(value == null) {
+					throw new NullReferenceException($"A value in { nameof(pValues) } is null. 'stringColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
+				}
 			}
 			
 			return new NotInCondition<string>(this, pValues);
@@ -154,9 +160,10 @@ namespace Sql.Column {
 		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 			
 			Type dataType = pReader.GetFieldType(pColumnIndex);
-			
-			if(dataType != typeof(string))
-				throw new Exception("Row column data is not of the correct type. Expected string value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+			if(dataType != typeof(string)) {
+				throw new Exception($"Row column data is not of the correct type. Expected string value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+			}
 			
 			return pReader.GetString(pColumnIndex);
 		}
@@ -164,9 +171,10 @@ namespace Sql.Column {
 			return (string)pRow.GetValue(this);
 		}
 		public void SetValue(ARow pRow, string pValue) {
-			
-			if(pValue != null && pValue.Length > MaxLength)
-				throw new Exception("string value is too long. Max Length = " + MaxLength.ToString() + ". Actual length = " + pValue.Length.ToString() + ". Table: " + Table.ToString() + ", Column = " + ColumnName);
+
+			if(pValue != null && pValue.Length > MaxLength) {
+				throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
+			}
 			
 			pRow.SetValue(this, pValue);
 		}

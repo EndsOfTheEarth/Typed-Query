@@ -175,21 +175,25 @@ namespace Sql.Column {
 			Int16 intValue;
 			
 			if(IsAutoId) {
-				
-				if(dataType != typeof(Int16) && dataType != typeof(decimal))
-					throw new Exception("Row column data is not of the correct type. Expected Int16 or decimal value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+				if(dataType != typeof(Int16) && dataType != typeof(decimal)) {
+					throw new Exception($"Row column data is not of the correct type. Expected Int16 or decimal value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+				}
 				
 				object value = pReader.GetValue(pColumnIndex);
-				
-				if(value is decimal)	//Queries like SELECT @@IDENTITY return decimals on integer columns so we need to handle this case. Not the best solution.
-					intValue = (Int16) (decimal)value;
-				else
-					intValue = (Int16) value;	//Should give a cast exception if not an int
+
+				if(value is decimal) {  //Queries like SELECT @@IDENTITY return decimals on integer columns so we need to handle this case. Not the best solution.
+					intValue = (Int16)(decimal)value;
+				}
+				else {
+					intValue = (Int16)value;    //Should give a cast exception if not an int
+				}
 			}
 			else {
-				
-				if(dataType != typeof(Int16))
-					throw new Exception("Row column data is not of the correct type. Expected Int16 value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+				if(dataType != typeof(Int16)) {
+					throw new Exception($"Row column data is not of the correct type. Expected Int16 value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+				}
 			
 				intValue = pReader.GetInt16(pColumnIndex);
 			}

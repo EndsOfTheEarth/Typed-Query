@@ -178,23 +178,28 @@ namespace Sql.Column {
 			if(IsAutoId) {
 				
 				object value = pReader.GetValue(pColumnIndex);
-				
-				if(value == null)
-					throw new Exception("Row column data value cannot be null. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
-				
-				if(value is decimal)	//Queries like SELECT @@IDENTITY return decimals on integer columns so we need to handle this case. Not the best solution.
-					intValue = (Int64) (decimal)value;
-				else if(value.GetType() == typeof(Int64))
-					intValue = (Int64) value;	//Should give a cast exception if not an int
-				else
-					throw new Exception("Row column data is not of the correct type. Expected Int64 or decimal value instead got '" + value.GetType().ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+				if(value == null) {
+					throw new Exception($"Row column data value cannot be null. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+				}
+
+				if(value is decimal) {  //Queries like SELECT @@IDENTITY return decimals on integer columns so we need to handle this case. Not the best solution.
+					intValue = (Int64)(decimal)value;
+				}
+				else if(value.GetType() == typeof(Int64)) {
+					intValue = (Int64)value;    //Should give a cast exception if not an int
+				}
+				else {
+					throw new Exception($"Row column data is not of the correct type. Expected Int64 or decimal value instead got '{ value.GetType().ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+				}
 			}
 			else {
 				
 				Type dataType = pReader.GetFieldType(pColumnIndex);
-			
-				if(dataType != typeof(Int64))
-					throw new Exception("Row column data is not of the correct type. Expected Int64 value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+				if(dataType != typeof(Int64)) {
+					throw new Exception($"Row column data is not of the correct type. Expected Int64 value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+				}
 			
 				intValue = pReader.GetInt64(pColumnIndex);
 			}

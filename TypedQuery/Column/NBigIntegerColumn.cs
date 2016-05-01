@@ -172,9 +172,10 @@ namespace Sql.Column {
 				return null;
 			
 			Type dataType = pReader.GetFieldType(pColumnIndex);
-			
-			if(dataType != typeof(Int64) && dataType != typeof(Int64))
-				throw new Exception("Row column data is not of the correct type. Expected Int64 value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+			if(dataType != typeof(Int64) && dataType != typeof(Int64)) {
+				throw new Exception($"Row column data is not of the correct type. Expected Int64 value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+			}
 				
 			return pReader.GetInt64(pColumnIndex);
 		}

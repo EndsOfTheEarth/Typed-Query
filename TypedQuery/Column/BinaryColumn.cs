@@ -61,9 +61,10 @@ namespace Sql.Column {
 			object value = pReader.GetValue(pColumnIndex);
 			
 			Type dataType = pReader.GetFieldType(pColumnIndex);
-			
-			if(dataType != typeof(byte[]))
-				throw new Exception("Row column data is not of the correct type. Expected byte[] value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+			if(dataType != typeof(byte[])) {
+				throw new Exception($"Row column data is not of the correct type. Expected byte[] value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+			}
 				
 			return (byte[])value;
 		}		

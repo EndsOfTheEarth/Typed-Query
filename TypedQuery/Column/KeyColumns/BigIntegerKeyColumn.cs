@@ -178,9 +178,10 @@ namespace Sql.Column {
 			Int64 intValue;
 			
 			if(IsAutoId) {
-				
-				if(dataType != typeof(Int64) && dataType != typeof(decimal))
-					throw new Exception("Row column data is not of the correct type. Expected Int64 or decimal value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+				if(dataType != typeof(Int64) && dataType != typeof(decimal)) {
+					throw new Exception($"Row column data is not of the correct type. Expected Int64 or decimal value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{Table.TableName}' Column: '{ColumnName}'");
+				}
 				
 				object value = pReader.GetValue(pColumnIndex);
 				
@@ -190,9 +191,10 @@ namespace Sql.Column {
 					intValue = (Int64) value;	//Should give a cast exception if not an int
 			}
 			else {
-				
-				if(dataType != typeof(Int64))
-					throw new Exception("Row column data is not of the correct type. Expected Int64 value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+				if(dataType != typeof(Int64)) {
+					throw new Exception($"Row column data is not of the correct type. Expected Int64 value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+				}
 				
 				intValue = pReader.GetInt64(pColumnIndex);
 			}

@@ -30,12 +30,16 @@ namespace Sql.Column {
 	public class EnumColumn<ENUM> : AColumn, IEnumColumn {
 
 		public EnumColumn(ATable pTable, string pColumnName) : base(pTable, pColumnName, false, false) {
-			if(!typeof(ENUM).IsEnum)
-				throw new ArgumentException("<ENUM> must be an enum type");
+
+			if(!typeof(ENUM).IsEnum) {
+				throw new ArgumentException($"<{nameof(ENUM)}> must be an enum type");
+			}
 		}
 		public EnumColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey) : base(pTable, pColumnName, pIsPrimaryKey, false) {
-			if(!typeof(ENUM).IsEnum)
-				throw new ArgumentException("<ENUM> must be an enum type");
+
+			if(!typeof(ENUM).IsEnum) {
+				throw new ArgumentException($"<{nameof(ENUM)}> must be an enum type");
+			}
 		}
 		
 		public Type GetEnumType() {
@@ -79,16 +83,19 @@ namespace Sql.Column {
 		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 			
 			Type dataType = pReader.GetFieldType(pColumnIndex);
-			
-			if(dataType != typeof(byte) && dataType != typeof(Int16) && dataType != typeof(Int32))
-				throw new Exception("Row column data is not of the correct type. Expected byte or Int16 or Int32 value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
+
+			if(dataType != typeof(byte) && dataType != typeof(Int16) && dataType != typeof(Int32)) {
+				throw new Exception($"Row column data is not of the correct type. Expected byte or Int16 or Int32 value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+			}
 			
 			object value = pReader.GetValue(pColumnIndex);
-			
-			if(value is byte)
-				return (int) ((byte) value);
-			else if(value is Int16)
+
+			if(value is byte) {
+				return (int)((byte)value);
+			}
+			else if(value is Int16) {
 				return (int)((Int16)value);
+			}
 			return (int)value;
 		}
 		public ENUM ValueOf(ARow pRow) {

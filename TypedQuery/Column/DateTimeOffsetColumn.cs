@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -114,29 +114,31 @@ namespace Sql.Column {
 		public Condition NotIn(params DateTimeOffset[] pValues) {
 			return new NotInCondition<DateTimeOffset>(this, pValues);
 		}
-		
+
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			
+
 			Type dataType = pReader.GetFieldType(pColumnIndex);
-			
-			if(pDatabase.DatabaseType == DatabaseType.PostgreSql){
-				
-				if(dataType != typeof(DateTime))
-					throw new Exception("Row column data is not of the correct type. Expected DateTime value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
-				
+
+			if(pDatabase.DatabaseType == DatabaseType.PostgreSql) {
+
+				if(dataType != typeof(DateTime)) {
+					throw new Exception($"Row column data is not of the correct type. Expected DateTime value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+				}
+
 				//PostgreSql Timestamp with time zone works differently from sql server datetimeoffset
 				//Timestamp stores dates in UTC where as datetimeoffset stores the date plus time zone.
 				//This means that postgre returns a date in the current timezone which is different from sql server
 				DateTime value = pReader.GetDateTime(pColumnIndex);
-				
+
 				DateTimeOffset offset = new DateTimeOffset(value);
 				return offset;
 			}
-			
-			if(dataType != typeof(DateTimeOffset))
-				throw new Exception("Row column data is not of the correct type. Expected DateTimeOffset value instead got '" + dataType.ToString() + "'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '" + Table.TableName + "' Column: '" + ColumnName + "'");
-			
+
+			if(dataType != typeof(DateTimeOffset)) {
+				throw new Exception($"Row column data is not of the correct type. Expected DateTimeOffset value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+			}
+
 			return (DateTimeOffset)pReader.GetValue(pColumnIndex);
 		}
 		public DateTimeOffset ValueOf(ARow pRow) {
@@ -145,14 +147,14 @@ namespace Sql.Column {
 		public void SetValue(ARow pRow, DateTimeOffset pValue) {
 			pRow.SetValue(this, pValue);
 		}
-		
+
 		internal override void TestSetValue(ARow pRow, object pValue) {
 			SetValue(pRow, (DateTimeOffset)pValue);
 		}
 		internal override object TestGetValue(ARow pRow) {
 			return ValueOf(pRow);
 		}
-		
+
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public override int GetHashCode() {
 			return base.GetHashCode();
@@ -167,8 +169,8 @@ namespace Sql.Column {
 		}
 		public override System.Data.DbType DbType {
 			get { return System.Data.DbType.DateTimeOffset; }
-		}		
-		public override object GetDefaultType(){
+		}
+		public override object GetDefaultType() {
 			return DateTimeOffset.MinValue;
 		}
 	}
