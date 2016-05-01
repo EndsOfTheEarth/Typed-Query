@@ -34,10 +34,10 @@ namespace Sql {
 		protected ADatabase(string pDatabaseName, DatabaseType pDatabaseType) {
 			
 			if(string.IsNullOrWhiteSpace(pDatabaseName))
-				throw new Exception("pDatabaseName cannot be null or empty");
+				throw new Exception($"{nameof(pDatabaseName)} cannot be null or empty");
 			
 			if(!DatabaseType.IsDefined(typeof(DatabaseType), pDatabaseType))	//Check for incorrect enum value e.g. being cast from an int value like zero.
-				throw new Exception("Unknown pDatabaseType. Value = " + pDatabaseType.ToString());
+				throw new Exception($"Unknown {nameof(pDatabaseType)}. Value = {pDatabaseType.ToString()}");
 			
 			mDatabaseName = pDatabaseName;
 			mDatabaseType = pDatabaseType;

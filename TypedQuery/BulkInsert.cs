@@ -17,7 +17,7 @@ namespace Sql {
 			set {
 				
 				if(value != null && value <= 0)
-					throw new Exception("Timeout can not be <= 0. Value = " + value.ToString());
+					throw new Exception($"Timeout cannot be <= 0. Value = {value.ToString()}");
 				
 				mTimeout = value;
 			}
@@ -29,7 +29,7 @@ namespace Sql {
 		public void AddValues(IInsertSet pInsertValues) {
 			
 			if(pInsertValues == null)
-				throw new NullReferenceException("pInsertValues can not be null");
+				throw new NullReferenceException($"{nameof(pInsertValues)} cannot be null");
 			
 			mValues.Add((InsertBuilder)pInsertValues);
 		}
@@ -37,7 +37,7 @@ namespace Sql {
 		public int Execute(Transaction pTransaction) {
 					
 			if(pTransaction == null)
-				throw new NullReferenceException("pTransaction can not be null");
+				throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
 			
 			System.Data.Common.DbConnection connection = null;
 			

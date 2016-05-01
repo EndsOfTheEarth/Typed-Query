@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,7 +26,7 @@ namespace Sql {
 	/// Abstract table
 	/// </summary>
 	public abstract class ATable : ISelectableColumns {
-		
+
 		private readonly ADatabase mDefaultDatabase;
 		private readonly string mTableName;
 		private readonly string mSchema;
@@ -35,26 +35,26 @@ namespace Sql {
 		private readonly Type mRowType;
 		private readonly bool mIsTemporaryTable;
 		private readonly bool? mUseConcurrenyChecking;
-		
+
 		public ADatabase DefaultDatabase {
 			get { return mDefaultDatabase; }
 		}
-		
+
 		/// <summary>
 		/// Name of table in database.
 		/// </summary>
 		public string TableName {
 			get { return mTableName; }
 		}
-		
+
 		public string Schema {
 			get { return mSchema; }
 		}
-		
+
 		public bool IsView {
 			get { return mIsView; }
 		}
-		
+
 		/// <summary>
 		/// Columns that belong to table
 		/// </summary>
@@ -69,14 +69,14 @@ namespace Sql {
 		internal Type RowType {
 			get { return mRowType; }
 		}
-		
+
 		/// <summary>
 		/// Returns true if table is a temporary table.
 		/// </summary>
 		public bool IsTemporaryTable {
 			get { return mIsTemporaryTable; }
 		}
-		
+
 		/// <summary>
 		/// If true row updates use all column values to find row in table. If false only the primary key columns are used to find row.
 		/// If null then the gloabl setting Settings.UseConcurrenyChecking value is used.
@@ -85,50 +85,50 @@ namespace Sql {
 			get { return mUseConcurrenyChecking; }
 		}
 
-		protected ATable(ADatabase pDefaultDatabase, string pTableName, string pSchema, bool pIsView, Type pRowType) : this(pDefaultDatabase, pTableName, pSchema, pIsView,  pRowType, false, null) {
-			
+		protected ATable(ADatabase pDefaultDatabase, string pTableName, string pSchema, bool pIsView, Type pRowType) : this(pDefaultDatabase, pTableName, pSchema, pIsView, pRowType, false, null) {
+
 		}
 		protected ATable(ADatabase pDefaultDatabase, string pTableName, string pSchema, bool pIsView, bool pUseConcurrenyChecking, Type pRowType) : this(pDefaultDatabase, pTableName, pSchema, pIsView, pRowType, false, pUseConcurrenyChecking) {
-			
+
 		}
-		
+
 		/// <summary>
 		/// Creates a temporary table with an auto generated table name
 		/// </summary>
 		/// <param name="pRowType"></param>
 		protected ATable(Type pRowType, string pTempTableName) {
-			
+
 			if(!pRowType.IsSubclassOf(typeof(ARow)))
-				throw new Exception("pRowType must be a subclass of Sql.ARow");
-			
+				throw new Exception($"{nameof(pRowType)} must be a subclass of Sql.ARow");
+
 			if(string.IsNullOrEmpty(pTempTableName))
-				throw new ArgumentException("pTempTableName cannot be null or empty");
-			
+				throw new ArgumentException($"{nameof(pTempTableName)} cannot be null or empty");
+
 			mRowType = pRowType;
 			mIsTemporaryTable = true;
 			mTableName = pTempTableName;
 			mUseConcurrenyChecking = null;
 		}
 		private ATable(ADatabase pDefaultDatabase, string pTableName, string pSchema, bool pIsView, Type pRowType, bool pIsTemporaryTable, bool? pUseConcurrenyChecking) {
-			
+
 			if(pDefaultDatabase == null)
-				throw new NullReferenceException("DefaultDatabase cannot be null");
-			
+				throw new NullReferenceException($"{nameof(pDefaultDatabase)} cannot be null");
+
 			if(string.IsNullOrWhiteSpace(pTableName))
-				throw new Exception("pTableName cannot be null or empty");
-			
+				throw new Exception($"{nameof(pTableName)} cannot be null or empty");
+
 			if(pRowType == null)
-				throw new NullReferenceException("pRowType cannot be null");
-			
+				throw new NullReferenceException($"{nameof(pRowType)} cannot be null");
+
 			if(!pRowType.IsSubclassOf(typeof(ARow)))
-				throw new Exception("pRowType must be a subclass of Sql.ARow");
-			
+				throw new Exception($"{nameof(pRowType)} must be a subclass of Sql.ARow");
+
 			if(pTableName.Contains("'"))
-				throw new Exception("pTableName cannot any single quote characters. Value = " + pTableName);
-			
+				throw new Exception($"{nameof(pTableName)} cannot any single quote characters. Value = {pTableName}");
+
 			if(pSchema.Contains("'"))
-				throw new Exception("pSchema cannot any single quote characters. Value = " + pTableName);
-			
+				throw new Exception($"{nameof(pSchema)} cannot any single quote characters. Value = {pTableName}");
+
 			mDefaultDatabase = pDefaultDatabase;
 			mTableName = pTableName;
 			mSchema = pSchema ?? string.Empty;
@@ -143,13 +143,13 @@ namespace Sql {
 		/// </summary>
 		/// <param name="pColumns"></param>
 		protected void AddColumns(params AColumn[] pColumns) {
-			if (pColumns == null || pColumns.Length == 0)
+			if(pColumns == null || pColumns.Length == 0)
 				throw new Exception("pColumns cannot be null or empty");
 			if(mColumns.Count > 0)
 				throw new Exception("Columns are already set on table");
 			mColumns.AddRange(pColumns);
 		}
-		
+
 		#region Hide Members
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public override int GetHashCode() {
@@ -164,7 +164,7 @@ namespace Sql {
 			return base.ToString();
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public new Type GetType(){
+		public new Type GetType() {
 			return base.GetType();
 		}
 		#endregion

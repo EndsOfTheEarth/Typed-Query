@@ -37,7 +37,7 @@ namespace Sql {
 		protected IResult ExecuteProcedure(Transaction pTransaction, int? pTimeout, params SqlParameter[] pSqlParams) {
 			
 			if(pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+				throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
 			
 			System.Data.Common.DbConnection connection = null;
 			

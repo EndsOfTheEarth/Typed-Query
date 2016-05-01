@@ -36,7 +36,7 @@ namespace Sql {
 		public static IDistinct Select(ISelectableColumns pField, params ISelectableColumns[] pFields) {
 			
 			if(pField == null)
-				throw new NullReferenceException("pField cannot be null");
+				throw new NullReferenceException($"{nameof(pField)} cannot be null");
 			
 			List<ISelectable> selectList = new List<ISelectable>();
 			selectList.AddRange(pField.SelectableColumns);
@@ -102,10 +102,10 @@ namespace Sql {
 		public static string GetSpSql(ATable pSP, Transaction pTransaction, params object[] pParameters) {
 			
 			if (pSP == null)
-				throw new NullReferenceException("pSP cannot be null");
+				throw new NullReferenceException($"{nameof(pSP)} cannot be null");
 
 			if (pTransaction.Database.DatabaseType != DatabaseType.Mssql)
-				throw new Exception("Stored procedures are only implemented for DatabaseType.Mssql. Not " + pTransaction.Database.DatabaseType.ToString());
+				throw new Exception($"Stored procedures are only implemented for DatabaseType.Mssql. Not {pTransaction.Database.DatabaseType.ToString()}");
 
 			Sql.Database.IAliasManager aliasManager = new Sql.Database.AliasManager();
 			return Sql.Database.SqlServer.GenerateSql.GetStoreProcedureQuery(pTransaction.Database, pSP, null, pParameters, aliasManager);
@@ -121,13 +121,13 @@ namespace Sql {
 		public static IResult ExecuteSP(ATable pSP, Transaction pTransaction, params object[] pParameters) {
 
 			if (pSP == null)
-				throw new NullReferenceException("pSP cannot be null");
+				throw new NullReferenceException($"{nameof(pSP)} cannot be null");
 			
 			if(pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+				throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
 
 			if (pTransaction.Database.DatabaseType != DatabaseType.Mssql)
-				throw new Exception("Stored procedures are only implemented for DatabaseType.Mssql. Not " + pTransaction.Database.DatabaseType.ToString());
+				throw new Exception($"Stored procedures are only implemented for DatabaseType.Mssql. Not {pTransaction.Database.DatabaseType.ToString()}");
 
 			System.Data.Common.DbConnection connection = null;
 			
@@ -192,13 +192,13 @@ namespace Sql {
 		public static int ExecuteNonQuery(string pSql, ADatabase pDatabase, Transaction pTransaction) {
 
 			if (string.IsNullOrWhiteSpace(pSql))
-				throw new Exception("pSql cannot be null or empty");
+				throw new Exception($"{nameof(pSql)} cannot be null or empty");
 
 			if (pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+				throw new NullReferenceException($"{nameof(pDatabase)} cannot be null");
 
 			if (pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+				throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
 
 			System.Data.Common.DbConnection connection = null;
 			

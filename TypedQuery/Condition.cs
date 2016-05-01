@@ -166,38 +166,38 @@ namespace Sql {
 		internal ColumnCondition(AColumn pLeft, Operator pOperator, AColumn pRight) : base(pLeft, pOperator, pRight) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft column cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} column cannot be null");
 			
 			if(pRight == null)
-				throw new NullReferenceException("pRight column cannot be null");
+				throw new NullReferenceException($"{nameof(pRight)} column cannot be null");
 			
 		}
 		
 		internal ColumnCondition(AColumn pLeft, Operator pOperator, object pRight) : base(pLeft, pOperator, pRight) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft column cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} column cannot be null");
 			
 			if(pRight == null)
-				throw new NullReferenceException("pRight value cannot be null");
+				throw new NullReferenceException($"{nameof(pRight)} value cannot be null");
 		}
 		
 		internal ColumnCondition(Interfaces.IFunction pLeft, Operator pOperator, object pRight) : base(pLeft, pOperator, pRight) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pRight == null)
-				throw new NullReferenceException("pRight cannot be null");
+				throw new NullReferenceException($"{nameof(pRight)} cannot be null");
 		}
 		
 		internal ColumnCondition(INumericCondition pLeft, Operator pOperator, object pRight) : base(pLeft, pOperator, pRight) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pRight == null)
-				throw new NullReferenceException("pRight cannot be null");
+				throw new NullReferenceException($"{nameof(pRight)} cannot be null");
 		}
 	}
 	
@@ -206,10 +206,10 @@ namespace Sql {
 		internal NestedQueryCondition(AColumn pLeft, Operator pOperator, Interfaces.IExecute pQuery) : base(pLeft, pOperator, pQuery) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pQuery == null)
-				throw new NullReferenceException("pQuery cannot be null");
+				throw new NullReferenceException($"{nameof(pQuery)} cannot be null");
 		}
 	}
 	
@@ -218,72 +218,72 @@ namespace Sql {
 		internal InCondition(AColumn pLeft, IList<T> pList) : base(pLeft, Operator.IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Count == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 			
 		}
 		internal InCondition(AColumn pLeft, T[] pList) : base(pLeft, Operator.IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Length == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 		}
 		
 		internal InCondition(Interfaces.IFunction pLeft, IList<T> pList) : base(pLeft, Operator.IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Count == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 		}
 		
 		internal InCondition(Interfaces.IFunction pLeft, T[] pList) : base(pLeft, Operator.IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Length == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 		}		
 	}
@@ -293,72 +293,72 @@ namespace Sql {
 		internal NotInCondition(AColumn pLeft, IList<T> pList) : base(pLeft, Operator.NOT_IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Count == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 		}
 		
 		internal NotInCondition(AColumn pLeft, T[] pList) : base(pLeft, Operator.NOT_IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Length == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 		}
 		
 		internal NotInCondition(Interfaces.IFunction pLeft, IList<T> pList) : base(pLeft, Operator.NOT_IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Count == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 		}
 		
 		internal NotInCondition(Interfaces.IFunction pLeft, T[] pList) : base(pLeft, Operator.NOT_IN, pList) {
 			
 			if(pLeft == null)
-				throw new NullReferenceException("pLeft cannot be null");
+				throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
 			
 			if(pList == null)
-				throw new NullReferenceException("pList cannot be null");
+				throw new NullReferenceException($"{nameof(pList)} cannot be null");
 			
 			if(pList.Length == 0)
-				throw new Exception("pList cannot be empty");
+				throw new Exception($"{nameof(pList)} cannot be empty");
 			
 			foreach(T value in pList){
 			
 				if(value == null)
-					throw new NullReferenceException("A value in pList is null. This is not allowed.");
+					throw new NullReferenceException($"A value in {nameof(pList)} is null. This is not allowed.");
 			}
 		}
 	}
@@ -368,7 +368,7 @@ namespace Sql {
 		public IsNullCondition(ISelectable pSelectable) : base(pSelectable, Operator.IS_NULL, null) {
 			
 			if(pSelectable == null)
-				throw new NullReferenceException("pSelectable cannot be null");
+				throw new NullReferenceException($"{nameof(pSelectable)} cannot be null");
 		}
 	}
 	
@@ -377,7 +377,7 @@ namespace Sql {
 		public IsNotNullCondition(ISelectable pSelectable) : base(pSelectable, Operator.IS_NOT_NULL, null) {
 			
 			if(pSelectable == null)
-				throw new NullReferenceException("pSelectable cannot be null");
+				throw new NullReferenceException($"{nameof(pSelectable)} cannot be null");
 		}
 	}
 	
@@ -386,10 +386,10 @@ namespace Sql {
 		public AndCondition(Condition pConditionA, Condition pConditionB) : base(pConditionA, Operator.AND, pConditionB){
 			
 			if(pConditionA == null)
-				throw new NullReferenceException("pConditionA cannot be null");
+				throw new NullReferenceException($"{nameof(pConditionA)} cannot be null");
 			
 			if(pConditionB == null)
-				throw new NullReferenceException("pConditionB cannot be null");
+				throw new NullReferenceException($"{nameof(pConditionB)} cannot be null");
 		}
 	}
 	
@@ -398,10 +398,10 @@ namespace Sql {
 		public OrCondition(Condition pConditionA, Condition pConditionB) : base(pConditionA, Operator.OR, pConditionB){
 			
 			if(pConditionA == null)
-				throw new NullReferenceException("pConditionA cannot be null");
+				throw new NullReferenceException($"{nameof(pConditionA)} cannot be null");
 			
 			if(pConditionB == null)
-				throw new NullReferenceException("pConditionB cannot be null");
+				throw new NullReferenceException($"{nameof(pConditionB)} cannot be null");
 		}
 	}
 	

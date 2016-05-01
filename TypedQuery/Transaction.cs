@@ -79,7 +79,7 @@ namespace Sql {
 		public Transaction(ADatabase pDatabase, System.Data.IsolationLevel pIsolationLevel, bool pForceUseOnThread){
 			
 			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+				throw new NullReferenceException($"{nameof(pDatabase)} cannot be null");
 			
 			mDatabase = pDatabase;
 			mId = GetNextId();
@@ -118,7 +118,7 @@ namespace Sql {
 		private static void RegisterForceThread(Transaction pTransaction) {
 			
 			if(pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+				throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
 			
 			lock(mForceThreadDict) {
 				if(mForceThreadDict.ContainsKey(Thread.CurrentThread))
@@ -140,7 +140,7 @@ namespace Sql {
 		private static void ReleaseForceThread(Transaction pTransaction) {
 			
 			if(pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+				throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
 			
 			lock(mForceThreadDict) {
 				if(pTransaction.mForceThread != null)
@@ -151,7 +151,7 @@ namespace Sql {
 		internal System.Data.Common.DbConnection GetOrSetConnection(ADatabase pDatabase) {
 			
 			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+				throw new NullReferenceException($"{nameof(pDatabase)} cannot be null");
 			
 			if(mDatabase != null && mDatabase != pDatabase)
 				throw new Exception("Transaction connecting was opened using a different database class. All queries used within a transaction must have tables using the same ADatabase class.");
@@ -166,7 +166,7 @@ namespace Sql {
 		internal System.Data.Common.DbTransaction GetOrSetDbTransaction(ADatabase pDatabase) {
 			
 			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+				throw new NullReferenceException($"{nameof(pDatabase)} cannot be null");
 			
 			lock(this) {
 				
@@ -186,7 +186,7 @@ namespace Sql {
 		internal static System.Data.Common.DbCommand CreateCommand(System.Data.Common.DbConnection pConnection, Transaction pTransaction) {
 			
 			if(pConnection == null)
-				throw new NullReferenceException("pConnection cannot be null");
+				throw new NullReferenceException($"{nameof(pConnection)} cannot be null");
 			
 			CheckForceThread(pTransaction);
 			

@@ -42,10 +42,10 @@ namespace Sql {
 		protected AColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, bool pAllowsNulls) {
 			
 			if (pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
+				throw new NullReferenceException($"{nameof(pTable)} cannot be null");
 
 			if (string.IsNullOrWhiteSpace(pColumnName))
-				throw new NullReferenceException("pColumnName cannot be null");
+				throw new NullReferenceException($"{nameof(pColumnName)} cannot be null");
 
 			mTable = pTable;
 			mColumnName = pColumnName;
@@ -179,7 +179,7 @@ namespace Sql {
 		internal OrderByColumn(ISelectable pColumn, OrderBy pOrderBy) {
 			
 			if(pColumn == null)
-				throw new NullReferenceException("pColumn cannot be null");
+				throw new NullReferenceException($"{nameof(pColumn)} cannot be null");
 			
 			mColumn = pColumn;
 			mOrderBy = pOrderBy;
