@@ -42,9 +42,10 @@ namespace Sql.Core {
 		public AColumn[] ReturnColumns { get; private set; }
 
 		internal DeleteBuilder(ATable pTable) {
-			
-			if (pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
+
+			if(pTable == null) {
+				throw new NullReferenceException($"{nameof(pTable)} cannot be null");
+			}
 			
 			mTable = pTable;
 		}
@@ -54,8 +55,10 @@ namespace Sql.Core {
 		}
 		
 		public IDeleteUseParams Where(Condition pCondition) {
-			if(pCondition == null)
-				throw new NullReferenceException("pCondition cannot be null");
+
+			if(pCondition == null) {
+				throw new NullReferenceException($"{nameof(pCondition)} cannot be null");
+			}
 			mWhereCondition = pCondition;
 			return this;
 		}
@@ -64,21 +67,25 @@ namespace Sql.Core {
 			mUseParameters = pUseParameters;
 			return this;
 		}
-		
+
 		public IDeleteReturning Timeout(int pSeconds) {
-			if(pSeconds < 0)
-				throw new Exception("pSeconds must be >= 0. pSeconds = " + pSeconds.ToString());
+
+			if(pSeconds < 0) {
+				throw new Exception($"{nameof(pSeconds)} must be >= 0. pSeconds = { pSeconds.ToString() }");
+			}
 			mTimeout = pSeconds;
 			return this;
 		}
 
 		public IDeleteExecute Returning(params AColumn[] pColumns) {
-			
-			if(pColumns == null)
-				throw new NullReferenceException("pColumns cannot be null");
-			
-			if(pColumns.Length == 0)
-				throw new Exception("pColumns cannot be empty");
+
+			if(pColumns == null) {
+				throw new NullReferenceException($"{nameof(pColumns)} cannot be null");
+			}
+
+			if(pColumns.Length == 0) {
+				throw new Exception($"{nameof(pColumns)} cannot be empty");
+			}
 			
 			ReturnColumns = pColumns;
 			
@@ -86,24 +93,27 @@ namespace Sql.Core {
 		}
 		
 		public string GetSql(ADatabase pDatabase) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{nameof(pDatabase)} cannot be null");
+			}
 			
 			return Database.GenertateSql.GetDeleteQuery(pDatabase, this, null);
 		}
-		private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {			
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+		private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{nameof(pDatabase)} cannot be null");
+			}
 			
 			return Database.GenertateSql.GetDeleteQuery(pDatabase, this, pParameters);
 		}
 
 		public IResult Execute(Transaction pTransaction) {
 
-			if (pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+			if(pTransaction == null) {
+				throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
+			}
 
 			if(Sql.Settings.BreakOnDeleteQuery) {
 				if(Debugger.IsAttached) {
@@ -125,12 +135,15 @@ namespace Sql.Core {
 
 					Parameters parameters;
 
-					if(mUseParameters != null)
+					if(mUseParameters != null) {
 						parameters = mUseParameters.Value ? new Parameters(command) : null;
-					else if(Settings.UseParameters)
+					}
+					else if(Settings.UseParameters) {
 						parameters = new Parameters(command);
-					else
+					}
+					else {
 						parameters = null;
+					}
 	
 					sql = GetSql(pTransaction.Database, parameters);
 					

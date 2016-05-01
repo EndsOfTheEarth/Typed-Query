@@ -37,9 +37,10 @@ namespace Sql.Core {
 			mSqlQuery = !string.IsNullOrEmpty(pSqlQuery) ? pSqlQuery : string.Empty;
 		}
 		internal QueryResult(ADatabase pDatabase, IList<ISelectable> pSelectColumns, System.Data.Common.DbDataReader pReader, string pSqlQuery) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
 			
 			mSqlQuery = !string.IsNullOrEmpty(pSqlQuery) ? pSqlQuery : string.Empty;
 
@@ -50,13 +51,16 @@ namespace Sql.Core {
 
 				ISelectable column = pSelectColumns[index];
 
-				if (column is AColumn) {
+				if(column is AColumn) {
 					ATable table = ((AColumn)column).Table;
-					if (!tables.Contains(table))
+					if(!tables.Contains(table)) {
 						tables.Add(table);
-				} else {
-					if (!functions.Contains(column))
+					}
+				}
+				else {
+					if(!functions.Contains(column)) {
 						functions.Add(column);
+					}
 				}
 			}
 
@@ -68,12 +72,13 @@ namespace Sql.Core {
 
 					IList<ARow> rows;
 
-					if (!mTableRows.ContainsKey(table)) {
+					if(!mTableRows.ContainsKey(table)) {
 						rows = new List<ARow>();
 						mTableRows.Add(table, rows);
 					}
-					else
+					else {
 						rows = mTableRows[table];
+					}
 					
 					ARow row;
 					
@@ -94,11 +99,13 @@ namespace Sql.Core {
 
 					IList<object> values;
 
-					if (!mFunctionValues.ContainsKey(function)) {
+					if(!mFunctionValues.ContainsKey(function)) {
 						values = new List<object>();
 						mFunctionValues.Add(function, values);
-					} else
+					}
+					else {
 						values = mFunctionValues[function];
+					}
 
 					values.Add(function.GetValue(pDatabase, pReader, pSelectColumns.IndexOf(function)));
 				}
@@ -115,26 +122,31 @@ namespace Sql.Core {
 		}
 
 		public ARow GetRow(ATable pTable, int pIndex) {
-			
-			if(pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
-			
-			if(pIndex < 0)
-				throw new IndexOutOfRangeException("pIndex must >= 0. pIndex == " + pIndex.ToString());
-			
-			if(!mTableRows.ContainsKey(pTable))
-				throw new Exception("Table instance of type '" + pTable.GetType() + "' does not exist in result. Check that is was included in select portion of query");
+
+			if(pTable == null) {
+				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+			}
+
+			if(pIndex < 0) {
+				throw new IndexOutOfRangeException($"{ nameof(pIndex) } must >= 0. pIndex == { pIndex.ToString() }");
+			}
+
+			if(!mTableRows.ContainsKey(pTable)) {
+				throw new Exception($"Table instance of type '{ pTable.GetType() }' does not exist in result. Check that is was included in select portion of query");
+			}
 			
 			return mTableRows[pTable][pIndex];
 		}
 		
 		public object GetValue(ISelectable pFunction, int pIndex) {
-			
-			if(pFunction == null)
-				throw new NullReferenceException("pFunction cannot be null");
-			
-			if(pIndex < 0)
-				throw new IndexOutOfRangeException("pIndex must >= 0. pIndex == " + pIndex.ToString());
+
+			if(pFunction == null) {
+				throw new NullReferenceException($"{ nameof(pFunction) } cannot be null");
+			}
+
+			if(pIndex < 0) {
+				throw new IndexOutOfRangeException($"{ nameof(pIndex) } must >= 0. pIndex == { pIndex.ToString() }");
+			}
 			
 			return mFunctionValues[pFunction][pIndex];
 		}
@@ -144,13 +156,15 @@ namespace Sql.Core {
 			int bytes = 0;
 			
 			foreach(ATable table in mTableRows.Keys){
-				foreach(ARow row in mTableRows[table])
+				foreach(ARow row in mTableRows[table]) {
 					bytes += row.GetOrigRowDataSizeInBytes();
+				}
 			}
 			
 			foreach(ISelectable function in mFunctionValues.Keys){
-				foreach(object value in mFunctionValues[function])
+				foreach(object value in mFunctionValues[function]) {
 					bytes += SqlHelper.GetAproxByteSizeOf(value);
+				}
 			}
 			return bytes;
 		}

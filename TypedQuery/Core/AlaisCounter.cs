@@ -38,28 +38,31 @@ namespace Sql.Core {
 		public string GetNextAlias() {
 			
 			lock(this) {
-				
-				if(mCounter == null)
-					mCounter = new int[]{ 0 };
-				else {					
+
+				if(mCounter == null) {
+					mCounter = new int[] { 0 };
+				}
+				else {
 					//Increment alias counter
-					
+
 					bool increaseCounter = true;
-					
-					for (int index = mCounter.Length - 1; index >= 0; index--) {
-						
+
+					for(int index = mCounter.Length - 1; index >= 0; index--) {
+
 						int value = mCounter[index];
-						
-						if(value == (CHARS.Length - 1))
+
+						if(value == (CHARS.Length - 1)) {
 							mCounter[index] = 0;
+						}
 						else {
 							mCounter[index]++;
 							increaseCounter = false;
 							break;
 						}
-					}					
-					if(increaseCounter)
-						mCounter = new int[mCounter.Length + 1];	//All zeros					
+					}
+					if(increaseCounter) {
+						mCounter = new int[mCounter.Length + 1];    //All zeros
+					}
 				}
 				return GetCurrentAlias();
 			}
@@ -68,9 +71,10 @@ namespace Sql.Core {
 		private string GetCurrentAlias(){
 			
 			StringBuilder alias = new StringBuilder();
-			
-			for (int index = 0; index < mCounter.Length; index++)
-					alias.Append(CHARS[mCounter[index]]);
+
+			for(int index = 0; index < mCounter.Length; index++) {
+				alias.Append(CHARS[mCounter[index]]);
+			}
 			
 			return alias.ToString();
 		}

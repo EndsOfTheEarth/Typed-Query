@@ -93,9 +93,10 @@ namespace Sql.Core {
 		#endregion
 
 		internal QueryBuilder(ISelectable[] pColumns) {
-			
-			if (pColumns == null || pColumns.Length == 0)
-				throw new Exception("pColumns cannot be null or empty");
+
+			if(pColumns == null || pColumns.Length == 0) {
+				throw new Exception($"{ nameof(pColumns) } cannot be null or empty");
+			}
 			
 			mColumns = pColumns;
 		}
@@ -121,68 +122,81 @@ namespace Sql.Core {
 		}
 
 		public IFromInto Top(int pRows) {
-			if(pRows < 0)
-				throw new Exception("pRows must be >= 0. pRows = " + pRows.ToString());
+			if(pRows < 0) {
+				throw new Exception($"{ nameof(pRows) } must be >= 0. pRows = { pRows.ToString() }");
+			}
 			mTopRows = pRows;
 			return this;
 		}
 
 		public IFrom Into(ATable pTable) {
-			if (pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
+			if(pTable == null) {
+				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+			}
 			mIntoTable = pTable;
 			return this;
 		}
 		public IJoin From(ATable pFromTable, params string[] pHints) {
-			if (pFromTable == null)
-				throw new NullReferenceException("pFromTable cannot be null");
+			if(pFromTable == null) {
+				throw new NullReferenceException($"{ nameof(pFromTable) } cannot be null");
+			}
 			mFromTable = pFromTable;
 			mFromHints = pHints != null ? pHints : new string[]{};
 			return this;
 		}
 
 		public IJoin Join(ATable pTable, Condition pCondition, params string[] pHints) {
-			if(pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
-			if(pCondition == null)
-				throw new NullReferenceException("pCondition cannot be null");
+
+			if(pTable == null) {
+				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+			}
+			if(pCondition == null) {
+				throw new NullReferenceException($"{ nameof(pCondition) } cannot be null");
+			}
 			mJoinList.Add(new Join(JoinType.JOIN, pTable, pCondition, pHints));
 			return this;
 		}
 		
 		public IJoin JoinIf(bool pIncludeJoin, ATable pTable, Condition pCondition, params string[] pHints) {
-			if(pIncludeJoin)
+			if(pIncludeJoin) {
 				Join(pTable, pCondition, pHints);
+			}
 			return this;
 		}
 
 		public IJoin LeftJoin(ATable pTable, Condition pCondition, params string[] pHints) {
-			if(pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
-			if(pCondition == null)
-				throw new NullReferenceException("pCondition cannot be null");
+			if(pTable == null) {
+				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+			}
+			if(pCondition == null) {
+				throw new NullReferenceException($"{ nameof(pCondition) } cannot be null");
+			}
 			mJoinList.Add(new Join(JoinType.LEFT, pTable, pCondition, pHints));
 			return this;
 		}
 		
 		public IJoin LeftJoinIf(bool pIncludeJoin, ATable pTable, Condition pCondition, params string[] pHints) {
-			if(pIncludeJoin)
+			if(pIncludeJoin) {
 				LeftJoin(pTable, pCondition, pHints);
+			}
 			return this;
 		}
 
 		public IJoin RightJoin(ATable pTable, Condition pCondition, params string[] pHints) {
-			if(pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
-			if(pCondition == null)
-				throw new NullReferenceException("pCondition cannot be null");
+			if(pTable == null) {
+				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+			}
+			if(pCondition == null) {
+				throw new NullReferenceException($"{ nameof(pCondition) } cannot be null");
+			}
 			mJoinList.Add(new Join(JoinType.RIGHT, pTable, pCondition, pHints));
 			return this;
 		}
 		
 		public IJoin RightJoinIf(bool pIncludeJoin, ATable pTable, Condition pCondition, params string[] pHints) {
-			if(pIncludeJoin)
+			if(pIncludeJoin) {
 				RightJoin(pTable, pCondition, pHints);
+			}
 			return this;
 		}
 
@@ -192,42 +206,49 @@ namespace Sql.Core {
 		}
 
 		public IHaving GroupBy(params ISelectable[] pColumns) {
-			if(pColumns == null)
-				throw new NullReferenceException("pColumns cannot be null");
-			if(pColumns.Length == 0)
-				throw new Exception("pColumns must be > 0 in length");
+			if(pColumns == null) {
+				throw new NullReferenceException($"{ nameof(pColumns) } cannot be null");
+			}
+			if(pColumns.Length == 0) {
+				throw new Exception($"{ nameof(pColumns) } must be > 0 in length");
+			}
 			mGroupByColumns = pColumns;
 			return this;
 		}
 
 		public IOrderBy Having(Condition pCondition) {
-			if(pCondition == null)
-				throw new NullReferenceException("pCondition cannot be null");
+			if(pCondition == null) {
+				throw new NullReferenceException($"{ nameof(pCondition) } cannot be null");
+			}
 			mHavingCondition = pCondition;
 			return this;
 		}
 
 		public IAppend OrderBy(params IOrderByColumn[] pOrderByColumns) {
-			if(pOrderByColumns == null)
-				throw new NullReferenceException("pOrderByColumns cannot be null");
-			if(pOrderByColumns.Length == 0)
-				throw new Exception("pOrderByColumns must be > 0 in length");
+			if(pOrderByColumns == null) {
+				throw new NullReferenceException($"{ nameof(pOrderByColumns) } cannot be null");
+			}
+			if(pOrderByColumns.Length == 0) {
+				throw new Exception($"{ nameof(pOrderByColumns) } must be > 0 in length");
+			}
 			mOrderByColumns = pOrderByColumns;
 			return this;
 		}
 
 		public string GetSql(ADatabase pDatabase) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
 			
 			return Database.GenertateSql.GetSelectQuery(pDatabase, this, null);
 		}
 
 		private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
 			
 			return Database.GenertateSql.GetSelectQuery(pDatabase, this, pParameters);
 		}
@@ -243,8 +264,9 @@ namespace Sql.Core {
 		}
 		
 		public IExecute Timeout(int pSeconds) {
-			if(pSeconds < 0)
-				throw new Exception("pSeconds must be >=. Current value = " + pSeconds.ToString());
+			if(pSeconds < 0) {
+				throw new Exception($"{ nameof(pSeconds) } must be >=. Current value = { pSeconds.ToString() }");
+			}
 			mTimeout = pSeconds;
 			return this;
 		}
@@ -258,9 +280,10 @@ namespace Sql.Core {
 		}
 		
 		public IResult ExecuteUncommitted(ADatabase pDatabase) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
 			
 			using(Transaction transaction = new Transaction(pDatabase, System.Data.IsolationLevel.ReadUncommitted)){
 				IResult result = Execute(transaction);
@@ -274,20 +297,23 @@ namespace Sql.Core {
 		}
 		
 		public IResult Execute(Transaction pTransaction) {
-			
-			if(pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+
+			if(pTransaction == null) {
+				throw new NullReferenceException($"{ nameof(pTransaction) } cannot be null");
+			}
 			
 			return ExecuteQuery(pTransaction.Database, pTransaction);
 		}
 		
 		private IResult ExecuteQuery(ADatabase pDatabase, Transaction pTransaction) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
-			
-			if(pTransaction != null && pTransaction.Database != pDatabase)
-				throw new ArgumentException("pTransaction is using a different database connection than pDatabase.");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
+
+			if(pTransaction != null && pTransaction.Database != pDatabase) {
+				throw new ArgumentException($"{ nameof(pTransaction) } is using a different database connection than pDatabase.");
+			}
 			
 			if(Sql.Settings.BreakOnSelectQuery) {
 				if(Debugger.IsAttached) {
@@ -311,12 +337,15 @@ namespace Sql.Core {
 					
 					Parameters parameters;
 
-					if(mUseParameters != null)
+					if(mUseParameters != null) {
 						parameters = mUseParameters.Value ? new Parameters(command) : null;
-					else if(Settings.UseParameters)
+					}
+					else if(Settings.UseParameters) {
 						parameters = new Parameters(command);
-					else
+					}
+					else {
 						parameters = null;
+					}
 	
 					sql = GetSql(pDatabase, parameters);
 					
@@ -324,12 +353,14 @@ namespace Sql.Core {
 					
 					command.CommandType = System.Data.CommandType.Text;
 					command.CommandTimeout = mTimeout != null ? mTimeout.Value : Settings.DefaultTimeout;
-	
-					if (pTransaction != null)
+
+					if(pTransaction != null) {
 						command.Transaction = pTransaction.GetOrSetDbTransaction(pDatabase);
-					
-					if(command.Transaction != null)
+					}
+
+					if(command.Transaction != null) {
 						isolationLevel = command.Transaction.IsolationLevel;
+					}
 					
 					start = DateTime.Now;
 	
@@ -340,9 +371,10 @@ namespace Sql.Core {
 						end = DateTime.Now;
 						
 						QueryResult result = new QueryResult(pDatabase, mColumns, reader, command.CommandText);
-		
-						if(pTransaction == null)
+
+						if(pTransaction == null) {
 							connection.Close();
+						}
 						
 						Settings.FireQueryPerformedEvent(pDatabase, sql, result.Count, QueryType.Select, start, end, null, isolationLevel, result, (pTransaction != null ? (ulong?)pTransaction.Id : null));
 						return result;
@@ -350,17 +382,19 @@ namespace Sql.Core {
 				}
 			}
 			catch (Exception e) {
-				if (connection != null && connection.State != System.Data.ConnectionState.Closed)
+				if(connection != null && connection.State != System.Data.ConnectionState.Closed) {
 					connection.Close();
+				}
 				Settings.FireQueryPerformedEvent(pDatabase, sql, 0, QueryType.Select, start, end, e, isolationLevel, null, (pTransaction != null ? (ulong?)pTransaction.Id : null));
 				throw;
 			}
 		}
 
 		public IDistinct Union(ISelectableColumns pField, params ISelectableColumns[] pFields) {
-			
-			if(pField == null)
-				throw new NullReferenceException("pField cannot be null");
+
+			if(pField == null) {
+				throw new NullReferenceException($"{ nameof(pField) } cannot be null");
+			}
 			
 			List<ISelectable> selectList = new List<ISelectable>();
 			selectList.AddRange(pField.SelectableColumns);
@@ -376,14 +410,17 @@ namespace Sql.Core {
 		}
 
 		public IDistinct UnionAll(ISelectableColumns pField, params ISelectableColumns[] pFields) {
-			
-			if(pField == null)
-				throw new NullReferenceException("pField cannot be null");
+
+			if(pField == null) {
+				throw new NullReferenceException($"{ nameof(pField) } cannot be null");
+			}
 			
 			List<ISelectable> selectList = new List<ISelectable>();
 			selectList.AddRange(pField.SelectableColumns);
-			foreach(ISelectableColumns selectableFields in pFields)
+
+			foreach(ISelectableColumns selectableFields in pFields) {
 				selectList.AddRange(selectableFields.SelectableColumns);
+			}
 			
 			QueryBuilder queryBuilder = new QueryBuilder(selectList.ToArray());
 
@@ -394,14 +431,17 @@ namespace Sql.Core {
 		}
 		
 		public IDistinct Intersect(ISelectableColumns pField, params ISelectableColumns[] pFields) {
-			
-			if(pField == null)
-				throw new NullReferenceException("pField cannot be null");
+
+			if(pField == null) {
+				throw new NullReferenceException($"{ nameof(pField) } cannot be null");
+			}
 			
 			List<ISelectable> selectList = new List<ISelectable>();
 			selectList.AddRange(pField.SelectableColumns);
-			foreach(ISelectableColumns selectableFields in pFields)
+
+			foreach(ISelectableColumns selectableFields in pFields) {
 				selectList.AddRange(selectableFields.SelectableColumns);
+			}
 			
 			QueryBuilder queryBuilder = new QueryBuilder(selectList.ToArray());
 
@@ -412,14 +452,17 @@ namespace Sql.Core {
 		}
 		
 		public IDistinct Except(ISelectableColumns pField, params ISelectableColumns[] pFields) {
-			
-			if(pField == null)
-				throw new NullReferenceException("pField cannot be null");
+
+			if(pField == null) {
+				throw new NullReferenceException($"{ nameof(pField) } cannot be null");
+			}
 			
 			List<ISelectable> selectList = new List<ISelectable>();
 			selectList.AddRange(pField.SelectableColumns);
-			foreach(ISelectableColumns selectableFields in pFields)
+
+			foreach(ISelectableColumns selectableFields in pFields) {
 				selectList.AddRange(selectableFields.SelectableColumns);
+			}
 			
 			QueryBuilder queryBuilder = new QueryBuilder(selectList.ToArray());
 

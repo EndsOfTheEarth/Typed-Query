@@ -28,9 +28,10 @@ namespace Sql.Core {
 		private int? mTimeout;
 		
 		internal TruncateBuilder(ATable pTable) {
-			
-			if(pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
+
+			if(pTable == null) {
+				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+			}
 			
 			mTable = pTable;
 		}
@@ -40,23 +41,26 @@ namespace Sql.Core {
 		}
 		
 		public ITrucateExecute Timeout(int pTimeout) {
-			if(pTimeout < 0)
-				throw new Exception("pTimeout cannot be less than 0. Value = " + pTimeout.ToString());
+			if(pTimeout < 0) {
+				throw new Exception($"{ nameof(pTimeout) } cannot be less than 0. Value = { pTimeout.ToString() }");
+			}
 			mTimeout = pTimeout;
 			return this;
 		}
 		
 		public string GetSql(Sql.ADatabase pDatabase) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null or empty");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null or empty");
+			}
 			
 			return Database.GenertateSql.GetTruncateQuery(pDatabase, mTable);
 		}
 		public int Execute(Transaction pTransaction) {
-		
-			if(pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+
+			if(pTransaction == null) {
+				throw new NullReferenceException($"{ nameof(pTransaction) } cannot be null");
+			}
 			
 			if(Sql.Settings.BreakOnTruncateQuery) {
 				if(Debugger.IsAttached) {
@@ -95,9 +99,10 @@ namespace Sql.Core {
 					return returnValue;
 				}
 			}
-			catch(Exception e) {			
-				if (connection != null && connection.State != System.Data.ConnectionState.Closed)
-					connection.Close();				
+			catch(Exception e) {
+				if(connection != null && connection.State != System.Data.ConnectionState.Closed) {
+					connection.Close();
+				}
 				Settings.FireQueryPerformedEvent(pTransaction.Database, sql, 0, QueryType.Truncate, start, end, e, pTransaction.IsolationLevel, null, pTransaction.Id);
 				throw;
 			}

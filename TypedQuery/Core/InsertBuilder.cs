@@ -46,9 +46,10 @@ namespace Sql.Core {
 		public AColumn[] ReturnColumns { get; private set; }
 
 		public InsertBuilder(ATable pTable) {
-			
-			if (pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
+
+			if(pTable == null) {
+				throw new NullReferenceException($"{nameof(pTable)} cannot be null");
+			}
 			
 			mTable = pTable;
 		}
@@ -89,9 +90,10 @@ namespace Sql.Core {
 		}
 		
 		public IInsertSet Set(Sql.Column.StringColumn pColumn, string pValue) {
-			
-			if(pValue != null && pValue.Length > pColumn.MaxLength)
-				throw new Exception(pColumn.ColumnName + " column string value is too long. Max length = " + pColumn.MaxLength.ToString() + ". Actual length = " + pValue.Length.ToString() + ". Table = " + pColumn.Table.TableName);
+
+			if(pValue != null && pValue.Length > pColumn.MaxLength) {
+				throw new Exception($"{pColumn.ColumnName} column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Length.ToString() }. Table = { pColumn.Table.TableName }");
+			}
 			
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
@@ -248,9 +250,10 @@ namespace Sql.Core {
 		}
 		
 		public IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, string pValue) where TABLE : Sql.ATable {
-			
-			if(pValue != null && pValue.Length > pColumn.MaxLength)
-				throw new Exception(pColumn.ColumnName + " column string value is too long. Max length = " + pColumn.MaxLength.ToString() + ". Actual length = " + pValue.Length.ToString() + ". Table = " + pColumn.Table.TableName);
+
+			if(pValue != null && pValue.Length > pColumn.MaxLength) {
+				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Length.ToString() }. Table = { pColumn.Table.TableName }");
+			}
 			
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
@@ -262,19 +265,23 @@ namespace Sql.Core {
 		}
 		
 		public IInsertExecute Timeout(int pSeconds) {
-			if(pSeconds < 0)
-				throw new Exception("pSeconds must be >=. Current value = " + pSeconds.ToString());
+
+			if(pSeconds < 0) {
+				throw new Exception($"{nameof(pSeconds)} must be >=. Current value = { pSeconds.ToString() }");
+			}
 			mTimeout = pSeconds;
 			return this;
 		}
 		
 		public IInsertExecute Returning(params AColumn[] pColumns) {
-			
-			if(pColumns == null)
-				throw new NullReferenceException("pColumns cannot be null");
-			
-			if(pColumns.Length == 0)
-				throw new Exception("pColumns cannot be empty");
+
+			if(pColumns == null) {
+				throw new NullReferenceException($"{ nameof(pColumns)} cannot be null");
+			}
+
+			if(pColumns.Length == 0) {
+				throw new Exception($"{ nameof(pColumns) } cannot be empty");
+			}
 			
 			ReturnColumns = pColumns;
 			
@@ -282,25 +289,28 @@ namespace Sql.Core {
 		}
 		
 		public string GetSql(ADatabase pDatabase) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
 			
 			return Database.GenertateSql.GetInsertQuery(pDatabase, this, null);
 		}
 
 		private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
-			
-			if(pDatabase == null)
-				throw new NullReferenceException("pDatabase cannot be null");
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
 			
 			return Database.GenertateSql.GetInsertQuery(pDatabase, this, pParameters);
 		}
 
 		public IResult Execute(Transaction pTransaction) {
 
-			if (pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+			if(pTransaction == null) {
+				throw new NullReferenceException($"{ nameof(pTransaction) } cannot be null");
+			}
 			
 			if(Sql.Settings.BreakOnInsertQuery) {
 				if(Debugger.IsAttached) {
@@ -322,12 +332,15 @@ namespace Sql.Core {
 
 					Parameters parameters;
 
-					if(mUseParameters != null)
+					if(mUseParameters != null) {
 						parameters = mUseParameters.Value ? new Parameters(command) : null;
-					else if(Settings.UseParameters)
+					}
+					else if(Settings.UseParameters) {
 						parameters = new Parameters(command);
-					else
+					}
+					else {
 						parameters = null;
+					}
 	
 					sql = GetSql(pTransaction.Database, parameters);
 					
@@ -372,8 +385,10 @@ namespace Sql.Core {
 		private readonly object mValue;
 
 		public SetValue(AColumn pColumn, object pValue) {
-			if(pColumn == null)
-				throw new NullReferenceException("pColumn cannot be null");
+
+			if(pColumn == null) {
+				throw new NullReferenceException($"{ nameof(pColumn) } cannot be null");
+			}
 			mColumn = pColumn;
 			mValue = pValue;
 		}

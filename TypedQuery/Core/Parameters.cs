@@ -29,9 +29,10 @@ namespace Sql.Core {
 		private int mParamCounter = 1;
 
 		public Parameters(System.Data.Common.DbCommand pCommand) {
-			
-			if (pCommand == null)
-				throw new NullReferenceException("pCommand cannot be null");
+
+			if(pCommand == null) {
+				throw new NullReferenceException($"{ nameof(pCommand) } cannot be null");
+			}
 
 			mCommand = pCommand;
 		}
@@ -40,8 +41,9 @@ namespace Sql.Core {
 			
 			if(mCommand.Parameters.Count < 15){	//If there aren't too many parameters then check to see if pValue is a duplicate value that already has a parameter
 				foreach(DbParameter param in mCommand.Parameters){
-					if(param.Value.Equals(pValue) && param.DbType == pDbType)
+					if(param.Value.Equals(pValue) && param.DbType == pDbType) {
 						return param.ParameterName;
+					}
 				}
 			}
 			System.Data.Common.DbParameter parameter = mCommand.CreateParameter();

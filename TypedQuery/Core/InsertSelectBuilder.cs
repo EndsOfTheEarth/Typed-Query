@@ -41,29 +41,33 @@ namespace Sql.Core {
 		}
 		
 		public InsertSelectBuilder(ATable pTable) {
-			
-			if(pTable == null)
-				throw new NullReferenceException("pTable cannot be null");
+
+			if(pTable == null) {
+				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+			}
 			
 			mTable = pTable;
 		}
 		
 		public IInsertSelectQuery Columns(params AColumn[] pColumns) {
-			
-			if(pColumns == null)
-				throw new NullReferenceException("pColumns cannot be null");
-			
-			if(pColumns.Length == 0)
-				throw new Exception("pColumns cannot be empty");
+
+			if(pColumns == null) {
+				throw new NullReferenceException($"{ nameof(pColumns) } cannot be null");
+			}
+
+			if(pColumns.Length == 0) {
+				throw new Exception($"{ nameof(pColumns) } cannot be empty");
+			}
 			
 			mColumns = pColumns;
 			return this;
 		}
 		
 		public IInsertSelectExecute Query(IExecute pSelectQuery) {
-			
-			if(pSelectQuery == null)
-				throw new NullReferenceException("pSelectQuery cannot be null");
+
+			if(pSelectQuery == null) {
+				throw new NullReferenceException($"{ nameof(pSelectQuery) } cannot be null");
+			}
 			
 			mSelectQuery = pSelectQuery;
 			return this;
@@ -78,9 +82,10 @@ namespace Sql.Core {
 		}
 		
 		public int Execute(Transaction pTransaction) {
-			
-			if (pTransaction == null)
-				throw new NullReferenceException("pTransaction cannot be null");
+
+			if(pTransaction == null) {
+				throw new NullReferenceException($"{ nameof(pTransaction) } cannot be null");
+			}
 
 			if(Sql.Settings.BreakOnInsertSelectQuery) {
 				if(Debugger.IsAttached) {
