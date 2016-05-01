@@ -21,13 +21,26 @@ using System.Reflection;
 
 namespace Sql {
 	
+	public abstract class ALogin {
+
+		public string Name { get; private set; }
+
+		public ALogin(string pName) {
+
+			if(string.IsNullOrEmpty(pName)) {
+				throw new ArgumentException($"{nameof(pName)} cannot be null or empty");
+			}
+			Name = pName;
+		}
+	}
+
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public sealed class GrantTable : Attribute {
 		
-		public Type User { get; private set; }
+		public ALogin User { get; private set; }
 		public Privilege Privilege { get; private set; }
 		
-		public GrantTable(Type pUser, Privilege pPrivilege) {
+		public GrantTable(ALogin pUser, Privilege pPrivilege) {
 			User = pUser;
 			Privilege = pPrivilege;
 		}
@@ -36,10 +49,10 @@ namespace Sql {
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
 	public sealed class GrantColumn : Attribute {
 		
-		public Type User { get; private set; }
+		public ALogin User { get; private set; }
 		public ColumnPrivilege Privilege { get; private set; }
 		
-		public GrantColumn(Type pUser, ColumnPrivilege pPrivilege) {			
+		public GrantColumn(ALogin pUser, ColumnPrivilege pPrivilege) {			
 			User = pUser;
 			Privilege = pPrivilege;
 		}
@@ -48,10 +61,10 @@ namespace Sql {
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
 	public sealed class RevokeColumn : Attribute {
 		
-		public Type User { get; private set; }
+		public ALogin User { get; private set; }
 		public ColumnPrivilege Privilege { get; private set; }
 		
-		public RevokeColumn(Type pUser, ColumnPrivilege pPrivilege) {			
+		public RevokeColumn(ALogin pUser, ColumnPrivilege pPrivilege) {			
 			User = pUser;
 			Privilege = pPrivilege;
 		}
