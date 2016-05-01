@@ -1,6 +1,6 @@
 ﻿/*
  * 
- * Copyright (C) 2009-2015 JFo.nz
+ * Copyright (C) 2009-2016 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
