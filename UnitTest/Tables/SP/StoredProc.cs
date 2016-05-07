@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace Sql.StoredProc.SP_Test_In_Out {
 	
-	[Sql.GrantTable(typeof(string), Sql.Privilege.SELECT)]
+	//[Sql.GrantTable(typeof(string), Sql.Privilege.SELECT)]
 	public sealed class SP : Sql.AStoredProc {
 		
 		public static SP INSTANCE = new SP();

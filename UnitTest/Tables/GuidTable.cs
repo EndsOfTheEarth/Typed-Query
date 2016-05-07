@@ -21,10 +21,12 @@ using System.Collections.Generic;
 
 namespace Sql.Tables.GuidTable {
 	
-	public class EditUser {}
+	public class EditUser : Sql.ALogin {
+        public EditUser() : base("EditUser") { }
+    }
 
 	[Sql.TableAttribute("Guid 'table' description")]
-	[Sql.GrantTable(typeof(EditUser), Sql.Privilege.SELECT | Sql.Privilege.INSERT)]
+	//[Sql.GrantTable(new EditUser(), Sql.Privilege.SELECT | Sql.Privilege.INSERT)]
 	public sealed class Table : Sql.ATable {
 
 		public static readonly Table INSTANCE = new Table();
