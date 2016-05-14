@@ -26,8 +26,8 @@ namespace Sql.Column {
 
 		public int MaxLength { get; private set; }
 		
-		public StringColumn(ATable pTable, string pColumnName, int pMaxLength)
-			: base(pTable, pColumnName, false, false) {
+		public StringColumn(ATable pTable, string pColumnName, int pMaxLength, bool pAllowsNulls = false)
+			: base(pTable, pColumnName, false, pAllowsNulls) {
 
 			if(pMaxLength <= 0) {
 				throw new Exception($"{nameof(pMaxLength)} must be >= 1");
@@ -35,8 +35,8 @@ namespace Sql.Column {
 			
 			MaxLength = pMaxLength;
 		}
-		public StringColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength)
-			: base(pTable, pColumnName, pIsPrimaryKey, false) {
+		public StringColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength, bool pAllowsNulls = false)
+			: base(pTable, pColumnName, pIsPrimaryKey, pAllowsNulls) {
 
 			if(pMaxLength <= 0) {
 				throw new Exception($"{nameof(pMaxLength)} must be >= 1");

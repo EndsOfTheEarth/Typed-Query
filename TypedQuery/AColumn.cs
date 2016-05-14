@@ -45,7 +45,7 @@ namespace Sql {
 				throw new NullReferenceException($"{nameof(pTable)} cannot be null");
 
 			if (string.IsNullOrWhiteSpace(pColumnName))
-				throw new NullReferenceException($"{nameof(pColumnName)} cannot be null");
+				throw new ArgumentException($"{nameof(pColumnName)} cannot be null or empty");
 
 			mTable = pTable;
 			mColumnName = pColumnName;
