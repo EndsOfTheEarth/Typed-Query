@@ -86,17 +86,15 @@ namespace Sql.Database.PostgreSql {
 			
 			if (pQueryBuilder.JoinList.Count > 0) {
 
-				sql.Append(" ");
-
 				for (int index = 0; index < pQueryBuilder.JoinList.Count; index++) {
 					Core.Join join = pQueryBuilder.JoinList[index];
 
 					if (join.JoinType == Core.JoinType.JOIN)
-						sql.Append("JOIN ");
+						sql.Append(" JOIN ");
 					else if (join.JoinType == Core.JoinType.LEFT)
-						sql.Append("LEFT JOIN ");
+						sql.Append(" LEFT JOIN ");
 					else if (join.JoinType == Core.JoinType.RIGHT)
-						sql.Append("RIGHT JOIN ");
+						sql.Append(" RIGHT JOIN ");
 					else
 						throw new Exception("Unknown join type: " + join.JoinType.ToString());
 
