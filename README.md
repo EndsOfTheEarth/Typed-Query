@@ -34,7 +34,7 @@ Sql.IResult result = Sql.Query
     .Execute();
  
 for (int index = 0; index < result.Count; index++) {
-    int userId = userTable.Id[index, result];
+    int userId = userTable[index, result].Id;
     int? countValue = count[index, result];
 }
 ```
