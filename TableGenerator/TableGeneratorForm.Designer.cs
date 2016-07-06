@@ -28,6 +28,7 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.tabDefinitions = new System.Windows.Forms.TabControl();
             this.tabPageTableDefinition = new System.Windows.Forms.TabPage();
+            this.chkRemoveUnderscores = new System.Windows.Forms.CheckBox();
             this.chkGenerateCommentMetaData = new System.Windows.Forms.CheckBox();
             this.chkIncludeSchema = new System.Windows.Forms.CheckBox();
             this.txtColumnPrefix = new System.Windows.Forms.TextBox();
@@ -39,7 +40,8 @@
             this.btnMaintainConnections = new System.Windows.Forms.Button();
             this.cboConnections = new System.Windows.Forms.ComboBox();
             this.lblConnections = new System.Windows.Forms.Label();
-            this.chkRemoveUnderscores = new System.Windows.Forms.CheckBox();
+            this.txtNamespace = new System.Windows.Forms.TextBox();
+            this.lblNamespace = new System.Windows.Forms.Label();
             this.tabDefinitions.SuspendLayout();
             this.tabPageTableDefinition.SuspendLayout();
             this.tabClassCode.SuspendLayout();
@@ -56,7 +58,7 @@
             this.tvwSchema.Location = new System.Drawing.Point(0, 0);
             this.tvwSchema.Name = "tvwSchema";
             this.tvwSchema.Size = new System.Drawing.Size(213, 631);
-            this.tvwSchema.TabIndex = 1;
+            this.tvwSchema.TabIndex = 0;
             this.tvwSchema.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvwSchema_AfterSelect);
             // 
             // txtTableDefinition
@@ -67,12 +69,12 @@
             this.txtTableDefinition.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTableDefinition.ForeColor = System.Drawing.SystemColors.WindowFrame;
             this.txtTableDefinition.HideSelection = false;
-            this.txtTableDefinition.Location = new System.Drawing.Point(4, 28);
+            this.txtTableDefinition.Location = new System.Drawing.Point(4, 56);
             this.txtTableDefinition.Multiline = true;
             this.txtTableDefinition.Name = "txtTableDefinition";
             this.txtTableDefinition.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtTableDefinition.Size = new System.Drawing.Size(802, 575);
-            this.txtTableDefinition.TabIndex = 3;
+            this.txtTableDefinition.Size = new System.Drawing.Size(802, 547);
+            this.txtTableDefinition.TabIndex = 7;
             this.txtTableDefinition.WordWrap = false;
             this.txtTableDefinition.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtTableDefinition_KeyDown);
             // 
@@ -82,7 +84,7 @@
             this.btnClose.Location = new System.Drawing.Point(959, 683);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 4;
+            this.btnClose.TabIndex = 7;
             this.btnClose.Text = "&Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -96,10 +98,12 @@
             this.tabDefinitions.Name = "tabDefinitions";
             this.tabDefinitions.SelectedIndex = 0;
             this.tabDefinitions.Size = new System.Drawing.Size(818, 631);
-            this.tabDefinitions.TabIndex = 5;
+            this.tabDefinitions.TabIndex = 0;
             // 
             // tabPageTableDefinition
             // 
+            this.tabPageTableDefinition.Controls.Add(this.txtNamespace);
+            this.tabPageTableDefinition.Controls.Add(this.lblNamespace);
             this.tabPageTableDefinition.Controls.Add(this.chkRemoveUnderscores);
             this.tabPageTableDefinition.Controls.Add(this.chkGenerateCommentMetaData);
             this.tabPageTableDefinition.Controls.Add(this.chkIncludeSchema);
@@ -113,15 +117,28 @@
             this.tabPageTableDefinition.TabIndex = 0;
             this.tabPageTableDefinition.Text = "Table Definition";
             // 
+            // chkRemoveUnderscores
+            // 
+            this.chkRemoveUnderscores.AutoSize = true;
+            this.chkRemoveUnderscores.Checked = true;
+            this.chkRemoveUnderscores.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRemoveUnderscores.Location = new System.Drawing.Point(476, 32);
+            this.chkRemoveUnderscores.Name = "chkRemoveUnderscores";
+            this.chkRemoveUnderscores.Size = new System.Drawing.Size(129, 17);
+            this.chkRemoveUnderscores.TabIndex = 6;
+            this.chkRemoveUnderscores.Text = "Remove Underscores";
+            this.chkRemoveUnderscores.UseVisualStyleBackColor = true;
+            this.chkRemoveUnderscores.CheckedChanged += new System.EventHandler(this.chkRemoveUnderscores_CheckedChanged);
+            // 
             // chkGenerateCommentMetaData
             // 
             this.chkGenerateCommentMetaData.AutoSize = true;
             this.chkGenerateCommentMetaData.Checked = true;
             this.chkGenerateCommentMetaData.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkGenerateCommentMetaData.Location = new System.Drawing.Point(296, 8);
+            this.chkGenerateCommentMetaData.Location = new System.Drawing.Point(296, 32);
             this.chkGenerateCommentMetaData.Name = "chkGenerateCommentMetaData";
             this.chkGenerateCommentMetaData.Size = new System.Drawing.Size(170, 17);
-            this.chkGenerateCommentMetaData.TabIndex = 7;
+            this.chkGenerateCommentMetaData.TabIndex = 5;
             this.chkGenerateCommentMetaData.Text = "Generate Comment Meta Data";
             this.chkGenerateCommentMetaData.UseVisualStyleBackColor = true;
             this.chkGenerateCommentMetaData.CheckedChanged += new System.EventHandler(this.chkGenerateCommentsMetaData_CheckedChanged);
@@ -131,29 +148,29 @@
             this.chkIncludeSchema.AutoSize = true;
             this.chkIncludeSchema.Checked = true;
             this.chkIncludeSchema.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkIncludeSchema.Location = new System.Drawing.Point(184, 8);
+            this.chkIncludeSchema.Location = new System.Drawing.Point(184, 32);
             this.chkIncludeSchema.Name = "chkIncludeSchema";
             this.chkIncludeSchema.Size = new System.Drawing.Size(103, 17);
-            this.chkIncludeSchema.TabIndex = 6;
+            this.chkIncludeSchema.TabIndex = 4;
             this.chkIncludeSchema.Text = "Include Schema";
             this.chkIncludeSchema.UseVisualStyleBackColor = true;
             this.chkIncludeSchema.CheckedChanged += new System.EventHandler(this.chkIncludeSchema_CheckedChanged);
             // 
             // txtColumnPrefix
             // 
-            this.txtColumnPrefix.Location = new System.Drawing.Point(76, 4);
+            this.txtColumnPrefix.Location = new System.Drawing.Point(76, 28);
             this.txtColumnPrefix.Name = "txtColumnPrefix";
             this.txtColumnPrefix.Size = new System.Drawing.Size(100, 20);
-            this.txtColumnPrefix.TabIndex = 5;
+            this.txtColumnPrefix.TabIndex = 3;
             this.txtColumnPrefix.TextChanged += new System.EventHandler(this.txtColumnPrefix_TextChanged);
             // 
             // lblColumnPrefix
             // 
             this.lblColumnPrefix.AutoSize = true;
-            this.lblColumnPrefix.Location = new System.Drawing.Point(4, 8);
+            this.lblColumnPrefix.Location = new System.Drawing.Point(4, 32);
             this.lblColumnPrefix.Name = "lblColumnPrefix";
             this.lblColumnPrefix.Size = new System.Drawing.Size(71, 13);
-            this.lblColumnPrefix.TabIndex = 4;
+            this.lblColumnPrefix.TabIndex = 2;
             this.lblColumnPrefix.Text = "Column Prefix";
             // 
             // tabClassCode
@@ -178,6 +195,7 @@
             this.txtClassCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtClassCode.Size = new System.Drawing.Size(804, 599);
             this.txtClassCode.TabIndex = 0;
+            this.txtClassCode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtClassCode_KeyDown);
             // 
             // splitter
             // 
@@ -204,7 +222,7 @@
             this.btnLoad.Location = new System.Drawing.Point(4, 8);
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.Size = new System.Drawing.Size(116, 40);
-            this.btnLoad.TabIndex = 2;
+            this.btnLoad.TabIndex = 0;
             this.btnLoad.Text = "&Load Schema";
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
@@ -215,7 +233,7 @@
             this.btnMaintainConnections.Location = new System.Drawing.Point(905, 12);
             this.btnMaintainConnections.Name = "btnMaintainConnections";
             this.btnMaintainConnections.Size = new System.Drawing.Size(128, 23);
-            this.btnMaintainConnections.TabIndex = 7;
+            this.btnMaintainConnections.TabIndex = 3;
             this.btnMaintainConnections.Text = "Maintain Connections";
             this.btnMaintainConnections.UseVisualStyleBackColor = true;
             this.btnMaintainConnections.Click += new System.EventHandler(this.button1_Click);
@@ -229,7 +247,7 @@
             this.cboConnections.Location = new System.Drawing.Point(200, 12);
             this.cboConnections.Name = "cboConnections";
             this.cboConnections.Size = new System.Drawing.Size(701, 21);
-            this.cboConnections.TabIndex = 8;
+            this.cboConnections.TabIndex = 2;
             this.cboConnections.SelectedIndexChanged += new System.EventHandler(this.cboConnections_SelectedIndexChanged);
             // 
             // lblConnections
@@ -238,21 +256,26 @@
             this.lblConnections.Location = new System.Drawing.Point(128, 16);
             this.lblConnections.Name = "lblConnections";
             this.lblConnections.Size = new System.Drawing.Size(66, 13);
-            this.lblConnections.TabIndex = 9;
+            this.lblConnections.TabIndex = 1;
             this.lblConnections.Text = "Connections";
             // 
-            // chkRemoveUnderscores
+            // txtNamespace
             // 
-            this.chkRemoveUnderscores.AutoSize = true;
-            this.chkRemoveUnderscores.Checked = true;
-            this.chkRemoveUnderscores.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRemoveUnderscores.Location = new System.Drawing.Point(476, 8);
-            this.chkRemoveUnderscores.Name = "chkRemoveUnderscores";
-            this.chkRemoveUnderscores.Size = new System.Drawing.Size(129, 17);
-            this.chkRemoveUnderscores.TabIndex = 8;
-            this.chkRemoveUnderscores.Text = "Remove Underscores";
-            this.chkRemoveUnderscores.UseVisualStyleBackColor = true;
-            this.chkRemoveUnderscores.CheckedChanged += new System.EventHandler(this.chkRemoveUnderscores_CheckedChanged);
+            this.txtNamespace.Location = new System.Drawing.Point(76, 4);
+            this.txtNamespace.Name = "txtNamespace";
+            this.txtNamespace.Size = new System.Drawing.Size(212, 20);
+            this.txtNamespace.TabIndex = 1;
+            this.txtNamespace.Text = "Tables";
+            this.txtNamespace.TextChanged += new System.EventHandler(this.txtNamespace_TextChanged);
+            // 
+            // lblNamespace
+            // 
+            this.lblNamespace.AutoSize = true;
+            this.lblNamespace.Location = new System.Drawing.Point(4, 8);
+            this.lblNamespace.Name = "lblNamespace";
+            this.lblNamespace.Size = new System.Drawing.Size(64, 13);
+            this.lblNamespace.TabIndex = 0;
+            this.lblNamespace.Text = "Namespace";
             // 
             // TableGeneratorForm
             // 
@@ -302,6 +325,8 @@
 		private System.Windows.Forms.TabPage tabClassCode;
 		private System.Windows.Forms.TextBox txtClassCode;
         private System.Windows.Forms.CheckBox chkRemoveUnderscores;
+        private System.Windows.Forms.TextBox txtNamespace;
+        private System.Windows.Forms.Label lblNamespace;
     }
 }
 

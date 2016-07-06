@@ -204,6 +204,10 @@ namespace TypedQuery.Logic {
 		public SpParameter(int pParamId, string pName, System.Data.DbType pParamType, System.Data.ParameterDirection pDirection) {
 			ParamId = pParamId;
 			Name = pName;
+
+            if(Name.StartsWith("@")) {
+                Name = Name.Replace("@", string.Empty);
+            }
 			ParamType = pParamType;
 			Direction = pDirection;
 		}

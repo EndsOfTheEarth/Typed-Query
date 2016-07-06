@@ -36,6 +36,7 @@ namespace TypedQuery.Logic {
 			Sql.IResult result = Sql.Query
 				.Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_Type)
 				.From(tablesTable)
+                .OrderBy(tablesTable.Table_schema, tablesTable.Table_name)
 				.Execute();
 
 			List<ITable> tableList = new List<ITable>(result.Count);
@@ -296,7 +297,8 @@ namespace TypedQuery.Logic {
 				sTypeLookup.Add("bigint", System.Data.DbType.Int64);
 				sTypeLookup.Add("bit", System.Data.DbType.Boolean);
 				sTypeLookup.Add("char", System.Data.DbType.String);
-				sTypeLookup.Add("date", System.Data.DbType.Date);
+                sTypeLookup.Add("nchar", System.Data.DbType.String);
+                sTypeLookup.Add("date", System.Data.DbType.Date);
 				sTypeLookup.Add("time", System.Data.DbType.Time);
 				sTypeLookup.Add("datetime", System.Data.DbType.DateTime);
 				sTypeLookup.Add("datetime2", System.Data.DbType.DateTime2);
@@ -308,7 +310,8 @@ namespace TypedQuery.Logic {
 				sTypeLookup.Add("ntext", System.Data.DbType.String);
 				sTypeLookup.Add("numeric", System.Data.DbType.Decimal);
 				sTypeLookup.Add("decimal", System.Data.DbType.Decimal);
-				sTypeLookup.Add("nvarchar", System.Data.DbType.String);
+                sTypeLookup.Add("money", System.Data.DbType.Decimal);
+                sTypeLookup.Add("nvarchar", System.Data.DbType.String);
 				sTypeLookup.Add("smallint", System.Data.DbType.Int16);
 				sTypeLookup.Add("tinyint", System.Data.DbType.Byte);
 				sTypeLookup.Add("uniqueidentifier", System.Data.DbType.Guid);
@@ -316,9 +319,9 @@ namespace TypedQuery.Logic {
 				sTypeLookup.Add("varchar", System.Data.DbType.String);
 			}
 			string key = pDataType.ToLower();
+
 			return sTypeLookup.ContainsKey(key) ? sTypeLookup[key] : System.Data.DbType.Object;
 		}
-
 
 		private class IsIdentity : Sql.Function.ANumericFunction {
 
