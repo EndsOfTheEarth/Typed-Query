@@ -181,8 +181,4 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="Documentation\documentation.html" />
-    <Content Include="Documentation\documentation_style.css" />
-  </ItemGroup>
 </Project>
