@@ -126,8 +126,6 @@
     <Compile Include="Core\TruncateBuilder.cs" />
     <Compile Include="Core\UpdateBuilder.cs" />
     <Compile Include="Database\AliasManager.cs" />
-    <Compile Include="Database\CheckDefinitions.cs" />
-    <Compile Include="Database\GenerateCode.cs" />
     <Compile Include="Database\GenerateMetaDataSql.cs" />
     <Compile Include="Database\GeneratePermissionsSql.cs" />
     <Compile Include="Database\GenertateSql.cs" />
