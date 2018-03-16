@@ -1,6 +1,6 @@
 # C# Typed Query Documentation
 ---
-##Index
+## Index
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
 - [Defining a Table](#defining-a-table)
@@ -47,7 +47,7 @@
 - [Read Only Connection Security Feature](#read-only-connection-security-feature)
 - [Table and Column Comments](#table-and-column-comments)
 
-##Introduction
+## Introduction
 Typed Query (TQ) is a type safe (i.e. No sql strings in code) database query api that sits on top of Ado.net. Written in C# it is designed to have a simple api that closely maps to standard sql.
 TQ is designed to be database independent. Currently SqlServer and PostgreSql are supported. (Note: There are some features that are database dependent like string comparison and query hints).
 
@@ -65,7 +65,7 @@ Pros
 - UI tools to generate Table and Row definitions and validate existing definitions
 - Open source with a small code base
 
-##Getting Started
+## Getting Started
 One database class must be defined for each database your code is connecting to. The database class must inherit from Sql.ADatabase. Table objects will reference this class to create connections to the database.
 Example:
 ```C#
@@ -90,7 +90,7 @@ public class MainDatabase : Sql.ADatabase {
 }
 ```
 
-##Defining a Table
+## Defining a Table
 Table classes should be generated using the Table Generator UI tool (To make life easy). Here is example code for the UserTable. Table classes inherit from Sql.ATable.
 Sql (For Sql Server):
 ```SQL
@@ -132,7 +132,7 @@ public sealed class Table : Sql.ATable {
 }
 ```
 
-##Defining a Row
+## Defining a Row
 Row classes should be generated using the Table Generator UI tool (To make life easy). Here is example code for the UserTable Row. Row classes inherit from Sql.ARow.
 ```C#
 public sealed class Row : Sql.ARow {
@@ -165,9 +165,9 @@ public sealed class Row : Sql.ARow {
 }
 ```
 
-##Insert Rows
+## Insert Rows
 With TQ there are two ways to insert rows. The first is by using the Row object and the second is using an insert query.
-###Row object insert
+### Row object insert
 First create an instance of the user Row class. Set fields with data. Calling Update(...) on the row writes the row to the database. When the row is written to the database it loads any auto id fields.
 ```C#
 using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) {
@@ -186,7 +186,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
     transaction.Commit();
 }
 ```
-###Query Insert
+### Query Insert
 Rows can be inserted using a normal sql insert query.
 
 ```C#
@@ -226,9 +226,9 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 }
 ```
 
-##Update Rows
+## Update Rows
 With TQ there are two ways to update rows. The first is by using the Row object and the second is using an update query.
-###Row object update
+### Row object update
 First the row must be loaded from the database. In order for the row to be update-able every field in the row must be selected in the load query.
 ```C#
 using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) {
@@ -253,7 +253,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
     transaction.Commit();
 }
 ```
-###Update query
+### Update query
 Rows can be updated using a normal sql update query.
 ```C#
 using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) {
@@ -300,9 +300,9 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 }
 ```
 
-##Delete Rows
+## Delete Rows
 With TQ there are two ways to delete rows. The first is by using the Row object and the second is using a delete query.
-###Row object delete
+### Row object delete
 First load row with all fields selected. Then flag row to be deleted. Call Update(...) to write the change to the database.
 ```C#
 using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) {
@@ -324,7 +324,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
     transaction.Commit();
 }
 ```
-###Delete query
+### Delete query
 Rows can be deleted using a normal sql delete query.
 ```C#
 using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) {
@@ -362,9 +362,9 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 }
 ```
 
-##Select Queries
+## Select Queries
 Select queries in TQ are very similar to standard sql.
-###Simiple Select (3 Fields)
+### Simiple Select (3 Fields)
 ```C#
 Table userTable = Table.INSTANCE;
 
@@ -383,7 +383,7 @@ for (int index = 0; index < result.Count; index++) {
 }
 ```
 
-##Conditions
+## Conditions
 In TQ the SQL condition operators 'AND' and 'OR' map to the C# operators '&' and '|'. (Note: the operators && and || are reserved in C# so these cannot be used).
 As a rule of thumb always surround an 'OR' operator with brackets.
 Example:
@@ -398,7 +398,7 @@ Sql.IResult result = Sql.Query
     .Execute();
 ```
 
-##Numeric Conditions
+## Numeric Conditions
 TQ supports numeric operators in conditions using numeric fields.
 ```C#
 Sql.IResult result = Sql.Query
@@ -421,7 +421,7 @@ Sql.IResult result = Sql.Query
     .Execute();
 ```
 
-##Dynamic Conditions
+## Dynamic Conditions
 There are cases where the condition needs to differ depending on certain inputs. This can be achieved by using the Condition class to build up the condition dynamically.
 ```C#
 Table userTable = Table.INSTANCE;
@@ -454,7 +454,7 @@ Sql.IResult result = Sql.Query
     .Execute();
 ```
 
-##Select Fields
+## Select Fields
 The TQ select query can take a number of different field inputs. It can take whole tables, individual fields and functions all within the same method.
 Example: This selected every column in the userTable and the id field (A second time).
 ```C#
@@ -464,7 +464,7 @@ Sql.IResult result = Sql.Query
     .Execute();
 ```
 
-##Select Options
+## Select Options
 TQ supports 3 select options. Distinct, TOP (Translates to LIMIT) and INTO.
 Example:
 ```C#
@@ -482,7 +482,7 @@ Sql.Query.Select(userTable)
     .Execute();
 ```
 
-##Joins
+## Joins
 TQ supports three joins types. Join, Left Join and Right Join.
 Example: Self join
 (Please note with self joins (i.e. Joining to the same table) different table object instances are required. This is because each instance has its own unique alias. If the query uses the same table object for a self join the sql aliasing will clash and cause an error.
@@ -509,7 +509,7 @@ result = Sql.Query
     .Execute();
 ```
 
-##Group By And Having
+## Group By And Having
 ```C#
 Sql.Function.CountAll count = new Sql.Function.CountAll();
 
@@ -521,7 +521,7 @@ Sql.IResult result = Sql.Query
     .Execute();
 ```
 
-##Order By
+## Order By
 TQ sorts fields either by the default sort of the database or by the defined value e.g. ASC or DESC.
 ```C#
 Sql.IResult result = Sql.Query
@@ -531,7 +531,7 @@ Sql.IResult result = Sql.Query
     .Execute();
 ```
 
-##Query Hints (Append)
+## Query Hints (Append)
 Query hints can be added using the Append(...) method.
 ```C#
 Sql.IResult result = Sql.Query
@@ -541,7 +541,7 @@ Sql.IResult result = Sql.Query
     .Execute();
 ```
 
-##Aggregate Functions
+## Aggregate Functions
 Example: SUM(usrId) grouped by first name.
 ```C#
 Table userTable = Table.INSTANCE;
@@ -573,7 +573,7 @@ Sql.IResult result = Sql.Query
 int countValue = count[0, result].Value;
 ```
 
-##Date Functions
+## Date Functions
 TQ supports date functions Year, Month, DayOfMonth, Hour, Minute, Second.
 Example:
 ```C#
@@ -602,7 +602,7 @@ int? minuteValue = minute[0, result];
 int? secondValue = second[0, result];
 ```
 
-##Query Time Out And Parameters
+## Query Time Out And Parameters
 The default time out can be overridden for a particular query. This overrides the global setting in Sql.Settings.DefaultTimeout. In this example the query will timeout after 60 seconds:
 ```C#
 Sql.Query
@@ -620,7 +620,7 @@ Sql.Query
     .Execute();
 ```
 
-##Execute Uncommitted Query
+## Execute Uncommitted Query
 Execute a query as read uncommitted without having to use a Sql.Transaction object.
 ```C#
 Sql.Query
@@ -629,7 +629,7 @@ Sql.Query
     .ExecuteUncommitted();
 ```
 
-##Query Within a Transaction
+## Query Within a Transaction
 ```C#
 using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) {
                 
@@ -651,7 +651,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
 }
 ```
 
-##Transaction Isolation Levels
+## Transaction Isolation Levels
 TQ supports the standard ado.net database isolation levels. Not all of these are supported by non sqlserver databases.
 ```C#
 new Sql.Transaction(MainDatabase.INSTANCE, System.Data.IsolationLevel.ReadUncommitted);
@@ -660,7 +660,7 @@ new Sql.Transaction(MainDatabase.INSTANCE, System.Data.IsolationLevel.Repeatable
 new Sql.Transaction(MainDatabase.INSTANCE, System.Data.IsolationLevel.Serializable);
 ```
 
-##Commit and RollBack
+## Commit and RollBack
 If a transaction is used in a resource block it is automatically rolled back if it is not committed when the code exits the block.
 Example:
 ```C#
@@ -675,10 +675,10 @@ transaction.Commit();
 transaction.Rollback();
 ```
 
-##Row Rollback
+## Row Rollback
 When a transaction is rolled back rows saved to the database within that transaction will retain their most recent column values and stay in the same state. So for example if a row is set to be deleted and the transaction is rolled back it will stay in the to be deleted state.
 
-##Field Types
+## Field Types
 These are currently supported field types:
 
 Column | Type
@@ -711,7 +711,7 @@ NSmallIntColumn | Int16 Null
 SmallIntColumn | Int16 Not Null
 StringColumn | String Null and Null
 
-##Key Columns
+## Key Columns
 'Key Columns' are columns that are used to map the primary and foreign key relationship between tables. These columns should be used for fields that are either a primary key field or a forgein key field. Key columns allow the compiler to check that join conditions on those fields are only between the primary and foreign key columns. Joins to non key columns of the same type are disallowed by the compiler.
 
 Currently only a subset of Column types are supported 
@@ -803,7 +803,7 @@ namespace Sql.Tables.OrderLog {
 }
 ```
 
-##Enum Fields
+## Enum Fields
 An enum field is an interger field that is mapped to an integer enum in C#. There is a special AColumn field to map this in a type safe way.
 Full Example:
 ```C#
@@ -865,7 +865,7 @@ public sealed class Row : Sql.ARow {
 }
 ```
 
-##Database Compatibility
+## Database Compatibility
 Most of TQ is database independent. The main areas where functionality may differ are:
 - String compare and LIKE operator - Some databases are case sensitive
 - Query hints are generally database specific
@@ -874,7 +874,7 @@ Most of TQ is database independent. The main areas where functionality may diffe
 - Aggregate functions like AVG(...) output different values between Sql Server and PostgreSql. Sql server rounds integer averages where as postgreSql does not.
 - Window function syntax differs between Sql Server and PostgreSql. Generally sql server has tighter rules around the use of the 'Order By' clause.
 
-##Global Settings
+## Global Settings
 There is a global settings class to set defaults on the following:
 - UseParameters - Turn query parameters on or off
 - UseConcurrenyChecking - This is used for row object updates and deletes. If set true then every field in the row is used to identify the row during an update or delete. If it is set to false then only the primary key fields are used to find the row. This can be overridden on the Table definition if needed.
@@ -902,7 +902,7 @@ private static void QueryExecuting(string pSql, Sql.QueryType pQueryType, DateTi
 }
 ```
 
-##Temp Tables
+## Temp Tables
 To use a temp table you first need to define a table and row object for the table. By not providing a table name in the table class TQ treats it as a temp table.
 ```C#
 public sealed class Table : Sql.ATable {
@@ -952,7 +952,7 @@ Sql.IResult result =
     .Execute(transaction);
 ```
 
-##Custom TSql
+## Custom TSql
 Custom sql can be used by using the class Sql.Function.CustomSql(...). This can be used when TQ doesn't support database functions features that you want to use.
 Warning: Remember to validate against sql injection attacks when using custom sql.
 ```C#
@@ -982,7 +982,7 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 }
 ```
 
-##Plain Text Queries
+## Plain Text Queries
 TQ allows you to send non select plain text queries.
 Warning: Remember to validate against sql injection attacks when using plain text queries.
 ```C#
@@ -995,10 +995,10 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 }
 ```
 
-##Sql Helper Class
+## Sql Helper Class
 The class Sql.SqlHelper contains static methods that help load query results into lists, dictionaries and to format sql to be more human readable.
 
-##Insert Select
+## Insert Select
 TQ allows insert select queries.
 ```C#
 Tables.BigIntTable.Table table = Tables.BigIntTable.Table.INSTANCE;
@@ -1014,7 +1014,7 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 }
 ```
 
-##Bulk Insert
+## Bulk Insert
 TQ has a bulk insert class that can but used when performing a large number of insert queries against a table. This functionality takes advantage of the insert 'values' syntax to reduce the number of network round trips between the client and the database.
 ```C#
 using(Transaction transaction = new Transaction(MainDatabase.INSTANCE)) {
@@ -1039,7 +1039,7 @@ using(Transaction transaction = new Transaction(MainDatabase.INSTANCE)) {
 }
 ```
 
-##Join Update
+## Join Update
 TQ supports update join syntax
 ```C#
 Table tableA = new Table();
@@ -1056,7 +1056,7 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 }
 ```
 
-##Nested Queries
+## Nested Queries
 When using nested queries it is important to use different instances of tables. In this example we must have two different instances of userTable. This is so the sql table aliases are correct when executing the query.
 ```C#
 Table userTable = Table.INSTANCE;
@@ -1072,7 +1072,7 @@ Sql.Query.Select(userTable)
     ).Execute();
 ```
 
-##Union, Except
+## Union, Except
 When using union queries it is important to use different instances of table classes so the sql aliasing works correctly.
 Also due to implementation limitations the union result is only accessible from tables defined in the last union query (e.g. UserTableB in this example).
 Union, Union All, Interset and Except syntax is supported.
@@ -1094,7 +1094,7 @@ for (int index = 0; index < result.Count; index++) {
 }
 ```
 
-##Stored Procedures
+## Stored Procedures
 To execute stored procedures you must create a stored procedure class definition by implementing the abstract class Sql.AStoredProc. This can be generated using the code generator.
 In and out parameters are supported as well as returned row results
 
@@ -1258,15 +1258,15 @@ GO
 }
 ```
 
-##Thread Safety
+## Thread Safety
 You can execute queries that don't have a transaction from multiple threads without a problem.
 Transactions are not thread safe because the underlying ado connection is not thread safe. You can not execute queries in parallel on a single transaction instance. You can execute queries on separate transaction instances in parallel though.
 ATable classes are immutable so they are thread safe. IResult class is not thread safe (But reading should work multi threaded).
 
-##Force Transaction on Current Thread
+## Force Transaction on Current Thread
 When creating a new transaction you can set a parameter to check that every query running on the current thread executes using that transaction. If there is a query that doesn't execute on that transaction an exception is thrown. This feature is used to help identify dead lock bugs. A good example would be a service thread that is doing a particular task and you want to catch any executing queries on that thread and make sure they are running in the transaction.
 
-##Window Functions
+## Window Functions
 TQ has syntax support for window functions. This includes 'OVER', 'PARTITION BY' and 'ORDER BY' syntax.
 
 Note: Sql Server and PostgreSql have slightly different syntax rules for window functions. Mostly around the use of the order by clause.
@@ -1303,7 +1303,7 @@ for(int index = 0; index < result.Count; index++) {
 }
 ```
 
-##Read Only Connection Security Feature
+## Read Only Connection Security Feature
 TQ has a security feature that allows queries that run outside of a transaction to be run on a read only connection. For example: Select queries that are run without having a transaction object passed in the Execute(...) method are run with a readonly connection if the database class provides one.
 
 To enable this feature the method GetConnection(...) in the database class needs to be altered to return a readonly connection when the parameter pCanBeReadonly is true.
@@ -1323,7 +1323,7 @@ public override System.Data.Common.DbConnection GetConnection(bool pCanBeReadonl
 }
 ```
 
-##Table and Column Comments
+## Table and Column Comments
 TQ supports meta data comments against tables and columns. These are added to the table definition in code as attributes. TQ can generate sql to create and update these comments in the database.
 
 Once the comments are assigned to the database a third party tool can be used to generate schema documentation.
