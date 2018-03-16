@@ -29,6 +29,15 @@ namespace TypedQuery.Logic {
 
 		}
 
+		public void TestConnection(Sql.ADatabase pDatabase) {
+
+			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table(pDatabase);
+
+			Sql.IResult result = Sql.Query
+				.Select(tablesTable).Top(1)
+				.From(tablesTable)
+				.Execute();
+		}
 		public IList<ITable> GetTableList(Sql.ADatabase pDatabase) {
 
 			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table(pDatabase);

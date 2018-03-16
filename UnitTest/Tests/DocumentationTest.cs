@@ -25,7 +25,7 @@ using TypedQuery.Logic;
 namespace Sql.Tests {
 	
 	[TestClass]
-	public class TableCheckerTest {
+	public class DocumentationTest {
 		
 		[TestInitialize()]
 		public void Init() {
@@ -58,21 +58,8 @@ namespace Sql.Tests {
 			rows.Add(new Sql.Tables.NIntTable.Row());
 			rows.Add(new Sql.Tables.SmallIntTable.Row());
 			rows.Add(new Sql.Tables.StringTable.Row());
-			
-			Sql.ADatabase database = DB.TestDB;
-			
-			StringBuilder output = new StringBuilder();
-			
-			foreach(Sql.ARow row in rows) {
 
-				List<ValidationError> errors = DefinitionChecker.CheckTable(row);
-
-                foreach(ValidationError error in errors) {
-                    output.Append(error.Message).Append(System.Environment.NewLine);
-                }
-			}
-			
-			string finalResult = output.ToString();
+			new TypedQuery.Logic.DocumentationGenerator().GenerateTestOnly("v0.0.1", DateTime.Now, rows);
 			return;
 		}
 	}

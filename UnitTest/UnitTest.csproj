@@ -34,6 +34,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -121,6 +139,7 @@
     <Compile Include="Tests\SmallIntTest.cs" />
     <Compile Include="Tests\StoredProcTest.cs" />
     <Compile Include="Tests\StringTests.cs" />
+    <Compile Include="Tests\DocumentationTest.cs" />
     <Compile Include="Tests\TableCheckerTest.cs" />
     <Compile Include="Tests\TempTableTest.cs" />
     <Compile Include="Tests\TruncateTest.cs" />
@@ -129,6 +148,10 @@
     <Compile Include="Tests\WindowFunctionTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TypedQueryGenerator\TypedQueryGenerator.csproj">
+      <Project>{492ab156-f684-47b5-a347-fc740ff630f4}</Project>
+      <Name>TypedQueryGenerator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TypedQuery\TypedQuery.csproj">
       <Project>{26510351-8210-4210-a00b-4777974345f3}</Project>
       <Name>TypedQuery</Name>

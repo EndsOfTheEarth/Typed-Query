@@ -24,6 +24,15 @@ namespace TypedQuery.Logic {
 
 	public class PostgreSqlSchema {
 
+        public void TestConnection() {
+
+            Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table();
+
+            Sql.IResult result = Sql.Query
+                .Select(tablesTable).Top(1)
+                .From(tablesTable)
+                .Execute();
+        }
 		public IList<ITable> GetTableList() {
 
 			Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table();

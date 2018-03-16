@@ -27,9 +27,9 @@ namespace Sql {
 
 		public readonly static Sql.ADatabase TestDB = new DB();
 
-		//private DB() : base("Application", Sql.DatabaseType.Mssql) {
-		private DB()
-			: base("Application", Sql.DatabaseType.PostgreSql) {
+		private DB() : base("Application", Sql.DatabaseType.Mssql) {
+		//private DB()
+		//	: base("Application", Sql.DatabaseType.PostgreSql) {
 		}
 		
 		static DB() {
@@ -57,8 +57,8 @@ namespace Sql {
 			get {
 				
 				if(DatabaseType == DatabaseType.Mssql)
-					return "user id=sa;password=1;server=localhost\\SQLEXPRESS;Trusted_Connection=no;database=Tester;connection timeout=30";
-				else if(DatabaseType == DatabaseType.PostgreSql)
+					return "server=localhost\\SQLEXPRESS;Trusted_Connection=yes;database=TQ_Test;connection timeout=30";    //user id=;password=;
+                else if(DatabaseType == DatabaseType.PostgreSql)
 					return "Server=127.0.0.1;Port=5432;Database=Test;User Id=postgres;Password=1;";
 				throw new Exception("Unknown database type: " + DatabaseType.ToString());
 			}

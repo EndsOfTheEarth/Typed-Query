@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Logic\CodeGenerator.cs" />
     <Compile Include="Logic\DefinitionChecker.cs" />
+    <Compile Include="Logic\DocumentationGenerator.cs" />
     <Compile Include="Logic\ITable.cs" />
     <Compile Include="Logic\PostgreSqlSchema.cs" />
     <Compile Include="Logic\SqlServerSchema.cs" />
