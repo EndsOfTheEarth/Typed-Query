@@ -29,69 +29,51 @@ namespace Sql.Tests {
 		
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
 		[TestMethod]
 		public void Test_01() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str += "string',";
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult result = Query.Select(table.Str).From(table).Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(row.Str, table[0, result].Str);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
 		[TestMethod]
 		public void Test_02() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string',";
-			
-			try {
-				
+
+			const string str = "string',";
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.StringTable.Row insertRow = new Tables.StringTable.Row();
-				
+
 				insertRow.Str = str;
 				insertRow.Update(transaction);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 			
 			Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
@@ -105,17 +87,10 @@ namespace Sql.Tests {
 			Assert.AreEqual(str, row.Str);
 			
 			row.Delete();
-			
-			transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
-				row.Update(transaction);				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+				row.Update(transaction);
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 			
 			result = Query.Select(table.Str).From(table).Execute();
@@ -124,63 +99,55 @@ namespace Sql.Tests {
 		
 		[TestMethod]
 		public void Test_03() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string',";
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string',";
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str = str;
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult result = Query.Select(table.Str).From(table).Where(table.Str == str).Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(str, table[0, result].Str);
-				
+
 				result = Query.Select(table.Str).From(table).Where(table.Str != str).Execute(transaction);
 				Assert.AreEqual(0, result.Count);
-				
+
 				result = Query.Select(table.Str).From(table).Where(table.Str.In(str)).Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(str, table[0, result].Str);
-				
-				result = Query.Select(table.Str).From(table).Where(table.Str.NotIn(str)).Execute(transaction);
-				Assert.AreEqual(0, result.Count);				
-				
-				List<string> list = new List<string>();
-				list.Add(str);
-				
-				result = Query.Select(table.Str).From(table).Where(table.Str.In(list)).Execute(transaction);
-				
-				Assert.AreEqual(1, result.Count);
-				Assert.AreEqual(str, table[0, result].Str);
-				
+
 				result = Query.Select(table.Str).From(table).Where(table.Str.NotIn(str)).Execute(transaction);
 				Assert.AreEqual(0, result.Count);
-				
+
+				List<string> list = new List<string>();
+				list.Add(str);
+
+				result = Query.Select(table.Str).From(table).Where(table.Str.In(list)).Execute(transaction);
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual(str, table[0, result].Str);
+
+				result = Query.Select(table.Str).From(table).Where(table.Str.NotIn(str)).Execute(transaction);
+				Assert.AreEqual(0, result.Count);
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
 		[TestMethod]
 		public void Test_04() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string''";
-			
-			try {
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string''";			
 				
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
 				
@@ -209,361 +176,313 @@ namespace Sql.Tests {
 				
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
 		}
 		
 		[TestMethod]
 		public void Test_05() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			string str2 = "string2";
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string";
+				string str2 = "string2";
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str = str;
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult result = Query.Select(table.Str).From(table).Where(table.Str == str).Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(str, table[0, result].Str);
-				
+
 				Tables.StringTable.Row row2 = new Tables.StringTable.Row();
-				
-				row2.Str = str2;				
+
+				row2.Str = str2;
 				row2.Update(transaction);
-				
-				result = Query.Select(table.Str).From(table).Where(table.Str == str | table.Str == str2).Execute(transaction);				
+
+				result = Query.Select(table.Str).From(table).Where(table.Str == str | table.Str == str2).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
-				result = Query.Select(table.Str).From(table).Execute(transaction);				
+
+				result = Query.Select(table.Str).From(table).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
+
 				result = Query.Select(table.Str).From(table).Where(table.Str.In(str, str2)).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
+
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
 		}
-		
+
 		[TestMethod]
 		public void Test_06() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string";
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str = str;
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult result = Query.Select(table.Str).From(table).Where(table.Str == str).Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(str, table[0, result].Str);
-				
-				IResult deleteResult = Query.Delete(table).NoWhereCondition.Execute(transaction);				
+
+				IResult deleteResult = Query.Delete(table).NoWhereCondition.Execute(transaction);
 				Assert.AreEqual(1, deleteResult.RowsEffected);
-				
+
 				result = Query.Select(table.Str).From(table).Execute(transaction);
 				Assert.AreEqual(0, result.Count);
-				
+
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
 		}
-		
+
 		[TestMethod]
 		public void Test_07() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			string str2 = "string2";
-			
-			try {				
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string";
+				string str2 = "string2";
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult insertResult = Query.Insert(table).Set(table.Str, str).Execute(transaction);
 				Assert.AreEqual(1, insertResult.RowsEffected);
-				
+
 				insertResult = Query.Insert(table).Set(table.Str, str2).Execute(transaction);
 				Assert.AreEqual(1, insertResult.RowsEffected);
-				
+
 				IResult result = Query.Select(table.Str).From(table).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
-				for(int index = 0; index < result.Count; index++){
+
+				for(int index = 0; index < result.Count; index++) {
 					Tables.StringTable.Row row = table[index, result];
 					Assert.IsTrue(row.Str == str || row.Str == str2);
 				}
-				
+
 				Tables.StringTable.Table table2 = new Tables.StringTable.Table();
-				
+
 				result = Query.Select(table.Str, table2.Str)
 								.From(table)
 								.Join(table2, table.Str == table2.Str)
 								.Execute(transaction);
-				
+
 				Assert.AreEqual(2, result.Count);
-				
-				for(int index = 0; index < result.Count; index++){
+
+				for(int index = 0; index < result.Count; index++) {
 					Tables.StringTable.Row row1 = table[index, result];
-					Tables.StringTable.Row row2 = table2[index, result];					
-					Assert.IsTrue(row1 != row2);					
+					Tables.StringTable.Row row2 = table2[index, result];
+					Assert.IsTrue(row1 != row2);
 					Assert.IsTrue(row1.Str == str || row1.Str == str2);
 					Assert.IsTrue(row2.Str == str || row2.Str == str2);
 					Assert.IsTrue(row1.Str == row2.Str);
 				}
-				
+
 				result = Query.Select(table.Str, table2.Str)
 								.From(table)
 								.LeftJoin(table2, table.Str == table2.Str)
 								.Execute(transaction);
-				
+
 				Assert.AreEqual(2, result.Count);
-				
-				for(int index = 0; index < result.Count; index++){
+
+				for(int index = 0; index < result.Count; index++) {
 					Tables.StringTable.Row row1 = table[index, result];
-					Tables.StringTable.Row row2 = table2[index, result];					
-					Assert.IsTrue(row1 != row2);					
+					Tables.StringTable.Row row2 = table2[index, result];
+					Assert.IsTrue(row1 != row2);
 					Assert.IsTrue(row1.Str == str || row1.Str == str2);
 					Assert.IsTrue(row2.Str == str || row2.Str == str2);
 					Assert.IsTrue(row1.Str == row2.Str);
 				}
-				
+
 				result = Query.Select(table.Str, table2.Str)
 								.From(table)
 								.RightJoin(table2, table.Str == table2.Str)
 								.Execute(transaction);
-				
+
 				Assert.AreEqual(2, result.Count);
-				
-				for(int index = 0; index < result.Count; index++){
+
+				for(int index = 0; index < result.Count; index++) {
 					Tables.StringTable.Row row1 = table[index, result];
-					Tables.StringTable.Row row2 = table2[index, result];					
-					Assert.IsTrue(row1 != row2);					
+					Tables.StringTable.Row row2 = table2[index, result];
+					Assert.IsTrue(row1 != row2);
 					Assert.IsTrue(row1.Str == str || row1.Str == str2);
 					Assert.IsTrue(row2.Str == str || row2.Str == str2);
 					Assert.IsTrue(row1.Str == row2.Str);
 				}
-				
+
 				result = Query.Select(table.Str, table2.Str)
 								.From(table)
 								.LeftJoin(table2, table.Str != table2.Str)
 								.Execute(transaction);
-				
+
 				Assert.AreEqual(2, result.Count);
-				
-				for(int index = 0; index < result.Count; index++){
+
+				for(int index = 0; index < result.Count; index++) {
 					Tables.StringTable.Row row1 = table[index, result];
-					Tables.StringTable.Row row2 = table2[index, result];					
-					Assert.IsTrue(row1 != row2);					
+					Tables.StringTable.Row row2 = table2[index, result];
+					Assert.IsTrue(row1 != row2);
 					Assert.IsTrue(row1.Str == str || row1.Str == str2);
 					Assert.IsTrue(row2.Str == str || row2.Str == str2);
 					Assert.IsTrue(row1.Str != row2.Str);
 				}
-				
+
 				result = Query.Select(table.Str)
 								.From(table)
 								.Where(table.Str.In(
 										Query.Select(table2.Str).From(table2))
 								)
 								.Execute(transaction);
-				
+
 				Assert.AreEqual(2, result.Count);
-				
-				for(int index = 0; index < result.Count; index++){
+
+				for(int index = 0; index < result.Count; index++) {
 					Tables.StringTable.Row row1 = table[index, result];
 					Assert.IsTrue(row1.Str == str || row1.Str == str2);
 				}
-				
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
 		}
-		
+
 		[TestMethod]
 		public void Test_08() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string";
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str = str;
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult result = Query.Select(table.Str).From(table).Where(table.Str.IsNotNull).Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(str, table[0, result].Str);
-				
+
 				result = Query.Select(table.Str).From(table).Where(table.Str.IsNull).Execute(transaction);
 				Assert.AreEqual(0, result.Count);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
-		
+
 		[TestMethod]
 		public void Test_09() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			string str2 = "string2";
-			
-			try {				
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string";
+				string str2 = "string2";
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult insertResult = Query.Insert(table).Set(table.Str, str).Execute(transaction);
 				Assert.AreEqual(1, insertResult.RowsEffected);
-				
+
 				insertResult = Query.Insert(table).Set(table.Str, str2).Execute(transaction);
 				Assert.AreEqual(1, insertResult.RowsEffected);
-				
+
 				IResult result = Query.Select(table.Str).From(table).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
+
 				result = Query.Select(table.Str).From(table).OrderBy(table.Str.ASC).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
+
 				string first = table[0, result].Str;
 				string second = table[1, result].Str;
-				
+
 				Assert.IsTrue(first != second);
-				
+
 				result = Query.Select(table.Str).From(table).OrderBy(table.Str.DESC).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
+
 				Assert.AreEqual(first, table[1, result].Str);
 				Assert.AreEqual(second, table[0, result].Str);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
 		[TestMethod]
 		public void Test_10() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string";
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str = str;
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult result = Query.Select(table.Str).From(table).Where(table.Str == str).Execute(transaction);
-				
+
 				row = table[0, result];
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(str, row.Str);
-				
-				row.Delete();				
+
+				row.Delete();
 				row.Update(transaction);
-				
+
 				result = Query.Select(table.Str).From(table).Where(table.Str == str).Execute(transaction);
 				Assert.AreEqual(0, result.Count);
-				
+
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
-		}
-		
+		}		
 		
 		[TestMethod]
 		public void Test_11() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				string str = "string";
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str = str;
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				IResult result = Query.Select(table.Str).From(table).Where(table.Str == str).Execute(transaction);
-				
+
 				row = table[0, result];
-				
+
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(str, row.Str);
-				
-				row.Delete();				
+
+				row.Delete();
 				row.Update(transaction);
-				
+
 				bool exceptionThrown = false;
-				
-				try{
+
+				try {
 					string getStr = row.Str;
 				}
-				catch(Exception ex){
+				catch(Exception ex) {
 					if(!ex.Message.StartsWith("Cannot access a columns data when is deleted"))
 						throw ex;
 					exceptionThrown = true;
-				}				
+				}
 				Assert.IsTrue(exceptionThrown);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
@@ -578,12 +497,10 @@ namespace Sql.Tests {
 		
 		[TestMethod]
 		public void Test_13() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			string str = "string";
-			
-			try {
+
+			const string str = "string";
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
 				
 				Tables.StringTable.Row insertRow = new Tables.StringTable.Row();
 				
@@ -591,11 +508,7 @@ namespace Sql.Tests {
 				insertRow.Update(transaction);
 				
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
+			}			
 			
 			Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
 			
@@ -664,59 +577,52 @@ namespace Sql.Tests {
 		
 		[TestMethod]
 		public void Test_16() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.StringTable.Row row = new Tables.StringTable.Row();
-				
+
 				row.Str += "string";
 				row.Update(transaction);
-				
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
-				
+
+
 				IResult result = Query.Update(table)
 					.Set(table.Str, table.Str)
 					.NoWhereCondition()
 					.Returning(table.Str)
 					.Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.RowsEffected);
 				Assert.AreEqual(table[0, result].Str, "string");
-				
+
 				Tables.StringTable.Table tableB = new Sql.Tables.StringTable.Table();
-				
+
 				result = Query.Update(table)
 					.Set(table.Str, table.Str)
 					.Join(tableB, table.Str == tableB.Str)
 					.NoWhereCondition()
 					.Returning(table.Str)
 					.Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.RowsEffected);
 				Assert.AreEqual(table[0, result].Str, "string");
-				
+
 				result = Query.Update(table)
 					.Set(table.Str, tableB.Str)
 					.Join(tableB, table.Str == tableB.Str)
 					.NoWhereCondition()
 					.Returning(table.Str)
 					.Execute(transaction);
-				
+
 				Assert.AreEqual(1, result.RowsEffected);
 				Assert.AreEqual(table[0, result].Str, "string");
-				
+
 				transaction.Commit();
 			}
-			catch(Exception e){
-				e = e ?? e;
-				transaction.Rollback();
-				throw;
-			}
 		}
-		
+
 		[TestMethod]
 		public void ParametersTurnedOff() {
 			
