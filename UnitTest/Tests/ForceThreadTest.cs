@@ -20,73 +20,67 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Sql.Tests {
-	
+
 	[TestClass]
 	public class ForceThreadTest {
-		
+
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
 		}
-		
+
 		[TestMethod]
 		public void Test_01() {
-			
+
 			Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-			
-			using(Transaction transaction = new Transaction(DB.TestDB, System.Data.IsolationLevel.ReadCommitted, true)){
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB, System.Data.IsolationLevel.ReadCommitted, true)) {
+
 				Tables.StringTable.Row row = new Sql.Tables.StringTable.Row();
-				
+
 				row.Str = "a";
 				row.Update(transaction);
-				
+
 				bool exceptionThrown = false;
-				
+
 				try {
 					Sql.Query.Select(table)
 						.From(table)
 						.ExecuteUncommitted(DB.TestDB);
 				}
-				catch(Exception e){
+				catch(Exception e) {
 					Assert.AreEqual("Cannot create connection on this thread as it is being forced to use another transaction", e.Message);
 					exceptionThrown = true;
 				}
 				Assert.IsTrue(exceptionThrown);
 			}
-			
+
 			Sql.IResult result = Sql.Query
 				.Select(table)
 				.From(table)
 				.ExecuteUncommitted(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
-			using(Transaction transaction = new Transaction(DB.TestDB)){
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.StringTable.Row row = new Sql.Tables.StringTable.Row();
-				
+
 				row.Str = "a";
 				row.Update(transaction);
-				
+
 				result = Sql.Query.Select(table)
 					.From(table)
 					.ExecuteUncommitted(DB.TestDB);
-				
+
 				//Sql server and postgreSql have different locking models so they return different results
 				if(DB.TestDB.DatabaseType == DatabaseType.Mssql)
 					Assert.AreEqual(1, result.Count);
@@ -94,14 +88,14 @@ namespace Sql.Tests {
 					Assert.AreEqual(0, result.Count);
 				else
 					throw new Exception("Unknown database type");
-				
+
 				transaction.Commit();
 			}
 			result = Sql.Query
 				.Select(table)
 				.From(table)
 				.ExecuteUncommitted(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 		}
 	}

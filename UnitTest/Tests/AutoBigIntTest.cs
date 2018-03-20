@@ -29,11 +29,9 @@ namespace Sql.Tests {
 
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.BigIntTable.Table table = Tables.BigIntTable.Table.INSTANCE;
 				
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
@@ -49,10 +47,6 @@ namespace Sql.Tests {
 					mRunOnce = true;
 				}				
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
@@ -123,7 +117,6 @@ namespace Sql.Tests {
 				Int64 id = -1;
 				
 				using(Transaction transaction = new Transaction(DB.TestDB)) {
-					
 					
 					row.Update(transaction);
 					

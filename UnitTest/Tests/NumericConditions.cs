@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -23,46 +23,40 @@ namespace Sql.Tests {
 
 	[TestClass]
 	public class NumericConditions {
-		
+
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.IntTable.Table table = Tables.IntTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
 		}
-		
+
 		[TestMethod]
 		public void Test_01() {
-			
-			using(Sql.Transaction transaction = new Transaction(DB.TestDB)){
-				
+
+			using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.IntTable.Row row = new Sql.Tables.IntTable.Row();
 				row.Id = Guid.NewGuid();
 				row.IntValue = 10;
-				
+
 				row.Update(transaction);
 				transaction.Commit();
 			}
-			
+
 			Tables.IntTable.Table table = Tables.IntTable.Table.INSTANCE;
-			
+
 			string sql = Sql.Query.Select(table.Id)
 				.From(table)
 				.Where(((table.IntValue + table.IntValue) / table.IntValue) > 0)
 				.GetSql(DB.TestDB);
-				
+
 		}
 	}
 }

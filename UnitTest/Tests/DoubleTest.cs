@@ -20,313 +20,307 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Sql.Tests {
-	
+
 	[TestClass]
 	public class DoubleTest {
-		
+
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.DoubleTable.Table table = Tables.DoubleTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
-		
+
 		private double mDouble1 = 25.250d;
-		
+
 		[TestMethod]
 		public void Test_01() {
-			
-			using(Transaction transaction = new Transaction(DB.TestDB)){
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.DoubleTable.Row row = new Sql.Tables.DoubleTable.Row();
-				
+
 				row.Id = Guid.NewGuid();
-				row.Value += mDouble1;	//+= tests the default values on a new row
+				row.Value += mDouble1;  //+= tests the default values on a new row
 				row.Update(transaction);
-				
+
 				transaction.Commit();
 			}
-			
+
 			Tables.DoubleTable.Table table = Tables.DoubleTable.Table.INSTANCE;
-			
+
 			IResult result = Query.Select(table.Value).From(table).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value == mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value != mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value > 0).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value < 0).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value <= mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value >= mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value <= (mDouble1 - 1f)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value >= (mDouble1 + 1f)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value.In(mDouble1, 5d)).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value.NotIn(mDouble1, 5d)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			System.Collections.Generic.List<double> list = new System.Collections.Generic.List<double>();
 			list.Add(mDouble1);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value.In(list)).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table.Value).From(table).Where(table.Value.NotIn(list)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			Tables.DoubleTable.Table table2 = new Sql.Tables.DoubleTable.Table();
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.Value == table2.Value)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
 			Assert.AreEqual(mDouble1, table2[0, result].Value);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.Value != table2.Value)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.Value >= table2.Value)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
 			Assert.AreEqual(mDouble1, table2[0, result].Value);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.Value <= table2.Value)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
 			Assert.AreEqual(mDouble1, table2[0, result].Value);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.Value < table2.Value)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.Value > table2.Value)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table)
 				.From(table)
 				.Where(table.Value.In(Query.Select(table2.Value).Distinct.From(table2)))
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].Value);
-			
+
 			result = Query.Select(table)
 				.From(table)
 				.Where(table.Value.NotIn(Query.Select(table2.Value).Distinct.From(table2)))
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table)
 				.From(table)
 				.Where(table.Value + 5d > 2d)
 				.Execute(DB.TestDB);
-			
+
 			return;
 		}
-		
+
 		[TestMethod]
 		public void Test_02() {
-			
-			using(Transaction transaction = new Transaction(DB.TestDB)){
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.DoubleTable.Row row = new Sql.Tables.DoubleTable.Row();
-				
+
 				row.Id = Guid.NewGuid();
 				row.Value = 1f;
 				row.NValue = mDouble1;
 				row.Update(transaction);
-				
+
 				transaction.Commit();
 			}
-			
+
 			Tables.DoubleTable.Table table = Tables.DoubleTable.Table.INSTANCE;
-			
+
 			IResult result = Query.Select(table.NValue).From(table).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue == mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue != mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue > 0).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue < 0).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue <= mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue >= mDouble1).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue <= (mDouble1 - 1f)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue >= (mDouble1 + 1f)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue.In(mDouble1, 5d)).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue.NotIn(mDouble1, 5d)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			System.Collections.Generic.List<double> list = new System.Collections.Generic.List<double>();
 			list.Add(mDouble1);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue.In(list)).Execute(DB.TestDB);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table.NValue).From(table).Where(table.NValue.NotIn(list)).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			Tables.DoubleTable.Table table2 = new Sql.Tables.DoubleTable.Table();
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.NValue == table2.NValue)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
 			Assert.AreEqual(mDouble1, table2[0, result].NValue);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.NValue != table2.NValue)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.NValue >= table2.NValue)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
 			Assert.AreEqual(mDouble1, table2[0, result].NValue);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.NValue <= table2.NValue)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
 			Assert.AreEqual(mDouble1, table2[0, result].NValue);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.NValue < table2.NValue)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table, table2)
 				.From(table)
 				.Join(table2, table.NValue > table2.NValue)
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table)
 				.From(table)
 				.Where(table.NValue.In(Query.Select(table2.NValue).Distinct.From(table2)))
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDouble1, table[0, result].NValue);
-			
+
 			result = Query.Select(table)
 				.From(table)
 				.Where(table.NValue.NotIn(Query.Select(table2.NValue).Distinct.From(table2)))
 				.Execute(DB.TestDB);
-			
+
 			Assert.AreEqual(0, result.Count);
-			
+
 			result = Query.Select(table)
 				.From(table)
 				.Where(table.NValue + 5d > 2d)
 				.Execute(DB.TestDB);
-			
+
 			return;
 		}
-		
+
 		[TestMethod]
 		public void ParametersTurnedOff() {
-			
+
 			Settings.UseParameters = false;
-			
+
 			try {
 				Init();
 				Test_01();
@@ -337,12 +331,12 @@ namespace Sql.Tests {
 				Settings.UseParameters = true;
 			}
 		}
-		
+
 		[TestMethod]
 		public void ParametersTurnedOn() {
-			
+
 			Settings.UseParameters = true;
-			
+
 			try {
 				Init();
 				Test_01();

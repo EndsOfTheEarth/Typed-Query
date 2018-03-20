@@ -23,53 +23,53 @@ namespace Sql.Tests {
 
 	[TestClass]
 	public class QueryTest {
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(NullReferenceException))]
-		public void Test_01(){
-			
+		public void Test_01() {
+
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
-				
-				Query.Update(table).Set(table.Id, Guid.NewGuid()).Where(null).Execute(transaction);	//Null in where clause
+
+				Query.Update(table).Set(table.Id, Guid.NewGuid()).Where(null).Execute(transaction); //Null in where clause
 			}
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(NullReferenceException))]
 		public void Test_02() {
-			
+
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
-				
-				Query.Delete(table).Where(null).Execute(transaction);	//Null in where clause
+
+				Query.Delete(table).Where(null).Execute(transaction);   //Null in where clause
 			}
 		}
-		
+
 		[TestMethod]
 		public void Test_03() {
-			
+
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
 				transaction.Commit();
 			}
-			
+
 			IResult result = Sql.Query.Select(table).From(table).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			bool exceptionThrown = false;
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
-				
+
 				Tables.GuidTable.Row row = new Sql.Tables.GuidTable.Row();
 				row.Id = Guid.NewGuid();
-				
+
 				row.Delete();
-				
+
 				try {
 					//You cannot call update on a deleted row that doesn't exist in the database
 					row.Update(transaction);
@@ -79,92 +79,92 @@ namespace Sql.Tests {
 				}
 				transaction.Commit();
 			}
-			
+
 			Assert.AreEqual(true, exceptionThrown);
 		}
-		
+
 		[TestMethod]
 		public void Test_04() {
-			
+
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
 				transaction.Commit();
 			}
-			
+
 			IResult result = Sql.Query.Select(table).From(table).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
-				
+
 				Tables.GuidTable.Row row = new Sql.Tables.GuidTable.Row();
 				row.Id = Guid.NewGuid();
-				
-				row.Delete();				
+
+				row.Delete();
 				try {
 					row.Id = Guid.NewGuid();
 				}
-				catch(Exception e){
+				catch(Exception e) {
 					if(e.Message.StartsWith("Cannot set columns data when row is deleted"))
 						return;
 				}
 				Assert.IsTrue(false);
 			}
 		}
-		
+
 		[TestMethod]
 		public void Test_05() {
-			
+
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
 				transaction.Commit();
 			}
-			
+
 			IResult result = Sql.Query.Select(table).From(table).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
-			
+
 			const int rows = 10;
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB)) {
 
-				for(int index = 0; index < rows; index++){
+				for(int index = 0; index < rows; index++) {
 					Tables.GuidTable.Row row = new Sql.Tables.GuidTable.Row();
 					row.Id = Guid.NewGuid();
-					
+
 					row.Update(transaction);
 				}
 				transaction.Commit();
 			}
-			
+
 			Function.Count count = new Sql.Function.Count();
-			
+
 			result = Sql.Query.Select(table, count).From(table).GroupBy(table.Id).Execute(DB.TestDB);
 			Assert.AreEqual(rows, result.Count);
-			
+
 			for(int index = 0; index < result.Count; index++)
 				Assert.AreEqual(1, count[index, result].Value);
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(NullReferenceException))]
 		public void Test_06() {
-			
+
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-			
-			using(Transaction transaction = new Transaction(DB.TestDB)) {				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
 				Sql.Query.Select(null).From(table).Execute(DB.TestDB);
 			}
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(NullReferenceException))]
 		public void Test_07() {
-			
+
 			Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-			
+
 			Sql.Query.Select(table).From(table).Where(table.Str.In(null, null)).Execute(DB.TestDB);
 		}
 	}

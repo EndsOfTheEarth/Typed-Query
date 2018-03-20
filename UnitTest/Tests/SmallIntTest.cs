@@ -28,15 +28,13 @@ namespace Sql.Tests {
 		
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.SmallIntTable.Table table = Tables.SmallIntTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				if(!mRunOnce) {
 					if(DB.TestDB.DatabaseType == DatabaseType.Mssql) {
 						Query.ExecuteNonQuery("DBCC CHECKIDENT (" + table.TableName + ", RESEED, 1)", DB.TestDB, transaction);
@@ -46,12 +44,8 @@ namespace Sql.Tests {
 					}
 					mRunOnce = true;
 				}
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		

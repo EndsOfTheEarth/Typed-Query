@@ -26,54 +26,42 @@ namespace Sql.Tests {
 	
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
 		[TestMethod]
 		public void Test_01(){
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			Guid id = Guid.NewGuid();
-			Guid id2 = Guid.NewGuid();
-			
-			try {				
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+				Guid id = Guid.NewGuid();
+				Guid id2 = Guid.NewGuid();
+
 				Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-				
+
 				IResult insertResult = Query.Insert(table).Set(table.Id, id).Execute(transaction);
 				Assert.AreEqual(1, insertResult.RowsEffected);
-				
+
 				insertResult = Query.Insert(table).Set(table.Id, id2).Execute(transaction);
 				Assert.AreEqual(1, insertResult.RowsEffected);
-				
+
 				IResult result = Query.Select(table.Id).From(table).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
+
 				result = Query.Select(table.Id).Distinct.From(table).Execute(transaction);
 				Assert.AreEqual(2, result.Count);
-				
+
 				Assert.IsTrue(result.SqlQuery.ToLower().Contains("distinct"));
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		

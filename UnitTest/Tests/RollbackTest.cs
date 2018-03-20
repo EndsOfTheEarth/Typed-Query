@@ -21,180 +21,174 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sql.Tables;
 
 namespace Sql.Tests {
-	
+
 	[TestClass]
 	public class RollbackTest {
-		
+
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				transaction.Commit();
 			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
-			}
 		}
-		
+
 		[TestMethod]
 		public void Test_01() {
-			
+
 			Tables.StringTable.Table stringTable = Tables.StringTable.Table.INSTANCE;
-			
+
 			if(true) {
 				Sql.Function.Count count = new Sql.Function.Count();
-					
+
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
-				
+
 				Assert.AreEqual(result.Count, 1);
 				Assert.AreEqual(count[0, result].Value, 0);
 			}
-			
+
 			using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
-				
-				for (int index = 0; index < 100; index++) {
-					
+
+				for(int index = 0; index < 100; index++) {
+
 					Tables.StringTable.Row row = new Sql.Tables.StringTable.Row();
 					row.Str = index.ToString();
 					row.Update(transaction);
 				}
-				
+
 				Sql.Function.Count count = new Sql.Function.Count();
-				
+
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(transaction);
-				
+
 				Assert.AreEqual(result.Count, 1);
 				Assert.AreEqual(count[0, result].Value, 100);
-				
+
 				result = Sql.Query.Select(stringTable).From(stringTable).Execute(transaction);
-				
-				for (int index = 0; index < result.Count; index++) {
-					
+
+				for(int index = 0; index < result.Count; index++) {
+
 					string str = stringTable[index, result].Str;
-					
+
 					Sql.Query.Update(stringTable)
 						.Set(stringTable.Str, str + "abc")
 						.Where(stringTable.Str == str)
 						.Execute(transaction);
 				}
 			}
-			
+
 			if(true) {
 				Sql.Function.Count count = new Sql.Function.Count();
-					
+
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
-				
+
 				Assert.AreEqual(result.Count, 1);
 				Assert.AreEqual(count[0, result].Value, 0);
 			}
 		}
-		
+
 		[TestMethod]
-		public void Test_02() {			
-			
+		public void Test_02() {
+
 			Tables.StringTable.Table stringTable = Tables.StringTable.Table.INSTANCE;
-			
+
 			if(true) {
 				Sql.Function.Count count = new Sql.Function.Count();
-					
+
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
-				
+
 				Assert.AreEqual(result.Count, 1);
 				Assert.AreEqual(count[0, result].Value, 0);
 			}
-			
+
 			using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
-				
-				for (int index = 0; index < 100; index++) {
-					
+
+				for(int index = 0; index < 100; index++) {
+
 					Sql.Query.Insert(stringTable)
 						.Set(stringTable.Str, index.ToString())
 						.Execute(transaction);
 				}
-				
+
 				Sql.Function.Count count = new Sql.Function.Count();
-				
+
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(transaction);
-				
+
 				Assert.AreEqual(result.Count, 1);
 				Assert.AreEqual(count[0, result].Value, 100);
-				
+
 				result = Sql.Query.Select(stringTable).From(stringTable).Execute(transaction);
-				
-				for (int index = 0; index < result.Count; index++) {
-					
+
+				for(int index = 0; index < result.Count; index++) {
+
 					string str = stringTable[index, result].Str;
-					
+
 					Sql.Query.Update(stringTable)
 						.Set(stringTable.Str, str + "abc")
 						.Where(stringTable.Str == str)
 						.Execute(transaction);
 				}
 			}
-			
+
 			if(true) {
 				Sql.Function.Count count = new Sql.Function.Count();
-					
+
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
-				
+
 				Assert.AreEqual(result.Count, 1);
 				Assert.AreEqual(count[0, result].Value, 0);
 			}
 		}
-		
+
 		[TestMethod]
-		public void Test_03() {	
-			
+		public void Test_03() {
+
 			System.Data.SqlClient.SqlConnection.ClearAllPools();
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB, System.Data.IsolationLevel.Serializable)) {
-				
+
 				Tables.StringTable.Table stringTable = Tables.StringTable.Table.INSTANCE;
-				
+
 				Sql.Query.Select(stringTable).From(stringTable).Execute(transaction);
-				
+
 				transaction.Commit();
 			}
-			
+
 			using(System.Data.Common.DbConnection connection = DB.TestDB.GetConnection(false)) {
-				
-				using(System.Data.Common.DbCommand command = connection.CreateCommand()){
-				
+
+				using(System.Data.Common.DbCommand command = connection.CreateCommand()) {
+
 					if(DB.TestDB.DatabaseType == DatabaseType.Mssql) {
-						
+
 						command.CommandText = "DBCC useroptions";
-						
+
 						using(System.Data.Common.DbDataReader reader = command.ExecuteReader()) {
-							
+
 							int count = 0;
-							while(reader.Read()){
-								
+							while(reader.Read()) {
+
 								string value = reader.GetString(0);
 								string value2 = reader.GetString(1);
 								count++;
-								
-								if(count == 12){
+
+								if(count == 12) {
 									Assert.AreEqual(value2, "read committed");
 									continue;
 								}
 							}
 						}
 					}
-					else if(DB.TestDB.DatabaseType == DatabaseType.PostgreSql){
-						
+					else if(DB.TestDB.DatabaseType == DatabaseType.PostgreSql) {
+
 						command.CommandText = "SHOW TRANSACTION ISOLATION LEVEL";
-						
+
 						using(System.Data.Common.DbDataReader reader = command.ExecuteReader()) {
-							
-							while(reader.Read()){
+
+							while(reader.Read()) {
 								string value = reader.GetString(0);
 								Assert.AreEqual(value, "read committed");
 							}
@@ -204,46 +198,46 @@ namespace Sql.Tests {
 						throw new Exception("Unknown database type");
 				}
 			}
-			
+
 			using(Transaction transaction = new Transaction(DB.TestDB, System.Data.IsolationLevel.RepeatableRead)) {
-				
+
 				Tables.StringTable.Table stringTable = Tables.StringTable.Table.INSTANCE;
-				
+
 				Sql.Query.Select(stringTable).From(stringTable).Execute(transaction);
-				
+
 				transaction.Rollback();
 			}
-			
+
 			using(System.Data.Common.DbConnection connection = DB.TestDB.GetConnection(false)) {
-				
-				using(System.Data.Common.DbCommand command = connection.CreateCommand()){
-				
+
+				using(System.Data.Common.DbCommand command = connection.CreateCommand()) {
+
 					if(DB.TestDB.DatabaseType == DatabaseType.Mssql) {
 						command.CommandText = "DBCC useroptions";
-						
+
 						using(System.Data.Common.DbDataReader reader = command.ExecuteReader()) {
-							
+
 							int count = 0;
-							while(reader.Read()){
-								
+							while(reader.Read()) {
+
 								string value = reader.GetString(0);
 								string value2 = reader.GetString(1);
 								count++;
-								
-								if(count == 12){
+
+								if(count == 12) {
 									Assert.AreEqual(value2, "read committed");
 									continue;
 								}
 							}
 						}
 					}
-					else if(DB.TestDB.DatabaseType == DatabaseType.PostgreSql){
-						
+					else if(DB.TestDB.DatabaseType == DatabaseType.PostgreSql) {
+
 						command.CommandText = "SHOW TRANSACTION ISOLATION LEVEL";
-						
+
 						using(System.Data.Common.DbDataReader reader = command.ExecuteReader()) {
-							
-							while(reader.Read()){
+
+							while(reader.Read()) {
 								string value = reader.GetString(0);
 								Assert.AreEqual(value, "read committed");
 							}

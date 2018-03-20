@@ -27,65 +27,52 @@ namespace Sql.Tests {
 	
 		[TestInitialize()]
 		public void Init() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.DecimalTable.Table table = Tables.DecimalTable.Table.INSTANCE;
-				
+
 				Query.Delete(table).NoWhereCondition.Execute(transaction);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		
 		[TestMethod]
 		public void Test_01() {
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
-				
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				Tables.DecimalTable.Row rowA = new Tables.DecimalTable.Row();
 				rowA.DecimalValue = 1;
 				rowA.Update(transaction);
-				
+
 				Tables.DecimalTable.Row rowB = new Tables.DecimalTable.Row();
 				rowB.DecimalValue = 2;
 				rowB.Update(transaction);
-				
+
 				Tables.DecimalTable.Table tableA = Tables.DecimalTable.Table.INSTANCE;
 				Tables.DecimalTable.Table tableB = new Sql.Tables.DecimalTable.Table();
-				
+
 				IResult result = Sql.Query.Update(tableA)
 					.Set(tableA.DecimalValue, tableB.DecimalValue)
 					.Join(tableB, tableA.Id != tableB.Id)
 					.Where(tableA.DecimalValue == 1)
 					.Execute(transaction);
-				
+
 				Assert.AreEqual(result.RowsEffected, 1);
-				
+
 				result = Query.Select(tableA).From(tableA).Execute(transaction);
-				
+
 				Assert.AreEqual(2, result.Count);
-				
-				for (int index = 0; index < result.Count; index++) {
-					
+
+				for(int index = 0; index < result.Count; index++) {
+
 					Tables.DecimalTable.Row row = tableA[index, result];
-					
+
 					Assert.AreEqual(row.DecimalValue, rowB.DecimalValue);
 				}
-				
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 		

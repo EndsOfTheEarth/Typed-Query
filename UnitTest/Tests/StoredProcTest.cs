@@ -40,31 +40,26 @@ namespace Sql.Tests {
 			
 			if(DB.TestDB.DatabaseType != DatabaseType.Mssql)
 				return;
-			
-			Transaction transaction = new Transaction(DB.TestDB);
-			
-			try {
+
+			using(Transaction transaction = new Transaction(DB.TestDB)) {
+
 				StoredProc.SP_Test_In_Out.SP sp_test = Sql.StoredProc.SP_Test_In_Out.SP.INSTANCE;
-				
+
 				int inParam = 12345;
 				int outParam = 0;
-				
+
 				IResult result = sp_test.Execute(inParam, out outParam, transaction);
-				
+
 				Assert.AreEqual(inParam, outParam);
-				
+
 				Assert.AreEqual(4, result.Count);
-				
+
 				Assert.AreEqual(12345, sp_test[0, result].IntValue);
 				Assert.AreEqual(123456, sp_test[1, result].IntValue);
 				Assert.AreEqual(1234567, sp_test[2, result].IntValue);
 				Assert.AreEqual(12345678, sp_test[3, result].IntValue);
-				
+
 				transaction.Commit();
-			}
-			catch(Exception e){
-				transaction.Rollback();
-				throw e;
 			}
 		}
 	}
