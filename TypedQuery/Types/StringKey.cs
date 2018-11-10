@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace Sql {
+namespace Sql.Types {
 
 	public struct StringKey<TABLE> {
 
 		private string mValue;
+
 		public string Value {
 			get {
 				if(mValue == null) {

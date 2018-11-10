@@ -86,6 +86,7 @@ namespace TypedQuery.Logic {
 			if(pGenerateKeyTypes) {
 				code.Append("using Sql.Types;").Append(endl);
 			}
+			code.Append("using Sql.Column;").Append(endl);
 
 			code.Append(endl);
 			code.Append("namespace ").Append(pNamespace).Append(".").Append(pTableDetails.TableName.Replace(" ", string.Empty)).Append(" {").Append(endl);
@@ -217,6 +218,7 @@ namespace TypedQuery.Logic {
 			if(pGenerateKeyTypes) {
 				code.Append("using Sql.Types;").Append(endl);
 			}
+			code.Append("using Sql.Column;").Append(endl);
 			code.Append(endl);
 
 			code.Append("namespace ").Append(pNamespace).Append(".Code.").Append(pTableDetails.TableName).Append(" {").Append(endl);
@@ -349,99 +351,100 @@ namespace TypedQuery.Logic {
 			}
 
 			if(pColumn.DbType == System.Data.DbType.Boolean) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.BoolColumn).ToString() : typeof(Sql.Column.NBoolColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.BoolColumn).Name : typeof(Sql.Column.NBoolColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.DateTime) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeColumn).ToString() : typeof(Sql.Column.NDateTimeColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeColumn).Name : typeof(Sql.Column.NDateTimeColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.DateTime2) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTime2Column).ToString() : typeof(Sql.Column.NDateTime2Column).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTime2Column).Name : typeof(Sql.Column.NDateTime2Column).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.DateTimeOffset) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeOffsetColumn).ToString() : typeof(Sql.Column.NDateTimeOffsetColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeOffsetColumn).Name : typeof(Sql.Column.NDateTimeOffsetColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Decimal) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DecimalColumn).ToString() : typeof(Sql.Column.NDecimalColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.DecimalColumn).Name : typeof(Sql.Column.NDecimalColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Guid) {
 
 				if(matchingKeyColumns.Count > 0) {
 					if(matchingKeyColumns.Count == 1)
-						value = (!pColumn.IsNullable ? "Sql.Column.GuidKeyColumn" : "Sql.Column.NGuidKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
+						value = (!pColumn.IsNullable ? "GuidKeyColumn" : "NGuidKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
 					else
-						value = (!pColumn.IsNullable ? "Sql.Column.GuidKeyColumn" : "Sql.Column.NGuidKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
+						value = (!pColumn.IsNullable ? "GuidKeyColumn" : "NGuidKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
 				}
 				else if(pColumn.IsPrimaryKey)
-					value = (!pColumn.IsNullable ? "Sql.Column.GuidKeyColumn" : "Sql.Column.NGuidKeyColumn") + "<" + pTable.TableName + ".Table>";
+					value = (!pColumn.IsNullable ? "GuidKeyColumn" : "NGuidKeyColumn") + "<" + pTable.TableName + ".Table>";
 				else
-					value = !pColumn.IsNullable ? typeof(Sql.Column.GuidColumn).ToString() : typeof(Sql.Column.NGuidColumn).ToString();
+					value = !pColumn.IsNullable ? typeof(Sql.Column.GuidColumn).Name : typeof(Sql.Column.NGuidColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Int16) {
 
 				if(matchingKeyColumns.Count > 0) {
 					if(matchingKeyColumns.Count == 1)
-						value = (!pColumn.IsNullable ? "Sql.Column.SmallIntegerKeyColumn" : "Sql.Column.NSmallIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
+						value = (!pColumn.IsNullable ? "SmallIntegerKeyColumn" : "NSmallIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
 					else
-						value = (!pColumn.IsNullable ? "Sql.Column.SmallIntegerKeyColumn" : "Sql.Column.NSmallIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
+						value = (!pColumn.IsNullable ? "SmallIntegerKeyColumn" : "NSmallIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
 				}
 				else if(pColumn.IsPrimaryKey)
-					value = (!pColumn.IsNullable ? "Sql.Column.SmallIntegerKeyColumn" : "Sql.Column.NSmallIntegerKeyColumn") + "<" + pTable.TableName + ".Table>";
+					value = (!pColumn.IsNullable ? "SmallIntegerKeyColumn" : "NSmallIntegerKeyColumn") + "<" + pTable.TableName + ".Table>";
 				else
-					value = !pColumn.IsNullable ? typeof(Sql.Column.SmallIntegerColumn).ToString() : typeof(Sql.Column.NSmallIntegerColumn).ToString();
+					value = !pColumn.IsNullable ? typeof(Sql.Column.SmallIntegerColumn).Name : typeof(Sql.Column.NSmallIntegerColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Int32) {
 
 				if(matchingKeyColumns.Count > 0) {
 					if(matchingKeyColumns.Count == 1)
-						value = (!pColumn.IsNullable ? "Sql.Column.IntegerKeyColumn" : "Sql.Column.NIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
+						value = (!pColumn.IsNullable ? "IntegerKeyColumn" : "NIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
 					else
-						value = (!pColumn.IsNullable ? "Sql.Column.IntegerKeyColumn" : "Sql.Column.NIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
+						value = (!pColumn.IsNullable ? "IntegerKeyColumn" : "NIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
 				}
 				else if(pColumn.IsPrimaryKey)
-					value = (!pColumn.IsNullable ? "Sql.Column.IntegerKeyColumn" : "Sql.Column.NIntegerKeyColumn") + "<" + pTable.TableName + ".Table>";
+					value = (!pColumn.IsNullable ? "IntegerKeyColumn" : "NIntegerKeyColumn") + "<" + pTable.TableName + ".Table>";
 				else
-					value = !pColumn.IsNullable ? typeof(Sql.Column.IntegerColumn).ToString() : typeof(Sql.Column.NIntegerColumn).ToString();
+					value = !pColumn.IsNullable ? typeof(Sql.Column.IntegerColumn).Name : typeof(Sql.Column.NIntegerColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Int64) {
 
 				if(matchingKeyColumns.Count > 0) {
 					if(matchingKeyColumns.Count == 1)
-						value = (!pColumn.IsNullable ? "Sql.Column.BigIntegerKeyColumn" : "Sql.Column.NBigIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
+						value = (!pColumn.IsNullable ? "BigIntegerKeyColumn" : "NBigIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
 					else
-						value = (!pColumn.IsNullable ? "Sql.Column.BigIntegerKeyColumn" : "Sql.Column.NBigIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
+						value = (!pColumn.IsNullable ? "BigIntegerKeyColumn" : "NBigIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
 				}
 				else if(pColumn.IsPrimaryKey)
-					value = (!pColumn.IsNullable ? "Sql.Column.BigIntegerKeyColumn" : "Sql.Column.NBigIntegerKeyColumn") + "<" + pTable.TableName + ".Table>";
+					value = (!pColumn.IsNullable ? "BigIntegerKeyColumn" : "NBigIntegerKeyColumn") + "<" + pTable.TableName + ".Table>";
 				else
-					value = !pColumn.IsNullable ? typeof(Sql.Column.BigIntegerColumn).ToString() : typeof(Sql.Column.NBigIntegerColumn).ToString();
+					value = !pColumn.IsNullable ? typeof(Sql.Column.BigIntegerColumn).Name : typeof(Sql.Column.NBigIntegerColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.String) {
 
 				if(matchingKeyColumns.Count > 0) {
 					if(matchingKeyColumns.Count == 1)
-						value = "Sql.Column.StringKeyColumn<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
+						value = "StringKeyColumn<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
 					else
-						value = "Sql.Column.StringKeyColumn<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
+						value = "StringKeyColumn<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
 				}
 				else if(pColumn.IsPrimaryKey)
-					value = "Sql.Column.StringKeyColumn<" + pTable.TableName + ".Table>";
+					value = "StringKeyColumn<" + pTable.TableName + ".Table>";
 				else
-					value = typeof(Sql.Column.StringColumn).ToString();
+					value = typeof(Sql.Column.StringColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Binary) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.BinaryColumn).ToString() : typeof(Sql.Column.NBinaryColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.BinaryColumn).Name : typeof(Sql.Column.NBinaryColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Byte) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.ByteColumn).ToString() : typeof(Sql.Column.NByteColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.ByteColumn).Name : typeof(Sql.Column.NByteColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Single) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.FloatColumn).ToString() : typeof(Sql.Column.NFloatColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.FloatColumn).Name : typeof(Sql.Column.NFloatColumn).Name;
 			}
 			else if(pColumn.DbType == System.Data.DbType.Double) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DoubleColumn).ToString() : typeof(Sql.Column.NDoubleColumn).ToString();
+				value = !pColumn.IsNullable ? typeof(Sql.Column.DoubleColumn).Name : typeof(Sql.Column.NDoubleColumn).Name;
 			}
-			else
+			else {
 				value = "UNKNOWN_COLUMN_TYPE";
+			}
 
 			return value;
 		}

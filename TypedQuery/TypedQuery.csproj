@@ -180,7 +180,7 @@
     <Compile Include="Query.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SqlHelper.cs" />
-    <Compile Include="StringKey.cs" />
+    <Compile Include="Types\StringKey.cs" />
     <Compile Include="Transaction.cs" />
     <None Include="COPYING.LESSER">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
