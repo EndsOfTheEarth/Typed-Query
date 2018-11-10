@@ -228,7 +228,7 @@ namespace TypedQuery.Connection {
 
 				if(dbType == Sql.DatabaseType.PostgreSql) {
 					Postgresql.PgDatabase.Instance.SetConnectionString(txtConnectionString.Text);
-					new Logic.PostgreSqlSchema().TestConnection();
+					new Logic.PostgreSqlSchema().TestConnection(Postgresql.PgDatabase.Instance);
 					MessageBox.Show(this, "Connection Worked!", "", MessageBoxButtons.OK);
 				}
 				else if(dbType == Sql.DatabaseType.Mssql) {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sql.Types;
+using System;
 using System.Collections.Generic;
 
 namespace Sql.Tables.Person {
@@ -34,7 +35,7 @@ namespace Sql.Tables.Person {
 		public Row() : base(Table.INSTANCE) {
 		}
 
-		public Guid Key {
+		public GuidKey<Table> Key {
 			get { return Tbl.Key.ValueOf(this); }
 			set { Tbl.Key.SetValue(this, value); }
 		}

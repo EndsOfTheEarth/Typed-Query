@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Sql.Interfaces;
 using System.Diagnostics;
+using Sql.Types;
 
 namespace Sql.Core {
 
@@ -211,50 +212,80 @@ namespace Sql.Core {
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, Guid pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, Guid? pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16 pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16? pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, int pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, int? pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64 pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64? pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue) {
 			mSetValueList.Add(new SetValue(pColumn, pValue));
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, string pValue) where TABLE : Sql.ATable {
+		public IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue) {
+			mSetValueList.Add(new SetValue(pColumn, pValue));
+			return this;
+		}
 
-			if(pValue != null && pValue.Length > pColumn.MaxLength) {
-				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Length.ToString() }. Table = { pColumn.Table.TableName }");
+		public IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue) {
+			mSetValueList.Add(new SetValue(pColumn, pValue));
+			return this;
+		}
+
+		public IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue) {
+			mSetValueList.Add(new SetValue(pColumn, pValue));
+			return this;
+		}
+
+		public IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue) {
+			mSetValueList.Add(new SetValue(pColumn, pValue));
+			return this;
+		}
+
+		public IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue) {
+
+			if(pValue != null && pValue.Value.Length > pColumn.MaxLength) {
+				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
+			}
+
+			mSetValueList.Add(new SetValue(pColumn, pValue));
+			return this;
+		}
+
+		public IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue) {
+
+			if(pValue != null && pValue.Value.Value.Length > pColumn.MaxLength) {
+				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
 			}
 
 			mSetValueList.Add(new SetValue(pColumn, pValue));

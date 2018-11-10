@@ -161,6 +161,10 @@
     <Compile Include="Function\Sum.cs" />
     <Compile Include="Function\DateFunction.cs" />
     <Compile Include="Function\WindowFunction.cs" />
+    <Compile Include="Types\GuidKey.cs" />
+    <Compile Include="Types\Int16Key.cs" />
+    <Compile Include="Types\Int64Key.cs" />
+    <Compile Include="Types\Int32Key.cs" />
     <Compile Include="IResult.cs" />
     <Compile Include="Interfaces\IDelete.cs" />
     <Compile Include="Interfaces\IFunction.cs" />
@@ -176,6 +180,7 @@
     <Compile Include="Query.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SqlHelper.cs" />
+    <Compile Include="StringKey.cs" />
     <Compile Include="Transaction.cs" />
     <None Include="COPYING.LESSER">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

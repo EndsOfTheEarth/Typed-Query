@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
+using Sql.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -57,16 +58,21 @@ namespace Sql.Interfaces {
 		IUpdateSet Set(Column.BinaryColumn pColumn, byte[] pValue);
 		IUpdateSet Set(Column.NBinaryColumn pColumn, byte[] pValue);
 		
-		IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, Guid pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, Guid? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16 pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, int pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, int? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64 pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, string pValue) where TABLE : Sql.ATable;
-		
+		IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue);
+
 		#region Hide Members
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		bool Equals(object pObject);
@@ -114,15 +120,20 @@ namespace Sql.Interfaces {
 		IUpdateSet Set(Column.BinaryColumn pColumn, byte[] pValue);
 		IUpdateSet Set(Column.NBinaryColumn pColumn, byte[] pValue);
 		
-		IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, Guid pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, Guid? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16 pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, int pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, int? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64 pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64? pValue) where TABLE : Sql.ATable;
-		IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, string pValue) where TABLE : Sql.ATable;
+		IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue);
+		IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue);
+		IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue);
 	}
 
 	public interface IUpdateJoin : IUpdateWhere {

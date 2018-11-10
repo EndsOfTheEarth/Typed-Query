@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sql.Types;
+using System;
 using System.Collections.Generic;
 
 namespace Sql.Tables.OrderLogId {
@@ -38,7 +39,7 @@ namespace Sql.Tables.OrderLogId {
 			get { return Tbl.Id.ValueOf(this); }
 		}
 
-		public int PersonId {
+		public Int32Key<PersonId.Table> PersonId {
 			get { return Tbl.PersonId.ValueOf(this); }
 			set { Tbl.PersonId.SetValue(this, value); }
 		}

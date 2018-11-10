@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sql.Types;
+using System;
 using System.Collections.Generic;
 
 namespace Sql.Tables.OrderLog {
@@ -8,7 +9,7 @@ namespace Sql.Tables.OrderLog {
 		public static readonly Table INSTANCE = new Table();
 
 		public Sql.Column.GuidColumn Key { get; private set; }
-		public Sql.Column.GuidKeyColumn<Sql.Tables.Person.Table> PersonKey { get; private set; }
+		public Sql.Column.GuidKeyColumn<Person.Table> PersonKey { get; private set; }
 		public Sql.Column.StringColumn Item_ { get; private set; }
 
 		public Table() : base(DB.TestDB, "OrderLog", "", false, typeof(Row)) {
@@ -39,7 +40,7 @@ namespace Sql.Tables.OrderLog {
 			set { Tbl.Key.SetValue(this, value); }
 		}
 
-		public Guid PersonKey {
+		public GuidKey<Person.Table> PersonKey {
 			get { return Tbl.PersonKey.ValueOf(this); }
 			set { Tbl.PersonKey.SetValue(this, value); }
 		}

@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
+using Sql.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,7 +27,7 @@ namespace Sql.Column {
 	/// Big Integer Column
 	/// This column maps to 8 byte integer fields, Int64, Long, Int8
 	/// </summary>
-	public class BigIntegerKeyColumn<TABLE> : ANumericColumn where TABLE : ATable {
+	public class BigIntegerKeyColumn<TABLE> : ANumericColumn {
 		
 		public BigIntegerKeyColumn(ATable pTable, string pColumnName)
 			: base(pTable, pColumnName, false, false) {
@@ -45,7 +46,7 @@ namespace Sql.Column {
 		public static Condition operator ==(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
 		}
-		public static Condition operator ==(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static Condition operator ==(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
 		}
 
@@ -55,7 +56,7 @@ namespace Sql.Column {
 		public static Condition operator !=(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
-		public static Condition operator !=(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static Condition operator !=(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
 		}
 
@@ -65,7 +66,7 @@ namespace Sql.Column {
 		public static Condition operator >(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN, pColumnB);
 		}
-		public static Condition operator >(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static Condition operator >(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN, pValue);
 		}
 
@@ -75,7 +76,7 @@ namespace Sql.Column {
 		public static Condition operator >=(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN_OR_EQUAL, pColumnB);
 		}
-		public static Condition operator >=(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static Condition operator >=(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN_OR_EQUAL, pValue);
 		}
 
@@ -85,7 +86,7 @@ namespace Sql.Column {
 		public static Condition operator <(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN, pColumnB);
 		}
-		public static Condition operator <(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static Condition operator <(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN, pValue);
 		}
 
@@ -95,7 +96,7 @@ namespace Sql.Column {
 		public static Condition operator <=(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN_OR_EQUAL, pColumnB);
 		}
-		public static Condition operator <=(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static Condition operator <=(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN_OR_EQUAL, pValue);
 		}
 		
@@ -105,7 +106,7 @@ namespace Sql.Column {
 		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator +(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.ADD, pColumnB);
 		}		
-		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator +(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator +(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.ADD, pValue);
 		}		
 		
@@ -115,7 +116,7 @@ namespace Sql.Column {
 		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator -(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.SUBTRACT, pColumnB);
 		}		
-		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator -(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator -(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.SUBTRACT, pValue);
 		}
 		
@@ -125,7 +126,7 @@ namespace Sql.Column {
 		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator /(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.DIVIDE, pColumnB);
 		}		
-		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator /(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator /(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.DIVIDE, pValue);
 		}		
 		
@@ -135,7 +136,7 @@ namespace Sql.Column {
 		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator *(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.MULTIPLY, pColumnB);
 		}		
-		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator *(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator *(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.MULTIPLY, pValue);
 		}
 		
@@ -145,15 +146,15 @@ namespace Sql.Column {
 		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator %(BigIntegerKeyColumn<TABLE> pColumnA, NBigIntegerKeyColumn<TABLE> pColumnB) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.MODULO, pColumnB);
 		}		
-		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator %(BigIntegerKeyColumn<TABLE> pColumnA, Int64 pValue) {
+		public static NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64> operator %(BigIntegerKeyColumn<TABLE> pColumnA, Int64Key<TABLE> pValue) {
 			return new NumericCondition<BigIntegerKeyColumn<TABLE>, NBigIntegerKeyColumn<TABLE>, Int64>(pColumnA, NumericOperator.MODULO, pValue);
 		}
 		
-		public Condition In(IList<Int64> pIntegerList) {
-			return new InCondition<Int64>(this, pIntegerList);
+		public Condition In(IList<Int64Key<TABLE>> pIntegerList) {
+			return new InCondition<Int64Key<TABLE>>(this, pIntegerList);
 		}
-		public Condition NotIn(IList<Int64> pIntegerList) {
-			return new NotInCondition<Int64>(this, pIntegerList);
+		public Condition NotIn(IList<Int64Key<TABLE>> pIntegerList) {
+			return new NotInCondition<Int64Key<TABLE>>(this, pIntegerList);
 		}
 
 		public Condition In(Interfaces.IExecute pNestedQuery) {
@@ -163,11 +164,11 @@ namespace Sql.Column {
 			return new NestedQueryCondition(this, Sql.Operator.NOT_IN, pNestedQuery);
 		}
 
-		public Condition In(params Int64[] pValues) {
-			return new InCondition<Int64>(this, pValues);
+		public Condition In(params Int64Key<TABLE>[] pValues) {
+			return new InCondition<Int64Key<TABLE>>(this, pValues);
 		}
-		public Condition NotIn(params Int64[] pValues) {
-			return new NotInCondition<Int64>(this, pValues);
+		public Condition NotIn(params Int64Key<TABLE>[] pValues) {
+			return new NotInCondition<Int64Key<TABLE>>(this, pValues);
 		}
 		
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -200,15 +201,15 @@ namespace Sql.Column {
 			}
 			return intValue;
 		}
-		public Int64 ValueOf(ARow pRow) {
-			return (Int64)pRow.GetValue(this);
+		public Int64Key<TABLE> ValueOf(ARow pRow) {
+			return (Int64Key<TABLE>)pRow.GetValue(this);
 		}
-		public void SetValue(ARow pRow, Int64 pValue) {
+		public void SetValue(ARow pRow, Int64Key<TABLE> pValue) {
 			pRow.SetValue(this, pValue);
 		}
 		
 		internal override void TestSetValue(ARow pRow, object pValue) {
-			SetValue(pRow, (Int64) pValue);
+			SetValue(pRow, (Int64Key<TABLE>) pValue);
 		}
 		internal override object TestGetValue(ARow pRow) {
 			return ValueOf(pRow);
@@ -230,7 +231,7 @@ namespace Sql.Column {
 			get { return System.Data.DbType.Int64; }
 		}
 		public override object GetDefaultType(){
-			 return (Int64)0;
+			return new Int64Key<TABLE>(0);
 		}
 	}
 }

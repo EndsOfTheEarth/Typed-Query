@@ -15,14 +15,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
+using Sql.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Sql.Column {
 
-	public class GuidKeyColumn<TABLE> : AColumn where TABLE : ATable {
+	public class GuidKeyColumn<TABLE> : AColumn {
 
 		public GuidKeyColumn(ATable pTable, string pColumnName)
 			: base(pTable, pColumnName, false, false) {
@@ -37,7 +38,7 @@ namespace Sql.Column {
 		public static Condition operator ==(GuidKeyColumn<TABLE> pColumnA, NGuidKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
 		}
-		public static Condition operator ==(GuidKeyColumn<TABLE> pColumnA, Guid pValue) {
+		public static Condition operator ==(GuidKeyColumn<TABLE> pColumnA, GuidKey<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
 		}
 
@@ -47,15 +48,15 @@ namespace Sql.Column {
 		public static Condition operator !=(GuidKeyColumn<TABLE> pColumnA, NGuidKeyColumn<TABLE> pColumnB) {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
-		public static Condition operator !=(GuidKeyColumn<TABLE> pColumnA, Guid pValue) {
+		public static Condition operator !=(GuidKeyColumn<TABLE> pColumnA, GuidKey<TABLE> pValue) {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
 		}
 
-		public Condition In(List<Guid> pList) {
-			return new InCondition<Guid>(this, pList);
+		public Condition In(List<GuidKey<TABLE>> pList) {
+			return new InCondition<GuidKey<TABLE>>(this, pList);
 		}
-		public Condition NotIn(List<Guid> pList) {
-			return new NotInCondition<Guid>(this, pList);
+		public Condition NotIn(List<GuidKey<TABLE>> pList) {
+			return new NotInCondition<GuidKey<TABLE>>(this, pList);
 		}
 
 		public Condition In(Interfaces.IExecute pNestedQuery) {
@@ -65,11 +66,11 @@ namespace Sql.Column {
 			return new NestedQueryCondition(this, Sql.Operator.NOT_IN, pNestedQuery);
 		}
 
-		public Condition In(params Guid[] pValues) {
-			return new InCondition<Guid>(this, pValues);
+		public Condition In(params GuidKey<TABLE>[] pValues) {
+			return new InCondition<GuidKey<TABLE>>(this, pValues);
 		}
-		public Condition NotIn(params Guid[] pValues) {
-			return new NotInCondition<Guid>(this, pValues);
+		public Condition NotIn(params GuidKey<TABLE>[] pValues) {
+			return new NotInCondition<GuidKey<TABLE>>(this, pValues);
 		}
 		
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -83,15 +84,15 @@ namespace Sql.Column {
 				
 			return pReader.GetGuid(pColumnIndex);
 		}
-		public Guid ValueOf(ARow pRow) {
-			return (Guid)pRow.GetValue(this);
+		public GuidKey<TABLE> ValueOf(ARow pRow) {
+			return new GuidKey<TABLE>((Guid)pRow.GetValue(this));
 		}
-		public void SetValue(ARow pRow, Guid pValue) {
-			pRow.SetValue(this, pValue);
+		public void SetValue(ARow pRow, GuidKey<TABLE> pValue) {
+			pRow.SetValue(this, pValue.Value);
 		}
 		
 		internal override void TestSetValue(ARow pRow, object pValue) {
-			SetValue(pRow, (Guid) pValue);
+			SetValue(pRow, (GuidKey<TABLE>) pValue);
 		}
 		internal override object TestGetValue(ARow pRow) {
 			return ValueOf(pRow);
@@ -113,7 +114,7 @@ namespace Sql.Column {
 			get { return System.Data.DbType.Guid; }
 		}
 		public override object GetDefaultType(){
-			return Guid.Empty;
+			return new GuidKey<TABLE>(Guid.Empty);
 		}
 	}
 }

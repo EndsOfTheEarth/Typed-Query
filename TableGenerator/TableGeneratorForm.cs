@@ -69,7 +69,7 @@ namespace TypedQuery {
 
 			if(connection.DatabaseType == Sql.DatabaseType.PostgreSql) {
 				Postgresql.PgDatabase.Instance.SetConnectionString(connection.ConnectionString);
-				tableList = new Logic.PostgreSqlSchema().GetTableList();
+				tableList = new Logic.PostgreSqlSchema().GetTableList(Postgresql.PgDatabase.Instance);
 			}
 			else if(connection.DatabaseType == Sql.DatabaseType.Mssql) {
 				SqlServer.SqlServerDatabase.Instance.SetConnectionString(connection.ConnectionString);
@@ -195,17 +195,17 @@ namespace TypedQuery {
 				if(table.DatabaseType == Sql.DatabaseType.PostgreSql) {
 
 					string errorText;
-					new Logic.PostgreSqlSchema().GetTableDetails(table.TableName, table.Schema, out tableDetails, out errorText);	//TODO: Show any errors
+					new Logic.PostgreSqlSchema().GetTableDetails(Postgresql.PgDatabase.Instance, table.TableName, table.Schema, out tableDetails, out errorText);	//TODO: Show any errors
 
-					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked);
-					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked);
+					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
+					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
 				}
 				else if(table.DatabaseType == Sql.DatabaseType.Mssql) {
 					
 					string errorText;
 					new Logic.SqlServerSchema().GetTableDetails(SqlServer.SqlServerDatabase.Instance, table.TableName, table.Schema, out tableDetails, out errorText);	//TODO: Show any errors
-					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked);
-					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked);
+					txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
+					txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
 				}
 				else
 					throw new Exception("Unnknown database type: " + table.DatabaseType.ToString());
@@ -300,5 +300,11 @@ namespace TypedQuery {
                 GenerateCodeDefintion(true);
             }
         }
-    }
+
+		private void chkGenerateKeyTypes_CheckedChanged(object sender, EventArgs e) {
+			if(tvwSchema.SelectedNode != null && tvwSchema.SelectedNode is TableNode) {
+				GenerateCodeDefintion(true);
+			}
+		}
+	}
 }

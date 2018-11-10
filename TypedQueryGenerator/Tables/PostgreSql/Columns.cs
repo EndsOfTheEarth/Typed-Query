@@ -23,7 +23,7 @@ namespace Postgresql.Columns {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table();
+		public readonly static Table Instance = new Table(PgDatabase.Instance);
 
 		public Sql.Column.StringColumn Table_catalog { get; private set; }
 		public Sql.Column.StringColumn Table_schema { get; private set; }
@@ -70,8 +70,8 @@ namespace Postgresql.Columns {
 		public Sql.Column.StringColumn Generation_expression { get; private set; }
 		public Sql.Column.StringColumn Is_updatable { get; private set; }
 
-		public Table()
-			: base(PgDatabase.Instance, "columns", "information_schema", true, typeof(Row)) {
+		public Table(Sql.ADatabase pDatabase)
+			: base(pDatabase, "columns", "information_schema", true, typeof(Row)) {
 
 			Table_catalog = new Sql.Column.StringColumn(this, "table_catalog", false, int.MaxValue);
 			Table_schema = new Sql.Column.StringColumn(this, "table_schema", false, int.MaxValue);

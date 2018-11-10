@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Sql.Column {
 
-	public class StringKeyColumn<TABLE> : AColumn, Sql.IColumnLength where TABLE : ATable {
+	public class StringKeyColumn<TABLE> : AColumn, Sql.IColumnLength {
 
 		public int MaxLength { get; private set; }
 
@@ -63,7 +63,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
 
-		public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, string pValue) {
+		public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
 
 			if(pValue == null) {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn = null' is an undefined condition in sql so this library disallows it.");
@@ -72,7 +72,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
 		}
 
-		public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, string pValue) {
+		public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
 
 			if(pValue == null) {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the != operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn != null' is an undefined condition in sql so this library disallows it.");
@@ -81,7 +81,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
 		}
 
-		public Condition Like(string pValue) {
+		public Condition Like(StringKey<TABLE> pValue) {
 
 			if(pValue == null) {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'like' operator. 'StringKeyColumn like null' is an undefined condition in sql so this library disallows it.");
@@ -90,7 +90,7 @@ namespace Sql.Column {
 			return new ColumnCondition(this, Operator.LIKE, pValue);
 		}
 
-		public Condition NotLike(string pValue) {
+		public Condition NotLike(StringKey<TABLE> pValue) {
 
 			if(pValue == null) {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'not like' operator. 'StringKeyColumn not like null' is an undefined condition in sql so this library disallows it.");
@@ -99,25 +99,25 @@ namespace Sql.Column {
 			return new ColumnCondition(this, Operator.NOT_LIKE, pValue);
 		}
 
-		public Condition In(List<string> pList) {
+		public Condition In(List<StringKey<TABLE>> pList) {
 
-			foreach(string value in pList) {
+			foreach(StringKey<TABLE> value in pList) {
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
 			}
 
-			return new InCondition<string>(this, pList);
+			return new InCondition<StringKey<TABLE>>(this, pList);
 		}
-		public Condition NotIn(List<string> pList) {
+		public Condition NotIn(List<StringKey<TABLE>> pList) {
 
-			foreach(string value in pList) {
+			foreach(StringKey<TABLE> value in pList) {
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
 			}
 
-			return new NotInCondition<string>(this, pList);
+			return new NotInCondition<StringKey<TABLE>>(this, pList);
 		}
 
 		public Condition In(Interfaces.IExecute pNestedQuery) {
@@ -127,33 +127,33 @@ namespace Sql.Column {
 			return new NestedQueryCondition(this, Sql.Operator.NOT_IN, pNestedQuery);
 		}
 
-		public Condition In(params string[] pValues) {
+		public Condition In(params StringKey<TABLE>[] pValues) {
 
 			if(pValues == null) {
 				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
 			}
 
-			foreach(string value in pValues) {
+			foreach(StringKey<TABLE> value in pValues) {
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
 			}
 
-			return new InCondition<string>(this, pValues);
+			return new InCondition<StringKey<TABLE>>(this, pValues);
 		}
-		public Condition NotIn(params string[] pValues) {
+		public Condition NotIn(params StringKey<TABLE>[] pValues) {
 
 			if(pValues == null) {
 				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
 			}
 
-			foreach(string value in pValues) {
+			foreach(StringKey<TABLE> value in pValues) {
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
 			}
 
-			return new NotInCondition<string>(this, pValues);
+			return new NotInCondition<StringKey<TABLE>>(this, pValues);
 		}
 
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -167,20 +167,20 @@ namespace Sql.Column {
 
 			return pReader.GetString(pColumnIndex);
 		}
-		public string ValueOf(ARow pRow) {
-			return (string)pRow.GetValue(this);
+		public StringKey<TABLE> ValueOf(ARow pRow) {
+			return (StringKey<TABLE>)pRow.GetValue(this);
 		}
-		public void SetValue(ARow pRow, string pValue) {
+		public void SetValue(ARow pRow, StringKey<TABLE> pValue) {
 
-			if(pValue != null && pValue.Length > MaxLength) {
-				throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
+			if(pValue != null && pValue.Value.Length > MaxLength) {
+				throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
 			}
 
 			pRow.SetValue(this, pValue);
 		}
 
 		internal override void TestSetValue(ARow pRow, object pValue) {
-			SetValue(pRow, (string)pValue);
+			SetValue(pRow, (StringKey<TABLE>)pValue);
 		}
 		internal override object TestGetValue(ARow pRow) {
 			return ValueOf(pRow);
@@ -202,7 +202,7 @@ namespace Sql.Column {
 			get { return System.Data.DbType.String; }
 		}
 		public override object GetDefaultType() {
-			return null;
+			return new StringKey<TABLE>(string.Empty);
 		}
 	}
 }

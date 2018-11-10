@@ -18,6 +18,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sql.Types;
 
 namespace Sql.Tests {
 
@@ -53,7 +54,7 @@ namespace Sql.Tests {
 		[TestMethod]
 		public void Test_01() {
 
-			Guid personKey = Guid.NewGuid();
+			GuidKey<Tables.Person.Table> personKey = new GuidKey<Tables.Person.Table>(Guid.NewGuid());
 
 			using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
 
@@ -97,7 +98,7 @@ namespace Sql.Tests {
 		[TestMethod]
 		public void Test_02() {
 
-			Guid personKey = Guid.NewGuid();
+			GuidKey<Tables.Person.Table> personKey = new GuidKey<Tables.Person.Table>(Guid.NewGuid());
 
 			Sql.Tables.Person.Table personTable = Sql.Tables.Person.Table.INSTANCE;
 			Sql.Tables.OrderLog.Table orderLogTable = Sql.Tables.OrderLog.Table.INSTANCE;
@@ -178,7 +179,7 @@ namespace Sql.Tests {
 		[TestMethod]
 		public void Test_03() {
 
-			int personId = -1;
+			Int32Key<Tables.PersonId.Table> personId = new Int32Key<Tables.PersonId.Table>(-1);
 
 			using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
 
@@ -212,7 +213,7 @@ namespace Sql.Tests {
 
 			Assert.AreEqual(personTable[0, result].Id, personId);
 
-			Assert.IsTrue(personId != -1);
+			Assert.IsTrue(personId.Value != -1);
 
 			result = Sql.Query.Select(personTable)
 				.From(personTable)
@@ -225,7 +226,7 @@ namespace Sql.Tests {
 		[TestMethod]
 		public void Test_04() {
 
-			int personId = -1;
+			Int32Key<Tables.PersonId.Table> personId = new Int32Key<Tables.PersonId.Table>(-1);
 
 			Sql.Tables.PersonId.Table personTable = Sql.Tables.PersonId.Table.INSTANCE;
 			Sql.Tables.OrderLogId.Table orderLogTable = Sql.Tables.OrderLogId.Table.INSTANCE;
@@ -257,7 +258,7 @@ namespace Sql.Tests {
 
 			Assert.AreEqual(personTable[0, result].Id, personId);
 
-			Assert.IsTrue(personId != -1);
+			Assert.IsTrue(personId.Value != -1);
 
 			result = Sql.Query.Select(personTable)
 				.From(personTable)

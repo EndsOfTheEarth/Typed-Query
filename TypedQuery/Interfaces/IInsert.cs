@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
+using Sql.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,16 +59,21 @@ namespace Sql.Interfaces {
 		IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue);
 		IInsertSet Set(AColumn pColumn, Sql.Function.CustomSql pValue);
 		
-		IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, Guid pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, Guid? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16 pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, int pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, int? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64 pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, string pValue) where TABLE : Sql.ATable;
-		
+		IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue);
+
 		#region Hide Members
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		bool Equals(object pObject);
@@ -116,15 +122,20 @@ namespace Sql.Interfaces {
 		IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue);
 		IInsertSet Set(AColumn pColumn, Sql.Function.CustomSql pValue);
 		
-		IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, Guid pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, Guid? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16 pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, int pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, int? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64 pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64? pValue) where TABLE : Sql.ATable;
-		IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, string pValue) where TABLE : Sql.ATable;
+		IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue);
+		IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue);
+		IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue);
 	}
 	
 	public interface IInsertUseParams : IInsertTimeout {

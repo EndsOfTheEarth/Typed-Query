@@ -24,18 +24,18 @@ namespace TypedQuery.Logic {
 
 	public class PostgreSqlSchema {
 
-        public void TestConnection() {
+        public void TestConnection(Sql.ADatabase pDatabase) {
 
-            Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table();
+            Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table(pDatabase);
 
             Sql.IResult result = Sql.Query
                 .Select(tablesTable).Top(1)
                 .From(tablesTable)
                 .Execute();
         }
-		public IList<ITable> GetTableList() {
+		public IList<ITable> GetTableList(Sql.ADatabase pDatabase) {
 
-			Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table();
+			Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table(pDatabase);
 
 			Sql.IResult result = Sql.Query
 				.Select(tablesTable.Table_name, tablesTable.Table_schema)
@@ -54,7 +54,7 @@ namespace TypedQuery.Logic {
 			return tableList;
 		}
 
-		public bool GetTableDetails(string pTableName, string pSchemaName, out ITableDetails pTableDetails, out string pErrorText) {
+		public bool GetTableDetails(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, out ITableDetails pTableDetails, out string pErrorText) {
 
 			if(string.IsNullOrEmpty(pTableName))
 				throw new ArgumentException("pTableName cannot be null or empty");
@@ -69,7 +69,7 @@ namespace TypedQuery.Logic {
 
 			if(true) {
 
-				Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table();
+				Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table(pDatabase);
 
 				Sql.IResult result = Sql.Query
 					.Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_type)
@@ -94,24 +94,24 @@ namespace TypedQuery.Logic {
 				tableDetails = new TableDetails(tablesRow.Table_name, tablesRow.Table_schema, isView);
 			}
 
-			foreach(IColumn column in GetColumns(pTableName, pSchemaName)) 
+			foreach(IColumn column in GetColumns(pDatabase, pTableName, pSchemaName)) 
 				tableDetails.Columns.Add(column);
 
-			tableDetails.PrimaryKey = GetPrimaryKey(pTableName, pSchemaName, tableDetails.Columns);
+			tableDetails.PrimaryKey = GetPrimaryKey(pDatabase, pTableName, pSchemaName, tableDetails.Columns);
 
-			foreach(IForeignKey foreignKey in GetForeignKeys(pTableName, pSchemaName, tableDetails.Columns))
+			foreach(IForeignKey foreignKey in GetForeignKeys(pDatabase, pTableName, pSchemaName, tableDetails.Columns))
 				tableDetails.ForeignKeys.Add(foreignKey);
 
-			GetComments(tableDetails, pTableName, pSchemaName);
+			GetComments(pDatabase, tableDetails, pTableName, pSchemaName);
 
 			pTableDetails = tableDetails;
 
 			return true;
 		}
 
-		private IList<IColumn> GetColumns(string pTableName, string pSchemaName) {
+		private IList<IColumn> GetColumns(Sql.ADatabase pDatabase, string pTableName, string pSchemaName) {
 
-			Postgresql.Columns.Table columnsTable = new Postgresql.Columns.Table();
+			Postgresql.Columns.Table columnsTable = new Postgresql.Columns.Table(pDatabase);
 
 			Sql.IResult result = Sql.Query
 				.Select(columnsTable.Column_name, columnsTable.Udt_name, columnsTable.Is_nullable, columnsTable.Column_default, columnsTable.Character_maximum_length)
@@ -136,10 +136,10 @@ namespace TypedQuery.Logic {
 			return columnList;
 		}
 
-		private IPrimaryKey GetPrimaryKey(string pTableName, string pSchemaName, IList<IColumn> pColumns) {
+		private IPrimaryKey GetPrimaryKey(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
 
-			Postgresql.TableConstraints.Table tcTable = new Postgresql.TableConstraints.Table();
-			Postgresql.ConstraintColumnUsage.Table ccuTable = new Postgresql.ConstraintColumnUsage.Table();
+			Postgresql.TableConstraints.Table tcTable = new Postgresql.TableConstraints.Table(pDatabase);
+			Postgresql.ConstraintColumnUsage.Table ccuTable = new Postgresql.ConstraintColumnUsage.Table(pDatabase);
 
 			Sql.IResult result = Sql.Query
 				.Select(tcTable.Constraint_name, ccuTable.Column_name)
@@ -171,12 +171,12 @@ namespace TypedQuery.Logic {
 			return primaryKey;
 		}
 
-		private IList<IForeignKey> GetForeignKeys(string pTableName, string pSchemaName, IList<IColumn> pColumns) {
+		private IList<IForeignKey> GetForeignKeys(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
 
-			Postgresql.TableConstraints.Table tcTable = new Postgresql.TableConstraints.Table();
-			Postgresql.ReferentialConstraints.Table rcTable = new Postgresql.ReferentialConstraints.Table();
-			Postgresql.KeyColumnUsage.Table kcuForeignTable = new Postgresql.KeyColumnUsage.Table();
-			Postgresql.KeyColumnUsage.Table kcuPrimaryTable = new Postgresql.KeyColumnUsage.Table();
+			Postgresql.TableConstraints.Table tcTable = new Postgresql.TableConstraints.Table(pDatabase);
+			Postgresql.ReferentialConstraints.Table rcTable = new Postgresql.ReferentialConstraints.Table(pDatabase);
+			Postgresql.KeyColumnUsage.Table kcuForeignTable = new Postgresql.KeyColumnUsage.Table(pDatabase);
+			Postgresql.KeyColumnUsage.Table kcuPrimaryTable = new Postgresql.KeyColumnUsage.Table(pDatabase);
 
 			Sql.IResult result = Sql.Query
 				.Select(kcuForeignTable.Constraint_name, kcuForeignTable.Column_name, kcuPrimaryTable.Table_name, kcuPrimaryTable.Column_name)
@@ -226,12 +226,12 @@ namespace TypedQuery.Logic {
 			return foreignKeyList;
 		}
 
-		private void GetComments(TableDetails pTableDetails, string pTableName, string pSchemaName) {
+		private void GetComments(Sql.ADatabase pDatabase, TableDetails pTableDetails, string pTableName, string pSchemaName) {
 
-			Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table();
+			Postgresql.Tables.Table tablesTable = new Postgresql.Tables.Table(pDatabase);
 
-			Postgresql.Pg_Class.Table pgClassTable = new Postgresql.Pg_Class.Table();
-			Postgresql.Pg_Description.Table pgDescTable = new Postgresql.Pg_Description.Table();
+			Postgresql.Pg_Class.Table pgClassTable = new Postgresql.Pg_Class.Table(pDatabase);
+			Postgresql.Pg_Description.Table pgDescTable = new Postgresql.Pg_Description.Table(pDatabase);
 
 			Sql.IResult result = Sql.Query
 				.Select(pgDescTable.Description)
@@ -247,7 +247,7 @@ namespace TypedQuery.Logic {
 				throw new Exception("Table description query returned more than one row. Only on table description row is expected");
 
 
-			Postgresql.pg_attribute.Table pgAttributeTable = new Postgresql.pg_attribute.Table();
+			Postgresql.pg_attribute.Table pgAttributeTable = new Postgresql.pg_attribute.Table(pDatabase);
 
 			result = Sql.Query.Select(pgAttributeTable.Name, pgDescTable.Description)
 				.From(pgAttributeTable)

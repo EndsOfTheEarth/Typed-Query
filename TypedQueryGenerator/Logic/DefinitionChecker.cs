@@ -603,7 +603,7 @@ namespace TypedQuery.Logic {
 			}
 			else if(table.DefaultDatabase.DatabaseType == Sql.DatabaseType.PostgreSql) {
 
-				if(!new Logic.PostgreSqlSchema().GetTableDetails(table.TableName, schema, out tableDetails, out errorText)) {
+				if(!new Logic.PostgreSqlSchema().GetTableDetails(pRow.ParentTable.DefaultDatabase, table.TableName, schema, out tableDetails, out errorText)) {
 					return new List<ValidationError>() { new ValidationError(schema, table.TableName, string.Empty, errorText) };
 				}
 			}

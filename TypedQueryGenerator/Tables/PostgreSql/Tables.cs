@@ -23,7 +23,7 @@ namespace Postgresql.Tables {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table();
+		public readonly static Table Instance = new Table(PgDatabase.Instance);
 
 		public Sql.Column.StringColumn Table_catalog { get; private set; }
 		public Sql.Column.StringColumn Table_schema { get; private set; }
@@ -38,8 +38,8 @@ namespace Postgresql.Tables {
 		public Sql.Column.StringColumn Is_typed { get; private set; }
 		public Sql.Column.StringColumn Commit_action { get; private set; }
 
-		public Table()
-			: base(PgDatabase.Instance, "tables", "information_schema", true, typeof(Row)) {
+		public Table(Sql.ADatabase pDatabase)
+			: base(pDatabase, "tables", "information_schema", true, typeof(Row)) {
 
 				Table_catalog = new Sql.Column.StringColumn(this, "table_catalog", false, int.MaxValue);
 				Table_schema = new Sql.Column.StringColumn(this, "table_schema", false, int.MaxValue);

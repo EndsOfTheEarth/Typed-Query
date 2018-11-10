@@ -23,15 +23,15 @@ namespace Postgresql.Pg_Description {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table();
+		public readonly static Table Instance = new Table(PgDatabase.Instance);
 
 		public Sql.Column.BigIntegerColumn ObjOid { get; private set; }
 		public Sql.Column.BigIntegerColumn ClassOid { get; private set; }
 		public Sql.Column.SmallIntegerColumn ObjSubId { get; private set; }
 		public Sql.Column.StringColumn Description { get; private set; }
 
-		public Table()
-			: base(PgDatabase.Instance, "pg_description", "pg_catalog", false, typeof(Row)) {
+		public Table(Sql.ADatabase pDatabase)
+			: base(pDatabase, "pg_description", "pg_catalog", false, typeof(Row)) {
 
 				ObjOid = new Sql.Column.BigIntegerColumn(this, "objoid", false);
 				ClassOid = new Sql.Column.BigIntegerColumn(this, "classoid", false);
