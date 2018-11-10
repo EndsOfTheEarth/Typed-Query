@@ -28,7 +28,7 @@ namespace Sql.Tables.NDecimalTable {
 		public readonly Sql.Column.IntegerColumn Id;
 		public readonly Sql.Column.NDecimalColumn DecimalValue;
 
-		public Table() : base(DB.TestDB, "NDecimalTable", "", false, typeof(Row)) {
+		public Table() : base("NDecimalTable", "", false, typeof(Row)) {
 			
 			Id = new Sql.Column.IntegerColumn(this, "Id", true, true);			
 			DecimalValue = new Sql.Column.NDecimalColumn(this, "DecimalValue", false);

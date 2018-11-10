@@ -12,7 +12,7 @@ namespace Sql.Tables.OrderLog {
 		public Sql.Column.GuidKeyColumn<Person.Table> PersonKey { get; private set; }
 		public Sql.Column.StringColumn Item_ { get; private set; }
 
-		public Table() : base(DB.TestDB, "OrderLog", "", false, typeof(Row)) {
+		public Table() : base("OrderLog", "", false, typeof(Row)) {
 
 			Key = new Sql.Column.GuidColumn(this, "ordKey", true);
 			PersonKey = new Sql.Column.GuidKeyColumn<Sql.Tables.Person.Table>(this, "ordPersonKey", false);

@@ -24,7 +24,7 @@ namespace Postgresql.pg_attribute {
 	[Sql.TableAttribute("")]
 	public sealed class Table : Sql.ATable {
 
-		public static readonly Table Instance = new Table(PgDatabase.Instance);
+		public static readonly Table Instance = new Table();
 
 		[Sql.ColumnAttribute("")]
 		public Sql.Column.BigIntegerColumn Relid { get; private set; }
@@ -86,8 +86,8 @@ namespace Postgresql.pg_attribute {
 		//[Sql.ColumnAttribute("")]
 		//public UNKNOWN_COLUMN_TYPE Options { get; private set; }
 
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "pg_attribute", "pg_catalog", false, typeof(Row)) {
+		public Table()
+			: base("pg_attribute", "pg_catalog", false, typeof(Row)) {
 
 			Relid = new Sql.Column.BigIntegerColumn(this, "attrelid", false);
 			Name = new Sql.Column.StringColumn(this, "attname", false, int.MaxValue);

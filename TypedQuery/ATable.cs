@@ -27,7 +27,6 @@ namespace Sql {
 	/// </summary>
 	public abstract class ATable : ISelectableColumns {
 
-		private readonly ADatabase mDefaultDatabase;
 		private readonly string mTableName;
 		private readonly string mSchema;
 		private readonly bool mIsView;
@@ -35,10 +34,6 @@ namespace Sql {
 		private readonly Type mRowType;
 		private readonly bool mIsTemporaryTable;
 		private readonly bool? mUseConcurrenyChecking;
-
-		public ADatabase DefaultDatabase {
-			get { return mDefaultDatabase; }
-		}
 
 		/// <summary>
 		/// Name of table in database.
@@ -85,10 +80,10 @@ namespace Sql {
 			get { return mUseConcurrenyChecking; }
 		}
 
-		protected ATable(ADatabase pDefaultDatabase, string pTableName, string pSchema, bool pIsView, Type pRowType) : this(pDefaultDatabase, pTableName, pSchema, pIsView, pRowType, false, null) {
+		protected ATable(string pTableName, string pSchema, bool pIsView, Type pRowType) : this(pTableName, pSchema, pIsView, pRowType, false, null) {
 
 		}
-		protected ATable(ADatabase pDefaultDatabase, string pTableName, string pSchema, bool pIsView, bool pUseConcurrenyChecking, Type pRowType) : this(pDefaultDatabase, pTableName, pSchema, pIsView, pRowType, false, pUseConcurrenyChecking) {
+		protected ATable(string pTableName, string pSchema, bool pIsView, bool pUseConcurrenyChecking, Type pRowType) : this(pTableName, pSchema, pIsView, pRowType, false, pUseConcurrenyChecking) {
 
 		}
 
@@ -109,10 +104,7 @@ namespace Sql {
 			mTableName = pTempTableName;
 			mUseConcurrenyChecking = null;
 		}
-		private ATable(ADatabase pDefaultDatabase, string pTableName, string pSchema, bool pIsView, Type pRowType, bool pIsTemporaryTable, bool? pUseConcurrenyChecking) {
-
-			if(pDefaultDatabase == null)
-				throw new NullReferenceException($"{nameof(pDefaultDatabase)} cannot be null");
+		private ATable(string pTableName, string pSchema, bool pIsView, Type pRowType, bool pIsTemporaryTable, bool? pUseConcurrenyChecking) {
 
 			if(string.IsNullOrWhiteSpace(pTableName))
 				throw new Exception($"{nameof(pTableName)} cannot be null or empty");
@@ -129,7 +121,6 @@ namespace Sql {
 			if(pSchema.Contains("'"))
 				throw new Exception($"{nameof(pSchema)} cannot any single quote characters. Value = {pTableName}");
 
-			mDefaultDatabase = pDefaultDatabase;
 			mTableName = pTableName;
 			mSchema = pSchema ?? string.Empty;
 			mIsView = pIsView;

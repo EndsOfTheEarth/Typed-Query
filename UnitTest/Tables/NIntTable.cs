@@ -28,7 +28,7 @@ namespace Sql.Tables.NIntTable {
 		public readonly Sql.Column.GuidColumn Id;
 		public readonly Sql.Column.NIntegerColumn IntValue;
 
-		public Table() : base(DB.TestDB, "NIntTable", "", false, typeof(Row)) {
+		public Table() : base("NIntTable", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.GuidColumn(this, "Id", true);
 			IntValue = new Sql.Column.NIntegerColumn(this, "IntValue", false);

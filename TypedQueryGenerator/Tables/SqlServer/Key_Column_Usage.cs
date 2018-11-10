@@ -23,7 +23,7 @@ namespace SqlServer.Key_Column_Usage {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(SqlServerDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Constraint_Name { get; private set; }
 
@@ -35,12 +35,8 @@ namespace SqlServer.Key_Column_Usage {
 		public Sql.Column.StringColumn Table_Name { get; private set; }
 		public Sql.Column.StringColumn Table_Schema { get; private set; }
 
-		//public Table()
-		//	: this(SqlServerDatabase.Instance) {
-
-		//}
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "Key_Column_Usage", "information_schema", true, typeof(Row)) {
+		public Table()
+			: base("Key_Column_Usage", "information_schema", true, typeof(Row)) {
 
 				Constraint_Name = new Sql.Column.StringColumn(this, "Constraint_Name", false, int.MaxValue);
 				Constraint_Catalog = new Sql.Column.StringColumn(this, "constraint_catalog", false, int.MaxValue);

@@ -26,7 +26,7 @@ namespace Sql {
 	
 	public abstract class AStoredProc : ATable {
 		
-		public AStoredProc(ADatabase pDefaultDatabase, string pProcName, string pSchema, Type pRowType) : base(pDefaultDatabase, pProcName, pSchema, false, pRowType) {
+		public AStoredProc(string pProcName, string pSchema, Type pRowType) : base(pProcName, pSchema, false, pRowType) {
 			
 		}
 		

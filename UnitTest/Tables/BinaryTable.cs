@@ -28,7 +28,7 @@ namespace Sql.Tables.BinaryTable {
 		public readonly Sql.Column.BinaryColumn BinaryValue;
 		public readonly Sql.Column.NBinaryColumn NBinaryValue;
 
-		public Table() : base(DB.TestDB, "BinaryTable", "", false, typeof(Row)) {
+		public Table() : base("BinaryTable", "", false, typeof(Row)) {
 
 			BinaryValue = new Sql.Column.BinaryColumn(this, "BinaryValue", false);
 			NBinaryValue = new Sql.Column.NBinaryColumn(this, "NBinaryValue", false);

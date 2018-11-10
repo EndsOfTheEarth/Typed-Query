@@ -29,7 +29,7 @@ namespace Sql.Tables.DoubleTable {
 		public readonly Sql.Column.DoubleColumn Value;
 		public readonly Sql.Column.NDoubleColumn NValue;
 
-		public Table() : base(DB.TestDB, "DoubleTable", "", false, typeof(Row)) {
+		public Table() : base("DoubleTable", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.GuidColumn(this, "Id", true);
 			Value = new Sql.Column.DoubleColumn(this, "Value", false);

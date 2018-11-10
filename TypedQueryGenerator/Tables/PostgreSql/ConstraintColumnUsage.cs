@@ -23,7 +23,7 @@ namespace Postgresql.ConstraintColumnUsage {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(PgDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Table_catalog { get; private set; }
 		public Sql.Column.StringColumn Table_schema { get; private set; }
@@ -33,8 +33,8 @@ namespace Postgresql.ConstraintColumnUsage {
 		public Sql.Column.StringColumn Constraint_schema { get; private set; }
 		public Sql.Column.StringColumn Constraint_name { get; private set; }
 
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "constraint_column_usage", "information_schema", true, typeof(Row)) {
+		public Table()
+			: base("constraint_column_usage", "information_schema", true, typeof(Row)) {
 
 				Table_catalog = new Sql.Column.StringColumn(this, "table_catalog", false, int.MaxValue);
 				Table_schema = new Sql.Column.StringColumn(this, "table_schema", false, int.MaxValue);

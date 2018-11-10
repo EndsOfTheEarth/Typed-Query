@@ -23,20 +23,15 @@ namespace SqlServer.Table_Constraints {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(SqlServerDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Constraint_Name { get; private set; }
 		public Sql.Column.StringColumn Constraint_Type { get; private set; }
 		public Sql.Column.StringColumn Table_Name { get; private set; }
 		public Sql.Column.StringColumn Table_Schema { get; private set; }
 
-		//public Table()
-		//	: this(SqlServerDatabase.Instance) {
-
-		//}
-
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "Table_Constraints", "information_schema", true, typeof(Row)) {
+		public Table()
+			: base("Table_Constraints", "information_schema", true, typeof(Row)) {
 
 				Constraint_Name = new Sql.Column.StringColumn(this, "Constraint_Name", false, int.MaxValue);
 				Constraint_Type = new Sql.Column.StringColumn(this, "Constraint_Type", false, int.MaxValue);

@@ -28,7 +28,7 @@ namespace Sql.Tables.IntTable {
 		public readonly Sql.Column.GuidColumn Id;
 		public readonly Sql.Column.IntegerColumn IntValue;
 
-		public Table() : base(DB.TestDB, "IntTable", "", false, typeof(Row)) {
+		public Table() : base("IntTable", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.GuidColumn(this, "Id", true);
 			IntValue = new Sql.Column.IntegerColumn(this, "IntValue", false);

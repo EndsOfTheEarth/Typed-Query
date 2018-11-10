@@ -30,7 +30,7 @@ namespace Sql.Tables.NDateTime2Table {
 		public readonly Sql.Column.GuidColumn Id;
 		public readonly Sql.Column.NDateTime2Column Dt;
 
-		public Table() : base(DB.TestDB, "NDateTimeTable2", "", false, typeof(Row)) {
+		public Table() : base("NDateTimeTable2", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.GuidColumn(this, "dtId", true);
 			Dt = new Sql.Column.NDateTime2Column(this, "dtDt", false);

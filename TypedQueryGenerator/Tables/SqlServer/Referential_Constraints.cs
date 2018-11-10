@@ -23,7 +23,7 @@ namespace SqlServer.Referential_Constraints {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(SqlServerDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Constraint_Name { get; private set; }
 		public Sql.Column.StringColumn Constraint_Catalog { get; private set; }
@@ -32,13 +32,8 @@ namespace SqlServer.Referential_Constraints {
 		public Sql.Column.StringColumn Unique_Constraint_Schema { get; private set; }
 		public Sql.Column.StringColumn Unique_Constraint_Name { get; private set; }
 
-		//public Table()
-		//	: this(SqlServerDatabase.Instance) {
-
-		//}
-
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "Referential_Constraints", "information_schema", false, typeof(Row)) {
+		public Table()
+			: base("Referential_Constraints", "information_schema", false, typeof(Row)) {
 
 				Constraint_Name = new Sql.Column.StringColumn(this, "constraint_name", false, int.MaxValue);
 				Constraint_Catalog = new Sql.Column.StringColumn(this, "constraint_catalog", false, int.MaxValue);

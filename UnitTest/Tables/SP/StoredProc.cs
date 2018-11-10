@@ -13,7 +13,7 @@ namespace Sql.StoredProc.SP_Test_In_Out {
 		internal Sql.Column.GuidColumn Id;
 		internal Sql.Column.IntegerColumn IntValue;
 		
-		private SP() : base(DB.TestDB, "SP_Test_In_Out", "dbo", typeof(Row)) {
+		private SP() : base("SP_Test_In_Out", "dbo", typeof(Row)) {
 			
 			Id = new Sql.Column.GuidColumn(this, "Id");
 			IntValue = new Sql.Column.IntegerColumn(this, "IntValue");

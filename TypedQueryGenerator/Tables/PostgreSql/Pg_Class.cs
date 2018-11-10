@@ -23,7 +23,7 @@ namespace Postgresql.Pg_Class {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(PgDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.BigIntegerColumn Oid { get; private set; }
 		public Sql.Column.StringColumn Name { get; private set; }
@@ -53,8 +53,8 @@ namespace Postgresql.Pg_Class {
 		//public UNKNOWN_COLUMN_TYPE Acl { get; private set; }
 		//public UNKNOWN_COLUMN_TYPE Options { get; private set; }
 
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "pg_class", "pg_catalog", false, typeof(Row)) {
+		public Table()
+			: base("pg_class", "pg_catalog", false, typeof(Row)) {
 
 				Oid = new Sql.Column.BigIntegerColumn(this, "oid");
 				Name = new Sql.Column.StringColumn(this, "relname", false, int.MaxValue);

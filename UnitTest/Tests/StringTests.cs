@@ -78,7 +78,7 @@ namespace Sql.Tests {
 			
 			Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
 			
-			IResult result = Query.Select(table.Str).From(table).Execute();
+			IResult result = Query.Select(table.Str).From(table).Execute(DB.TestDB);
 			
 			Assert.AreEqual(1, result.Count);
 			
@@ -93,7 +93,7 @@ namespace Sql.Tests {
 				transaction.Commit();
 			}
 			
-			result = Query.Select(table.Str).From(table).Execute();
+			result = Query.Select(table.Str).From(table).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);
 		}
 		
@@ -512,12 +512,12 @@ namespace Sql.Tests {
 			
 			Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
 			
-			IResult result = Query.Select(table.Str).From(table).Where(table.Str.Like("%" + str.ToUpper() + "%")).Execute();
+			IResult result = Query.Select(table.Str).From(table).Where(table.Str.Like("%" + str.ToUpper() + "%")).Execute(DB.TestDB);
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(str, table[0, result].Str);
 			
-			result = Query.Select(table.Str).From(table).Where(table.Str.NotLike("%" + str.ToUpper() + "%")).Execute();
+			result = Query.Select(table.Str).From(table).Where(table.Str.NotLike("%" + str.ToUpper() + "%")).Execute(DB.TestDB);
 			Assert.AreEqual(0, result.Count);		
 		}
 		
@@ -563,7 +563,7 @@ namespace Sql.Tests {
 				.From(table)
 				.GroupBy(table.Str)
 				.OrderBy(count, table.Str)
-				.Execute();
+				.Execute(DB.TestDB);
 			
 			Assert.AreEqual(3, result.Count);
 			Assert.AreEqual(1, count[0, result].Value);

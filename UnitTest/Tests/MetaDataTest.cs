@@ -39,11 +39,11 @@ namespace Sql.Tests {
 			
 			Sql.Database.GenerateMetaDataSql metaData = new Sql.Database.GenerateMetaDataSql();
 			
-			string commentSql = metaData.GenerateSql(table);
+			string commentSql = metaData.GenerateSql(table, DB.TestDB);
 			
 			Tables.EnumTable.Table enumTable = Tables.EnumTable.Table.INSTANCE;
 			
-			commentSql = metaData.GenerateSql(enumTable);
+			commentSql = metaData.GenerateSql(enumTable, DB.TestDB);
 			return;
 		}
 	}

@@ -34,7 +34,7 @@ namespace Sql.Tables.GuidTable {
 		[Sql.ColumnAttribute("column''description")]
 		public readonly Sql.Column.GuidColumn Id;
 
-		public Table() : base(DB.TestDB, "GuidTable", "", false, typeof(Row)) {
+		public Table() : base("GuidTable", "", false, typeof(Row)) {
 			Id = new Sql.Column.GuidColumn(this, "Id", true);
 			AddColumns(Id);
 		}

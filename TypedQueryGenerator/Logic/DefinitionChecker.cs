@@ -575,7 +575,7 @@ namespace TypedQuery.Logic {
 			return false;
 		}
 
-		public static List<ValidationError> CheckTable(Sql.ARow pRow) {
+		public static List<ValidationError> CheckTable(Sql.ARow pRow, Sql.ADatabase pDatabase) {
 
 			Sql.ATable table = pRow.ParentTable;
 
@@ -583,32 +583,32 @@ namespace TypedQuery.Logic {
 
 			if(string.IsNullOrEmpty(schema)) {
 
-				if(table.DefaultDatabase.DatabaseType == Sql.DatabaseType.Mssql)
+				if(pDatabase.DatabaseType == Sql.DatabaseType.Mssql)
 					schema = "dbo";
-				else if(table.DefaultDatabase.DatabaseType == Sql.DatabaseType.PostgreSql)
+				else if(pDatabase.DatabaseType == Sql.DatabaseType.PostgreSql)
 					schema = "public";
 				else
-					throw new Exception("Unknown database type: '" + table.DefaultDatabase.DatabaseType.ToString() + "'");
+					throw new Exception("Unknown database type: '" + pDatabase.DatabaseType.ToString() + "'");
 			}
 
 			ITableDetails tableDetails;
 
 			string errorText;
 
-			if(table.DefaultDatabase.DatabaseType == Sql.DatabaseType.Mssql) {
+			if(pDatabase.DatabaseType == Sql.DatabaseType.Mssql) {
 
-				if(!new Logic.SqlServerSchema().GetTableDetails(pRow.ParentTable.DefaultDatabase, table.TableName, schema, out tableDetails, out errorText)) {
+				if(!new Logic.SqlServerSchema().GetTableDetails(pDatabase, table.TableName, schema, out tableDetails, out errorText)) {
 					return new List<ValidationError>() { new ValidationError(schema, table.TableName, string.Empty, errorText) };
 				}
 			}
-			else if(table.DefaultDatabase.DatabaseType == Sql.DatabaseType.PostgreSql) {
+			else if(pDatabase.DatabaseType == Sql.DatabaseType.PostgreSql) {
 
-				if(!new Logic.PostgreSqlSchema().GetTableDetails(pRow.ParentTable.DefaultDatabase, table.TableName, schema, out tableDetails, out errorText)) {
+				if(!new Logic.PostgreSqlSchema().GetTableDetails(pDatabase, table.TableName, schema, out tableDetails, out errorText)) {
 					return new List<ValidationError>() { new ValidationError(schema, table.TableName, string.Empty, errorText) };
 				}
 			}
 			else
-				throw new Exception("Unknown database type: '" + table.DefaultDatabase.DatabaseType.ToString() + "'");
+				throw new Exception("Unknown database type: '" + pDatabase.DatabaseType.ToString() + "'");
 
 			List<ValidationError> issues = CheckTable(table, tableDetails);
 

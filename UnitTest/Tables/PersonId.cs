@@ -12,7 +12,7 @@ namespace Sql.Tables.PersonId {
 		public Sql.Column.StringColumn FirstName { get; private set; }
 		public Sql.Column.StringColumn Surname { get; private set; }
 
-		public Table() : base(DB.TestDB, "PersonId", "", false, typeof(Row)) {
+		public Table() : base("PersonId", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.IntegerKeyColumn<Table>(this, "perId", true, true);
 			FirstName = new Sql.Column.StringColumn(this, "perFirstName", false, 100);

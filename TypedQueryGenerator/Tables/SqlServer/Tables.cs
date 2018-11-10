@@ -23,18 +23,15 @@ namespace SqlServer.Tables {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(SqlServerDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Table_catalog { get; private set; }
 		public Sql.Column.StringColumn Table_schema { get; private set; }
 		public Sql.Column.StringColumn Table_name { get; private set; }
 		public Sql.Column.StringColumn Table_Type { get; private set; }
 
-		//public Table() : this(SqlServerDatabase.Instance) {
-
-		//}
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "tables", "information_schema", false, typeof(Row)) {
+		public Table()
+			: base("tables", "information_schema", false, typeof(Row)) {
 
 				Table_catalog = new Sql.Column.StringColumn(this, "table_catalog", false, int.MaxValue);
 				Table_schema = new Sql.Column.StringColumn(this, "table_schema", false, int.MaxValue);

@@ -31,7 +31,7 @@ namespace Sql.Tables.AutoTable {
 		
 		public readonly Sql.Column.StringColumn Text;
 
-		public Table() : base(DB.TestDB, "AutoTable", "", false, typeof(Row)) {
+		public Table() : base("AutoTable", "", false, typeof(Row)) {
 			
 			Id = new Sql.Column.IntegerColumn(this, "Id", true, true);			
 			Text = new Sql.Column.StringColumn(this, "Text", false, 255);

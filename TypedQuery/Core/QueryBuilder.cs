@@ -272,12 +272,17 @@ namespace Sql.Core {
 		}
 		
 		public IResult Execute(ADatabase pDatabase) {
+
+			if(pDatabase == null) {
+				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+			}
+
 			return ExecuteQuery(pDatabase, null);
 		}
 		
-		public IResult Execute() {
-			return ExecuteQuery(mFromTable.DefaultDatabase, null);
-		}
+		//public IResult Execute() {
+		//	return ExecuteQuery(mFromTable.DefaultDatabase, null);
+		//}
 		
 		public IResult ExecuteUncommitted(ADatabase pDatabase) {
 
@@ -292,9 +297,9 @@ namespace Sql.Core {
 			}
 		}
 		
-		public IResult ExecuteUncommitted() {
-			return ExecuteUncommitted(mFromTable.DefaultDatabase);
-		}
+		//public IResult ExecuteUncommitted() {
+		//	return ExecuteUncommitted(mFromTable.DefaultDatabase);
+		//}
 		
 		public IResult Execute(Transaction pTransaction) {
 

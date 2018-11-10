@@ -27,7 +27,7 @@ namespace Sql.Tables.SP {
 		
 		public static readonly StoredProc INSTANCE = new StoredProc();
 		
-		public StoredProc() : base(DB.TestDB, "BooleanTable", "", false, typeof(Row)) {
+		public StoredProc() : base("BooleanTable", "", false, typeof(Row)) {
 			
 		}
 	}

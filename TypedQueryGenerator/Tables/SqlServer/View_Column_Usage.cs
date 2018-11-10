@@ -23,7 +23,7 @@ namespace SqlServer.View_Column_Usage {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(SqlServerDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn View_Name { get; private set; }
 		public Sql.Column.StringColumn Column_Name { get; private set; }
@@ -33,13 +33,8 @@ namespace SqlServer.View_Column_Usage {
 		public Sql.Column.StringColumn Table_Schema { get; private set; }
 		public Sql.Column.StringColumn Table_Name { get; private set; }
 
-		//public Table()
-		//	: this(SqlServerDatabase.Instance) {
-
-		//}
-
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "View_Column_Usage", "information_schema", true, typeof(Row)) {
+		public Table()
+			: base("View_Column_Usage", "information_schema", true, typeof(Row)) {
 
 				View_Name = new Sql.Column.StringColumn(this, "view_name", false, int.MaxValue);
 				Column_Name = new Sql.Column.StringColumn(this, "column_name", false, int.MaxValue);

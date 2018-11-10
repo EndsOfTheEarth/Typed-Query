@@ -28,7 +28,7 @@ namespace Sql.Tables.BigIntTable {
 		public readonly Sql.Column.BigIntegerColumn Id;
 		public readonly Sql.Column.NBigIntegerColumn IntValue;
 
-		public Table() : base(DB.TestDB, "BigIntTable", "", false, typeof(Row)) {
+		public Table() : base("BigIntTable", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.BigIntegerColumn(this, "Id", true, true);
 			IntValue = new Sql.Column.NBigIntegerColumn(this, "IntValue", false);

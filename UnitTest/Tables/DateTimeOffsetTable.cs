@@ -31,7 +31,7 @@ namespace Sql.Tables.DateTimeOffsetTable {
 		public readonly Sql.Column.DateTimeOffsetColumn Dt;
 		public readonly Sql.Column.NDateTimeOffsetColumn NullDt;
 
-		public Table() : base(DB.TestDB, "DateTimeTableOffset", "", false, typeof(Row)) {
+		public Table() : base("DateTimeTableOffset", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.GuidColumn(this, "dtId", true);
 			Dt = new Sql.Column.DateTimeOffsetColumn(this, "dtDt", false);

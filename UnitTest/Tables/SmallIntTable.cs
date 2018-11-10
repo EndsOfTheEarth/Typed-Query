@@ -28,7 +28,7 @@ namespace Sql.Tables.SmallIntTable {
 		public readonly Sql.Column.SmallIntegerColumn Id;
 		public readonly Sql.Column.NSmallIntegerColumn IntValue;
 
-		public Table() : base(DB.TestDB, "SmallIntTable", "", false, typeof(Row)) {
+		public Table() : base("SmallIntTable", "", false, typeof(Row)) {
 			
 			Id = new Sql.Column.SmallIntegerColumn(this, "Id", true, true);
 			IntValue = new Sql.Column.NSmallIntegerColumn(this, "IntValue", false);

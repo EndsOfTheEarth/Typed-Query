@@ -28,7 +28,7 @@ namespace Sql.Tables.BooleanTable {
 		public readonly Sql.Column.GuidColumn Id;
 		public readonly Sql.Column.BoolColumn Bool;
 
-		public Table() : base(DB.TestDB, "BooleanTable", "", false, typeof(Row)) {
+		public Table() : base("BooleanTable", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.GuidColumn(this, "Id", true);
 			Bool = new Sql.Column.BoolColumn(this, "Bool", false);

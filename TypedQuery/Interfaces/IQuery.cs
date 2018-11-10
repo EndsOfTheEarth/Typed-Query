@@ -214,23 +214,10 @@ namespace Sql.Interfaces {
 		IResult Execute(ADatabase pDatabase);
 		
 		/// <summary>
-		/// Executes query using default Isolation level and the default database (Set on the queries 'FROM' table).
-		/// </summary>
-		/// <returns></returns>
-		IResult Execute();
-		
-		/// <summary>
 		/// Executes query using read uncommited Isolation level
 		/// </summary>
 		/// <returns></returns>
 		IResult ExecuteUncommitted(ADatabase pDatabase);
-		
-		
-		/// <summary>
-		/// Executes query using read uncommited Isolation level and the default database (Set in the Settings class).
-		/// </summary>
-		/// <returns></returns>
-		IResult ExecuteUncommitted();
 		
 		/// <summary>
 		/// Executes query using transaction provided

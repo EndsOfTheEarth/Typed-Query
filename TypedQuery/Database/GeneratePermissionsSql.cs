@@ -28,7 +28,7 @@ namespace Sql.Database {
 			
 		}
 		
-		public string GenerateSql<TABLE>(TABLE pTable) where TABLE : ATable {
+		public string GenerateSql<TABLE>(TABLE pTable, ADatabase pDatabase) where TABLE : ATable {
 		
 			if(pTable == null)
 				throw new NullReferenceException("pTable cannot be null");			
@@ -42,7 +42,7 @@ namespace Sql.Database {
 				if (attribute is Sql.GrantTable) {
 					
 					Sql.GrantTable grantTable = (Sql.GrantTable) attribute;					
-			        string grantSql = Sql.Database.GenertateSql.CreateGrantTable(pTable.Schema, pTable.TableName, grantTable.User.Name, grantTable.Privilege, pTable.DefaultDatabase);
+			        string grantSql = Sql.Database.GenertateSql.CreateGrantTable(pTable.Schema, pTable.TableName, grantTable.User.Name, grantTable.Privilege, pDatabase);
 			        sql.Append(grantSql).Append(System.Environment.NewLine);
 			    }
 			}			
@@ -61,14 +61,14 @@ namespace Sql.Database {
 							
 							Sql.GrantColumn grantColumn = (Sql.GrantColumn) attribute;
 						
-					    	string grantSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.GRANT, pTable.Schema, pTable.TableName, column.ColumnName, grantColumn.User.Name, grantColumn.Privilege, pTable.DefaultDatabase);
+					    	string grantSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.GRANT, pTable.Schema, pTable.TableName, column.ColumnName, grantColumn.User.Name, grantColumn.Privilege, pDatabase);
 					    	sql.Append(grantSql).Append(System.Environment.NewLine);
 						}
 						else if (attribute is Sql.RevokeColumn) {
 							
 							Sql.RevokeColumn revokeColumn = (Sql.RevokeColumn) attribute;
 						
-					    	string revokeSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.REVOKE, pTable.Schema, pTable.TableName, column.ColumnName, revokeColumn.User.Name, revokeColumn.Privilege, pTable.DefaultDatabase);
+					    	string revokeSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.REVOKE, pTable.Schema, pTable.TableName, column.ColumnName, revokeColumn.User.Name, revokeColumn.Privilege, pDatabase);
 					    	sql.Append(revokeSql).Append(System.Environment.NewLine);
 						}
 					}					
@@ -89,14 +89,14 @@ namespace Sql.Database {
 							
 							Sql.GrantColumn grantColumn = (Sql.GrantColumn) attribute;
 						
-					    	string grantSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.GRANT, pTable.Schema, pTable.TableName, column.ColumnName, grantColumn.User.Name, grantColumn.Privilege, pTable.DefaultDatabase);
+					    	string grantSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.GRANT, pTable.Schema, pTable.TableName, column.ColumnName, grantColumn.User.Name, grantColumn.Privilege, pDatabase);
 					    	sql.Append(grantSql).Append(System.Environment.NewLine);
 						}
 						else if (attribute is Sql.RevokeColumn) {
 							
 							Sql.RevokeColumn revokeColumn = (Sql.RevokeColumn) attribute;
 						
-					    	string revokeSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.REVOKE, pTable.Schema, pTable.TableName, column.ColumnName, revokeColumn.User.Name, revokeColumn.Privilege, pTable.DefaultDatabase);
+					    	string revokeSql = Sql.Database.GenertateSql.CreateGrantOrRevokeColumn(PrivAction.REVOKE, pTable.Schema, pTable.TableName, column.ColumnName, revokeColumn.User.Name, revokeColumn.Privilege, pDatabase);
 					    	sql.Append(revokeSql).Append(System.Environment.NewLine);
 						}
 					}					

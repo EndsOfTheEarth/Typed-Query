@@ -23,7 +23,7 @@ namespace SqlServer.Columns {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(SqlServerDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Column_Name { get; private set; }
 		public Sql.Column.StringColumn Data_Type { get; private set; }
@@ -34,13 +34,8 @@ namespace SqlServer.Columns {
 		public Sql.Column.IntegerColumn Ordinal_Position { get; private set; }
 		public Sql.Column.NIntegerColumn Character_Maximum_Length { get; private set; }
 
-		//public Table()
-		//	: this(SqlServerDatabase.Instance) {
-
-		//}
-
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "columns", "information_schema", false, typeof(Row)) {
+		public Table()
+			: base("columns", "information_schema", false, typeof(Row)) {
 
 				Column_Name = new Sql.Column.StringColumn(this, "Column_Name", false, int.MaxValue);
 				Data_Type = new Sql.Column.StringColumn(this, "Data_Type", false, int.MaxValue);

@@ -23,7 +23,7 @@ namespace Postgresql.KeyColumnUsage {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(PgDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Constraint_catalog { get; private set; }
 		public Sql.Column.StringColumn Constraint_schema { get; private set; }
@@ -35,8 +35,8 @@ namespace Postgresql.KeyColumnUsage {
 		public Sql.Column.NIntegerColumn Ordinal_position { get; private set; }
 		public Sql.Column.NIntegerColumn Position_in_unique_constraint { get; private set; }
 
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "key_column_usage", "information_schema", true, typeof(Row)) {
+		public Table()
+			: base("key_column_usage", "information_schema", true, typeof(Row)) {
 
 			Constraint_catalog = new Sql.Column.StringColumn(this, "constraint_catalog", false, int.MaxValue);
 			Constraint_schema = new Sql.Column.StringColumn(this, "constraint_schema", false, int.MaxValue);

@@ -766,7 +766,7 @@ namespace Sql.Tests {
 
 				Tables.GuidTable.Table guidTable = Tables.GuidTable.Table.INSTANCE;
 
-				Sql.IResult result = Sql.Query.Select(guidTable).From(guidTable).Execute();
+				Sql.IResult result = Sql.Query.Select(guidTable).From(guidTable).Execute(DB.TestDB);
 
 				Assert.AreEqual(1, result.Count);
 

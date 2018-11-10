@@ -12,7 +12,7 @@ namespace Sql.Tables.Person {
 		public Sql.Column.StringColumn FirstName { get; private set; }
 		public Sql.Column.StringColumn Surname { get; private set; }
 
-		public Table() : base(DB.TestDB, "Person", "", false, typeof(Row)) {
+		public Table() : base("Person", "", false, typeof(Row)) {
 
 			Key = new Sql.Column.GuidKeyColumn<Table>(this, "perKey", true);
 			FirstName = new Sql.Column.StringColumn(this, "perFirstName", false, 100);

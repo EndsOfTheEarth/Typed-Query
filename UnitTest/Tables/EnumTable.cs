@@ -37,7 +37,7 @@ namespace Sql.Tables.EnumTable {
 		[Sql.ColumnAttribute("Enum column description")]
 		public readonly Sql.Column.EnumColumn<EnumTypes> EnumValue;
 
-		public Table() : base(DB.TestDB, "EnumTable", "", false, typeof(Row)) {
+		public Table() : base("EnumTable", "", false, typeof(Row)) {
 
 			EnumValue = new Sql.Column.EnumColumn<EnumTypes>(this, "EnumValue", false);
 

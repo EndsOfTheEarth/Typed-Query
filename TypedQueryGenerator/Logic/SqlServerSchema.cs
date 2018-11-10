@@ -31,22 +31,22 @@ namespace TypedQuery.Logic {
 
 		public void TestConnection(Sql.ADatabase pDatabase) {
 
-			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table(pDatabase);
+			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
 
 			Sql.IResult result = Sql.Query
 				.Select(tablesTable).Top(1)
 				.From(tablesTable)
-				.Execute();
+				.Execute(pDatabase);
 		}
 		public IList<ITable> GetTableList(Sql.ADatabase pDatabase) {
 
-			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table(pDatabase);
+			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
 
 			Sql.IResult result = Sql.Query
 				.Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_Type)
 				.From(tablesTable)
                 .OrderBy(tablesTable.Table_schema, tablesTable.Table_name)
-				.Execute();
+				.Execute(pDatabase);
 
 			List<ITable> tableList = new List<ITable>(result.Count);
 
@@ -77,13 +77,13 @@ namespace TypedQuery.Logic {
 
 			if(true) {
 
-				SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table(pDatabase);
+				SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
 
 				Sql.IResult result = Sql.Query
 					.Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_Type)
 					.From(tablesTable)
 					.Where(tablesTable.Table_name == pTableName & tablesTable.Table_schema == pSchemaName)
-					.Execute();
+					.Execute(pDatabase);
 
 				if(result.Count == 0) {
 					pErrorText = "Cannot find table '" + pTableName + "' in database for the schema '" + pSchemaName + "'";
@@ -119,7 +119,7 @@ namespace TypedQuery.Logic {
 
 		private IList<IColumn> GetColumns(Sql.ADatabase pDatabase, string pTableName, string pSchemaName) {
 
-			SqlServer.Columns.Table columnsTable = new SqlServer.Columns.Table(pDatabase);
+			SqlServer.Columns.Table columnsTable = new SqlServer.Columns.Table();
 			SqlServerSchema.IsIdentity isIdentity = new SqlServerSchema.IsIdentity(columnsTable);
 
 			Sql.IResult result = Sql.Query
@@ -127,7 +127,7 @@ namespace TypedQuery.Logic {
 				.From(columnsTable)
 				.Where(columnsTable.Table_Schema == pSchemaName & columnsTable.Table_Name == pTableName)
 				.OrderBy(columnsTable.Ordinal_Position)
-				.Execute();
+				.Execute(pDatabase);
 
 			List<IColumn> columnList = new List<IColumn>(result.Count);
 
@@ -147,8 +147,8 @@ namespace TypedQuery.Logic {
 
 		private IPrimaryKey GetPrimaryKey(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
 
-			SqlServer.Table_Constraints.Table tableConstaintsTable = new SqlServer.Table_Constraints.Table(pDatabase);
-			SqlServer.Key_Column_Usage.Table keyColumnUsageTable = new SqlServer.Key_Column_Usage.Table(pDatabase);
+			SqlServer.Table_Constraints.Table tableConstaintsTable = new SqlServer.Table_Constraints.Table();
+			SqlServer.Key_Column_Usage.Table keyColumnUsageTable = new SqlServer.Key_Column_Usage.Table();
 
 			Sql.IResult result = Sql.Query
 				.Select(tableConstaintsTable.Constraint_Name, keyColumnUsageTable.Column_Name)
@@ -156,7 +156,7 @@ namespace TypedQuery.Logic {
 				.Join(keyColumnUsageTable, tableConstaintsTable.Constraint_Name == keyColumnUsageTable.Constraint_Name & keyColumnUsageTable.Table_Name == tableConstaintsTable.Table_Name & keyColumnUsageTable.Table_Schema == tableConstaintsTable.Table_Schema)
 				.Where(tableConstaintsTable.Table_Name == pTableName & tableConstaintsTable.Table_Schema == pSchemaName & tableConstaintsTable.Constraint_Type == "PRIMARY KEY")
 				.OrderBy(keyColumnUsageTable.Ordinal_Position)
-				.Execute();
+				.Execute(pDatabase);
 
 			PrimaryKey primaryKey = null;
 
@@ -183,9 +183,9 @@ namespace TypedQuery.Logic {
 
 		private IList<IForeignKey> GetForeignKeys(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
 
-			SqlServer.Referential_Constraints.Table rcTable = new SqlServer.Referential_Constraints.Table(pDatabase);
-			SqlServer.Key_Column_Usage.Table kcu1Table = new SqlServer.Key_Column_Usage.Table(pDatabase);
-			SqlServer.Key_Column_Usage.Table kcu2Table = new SqlServer.Key_Column_Usage.Table(pDatabase);
+			SqlServer.Referential_Constraints.Table rcTable = new SqlServer.Referential_Constraints.Table();
+			SqlServer.Key_Column_Usage.Table kcu1Table = new SqlServer.Key_Column_Usage.Table();
+			SqlServer.Key_Column_Usage.Table kcu2Table = new SqlServer.Key_Column_Usage.Table();
 
 			Sql.IResult result = Sql.Query
 				.Select(kcu1Table.Constraint_Name, kcu1Table.Column_Name, kcu2Table.Table_Name, kcu2Table.Column_Name)
@@ -193,7 +193,7 @@ namespace TypedQuery.Logic {
 				.Join(kcu1Table, kcu1Table.Constraint_Catalog == rcTable.Constraint_Catalog & kcu1Table.Constraint_Schema == rcTable.Constraint_Schema & kcu1Table.Constraint_Name == rcTable.Constraint_Name)
 				.Join(kcu2Table, kcu2Table.Constraint_Catalog == rcTable.Unique_Constraint_Catalog & kcu2Table.Constraint_Schema == rcTable.Unique_Constraint_Schema & kcu2Table.Constraint_Name == rcTable.Unique_Constraint_Name & kcu2Table.Ordinal_Position == kcu1Table.Ordinal_Position)
 				.Where(kcu1Table.Table_Name == pTableName & kcu1Table.Table_Schema == pSchemaName)
-				.Execute();
+				.Execute(pDatabase);
 
 			Dictionary<string, IForeignKey> keysLookup = new Dictionary<string, IForeignKey>();
 			List<IForeignKey> foreignKeyList = new List<IForeignKey>();

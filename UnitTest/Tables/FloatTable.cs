@@ -29,7 +29,7 @@ namespace Sql.Tables.FloatTable {
 		public readonly Sql.Column.FloatColumn Value;
 		public readonly Sql.Column.NFloatColumn NValue;
 
-		public Table() : base(DB.TestDB, "FloatTable", "", false, typeof(Row)) {
+		public Table() : base("FloatTable", "", false, typeof(Row)) {
 
 			Id = new Sql.Column.GuidColumn(this, "Id", true);
 			Value = new Sql.Column.FloatColumn(this, "Value", false);

@@ -28,7 +28,7 @@ namespace Sql.Database {
 			
 		}
 		
-		public string GenerateSql<TABLE>(TABLE pTable) where TABLE : ATable {
+		public string GenerateSql<TABLE>(TABLE pTable, ADatabase pDatabase) where TABLE : ATable {
 		
 			if(pTable == null)
 				throw new NullReferenceException("pTable cannot be null");			
@@ -42,13 +42,13 @@ namespace Sql.Database {
 			foreach(object attribute in tableAttributes) {
 			
 				if (attribute is Sql.TableAttribute) {
-			        tableComment = Sql.Database.GenertateSql.CreateTableComment(pTable.TableName, ((Sql.TableAttribute) attribute).Description, pTable.DefaultDatabase);
+			        tableComment = Sql.Database.GenertateSql.CreateTableComment(pTable.TableName, ((Sql.TableAttribute) attribute).Description, pDatabase);
 			        break;
 			    }
 			}
 			
 			if(tableComment == null)
-				tableComment = Sql.Database.GenertateSql.CreateTableComment(pTable.TableName, string.Empty, pTable.DefaultDatabase);
+				tableComment = Sql.Database.GenertateSql.CreateTableComment(pTable.TableName, string.Empty, pDatabase);
 			
 			sql.Append(tableComment).Append(System.Environment.NewLine);
 
@@ -81,7 +81,7 @@ namespace Sql.Database {
 							if(!string.IsNullOrEmpty(valuesText))
 								description += "(" + valuesText + ")";
 						
-					    	columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pTable.DefaultDatabase);
+					    	columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pDatabase);
 					    	break;
 						}
 					}
@@ -93,7 +93,7 @@ namespace Sql.Database {
 						if(!string.IsNullOrEmpty(valuesText))
 							description += "(" + valuesText + ")";
 						
-						columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pTable.DefaultDatabase);
+						columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pDatabase);
 					}
 					
 					sql.Append(columnComment).Append(System.Environment.NewLine);					
@@ -129,7 +129,7 @@ namespace Sql.Database {
 							if(!string.IsNullOrEmpty(valuesText))
 								description += "(" + valuesText + ")";
 						
-					    	columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pTable.DefaultDatabase);
+					    	columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pDatabase);
 					    	break;
 						}
 					}
@@ -141,7 +141,7 @@ namespace Sql.Database {
 						if(!string.IsNullOrEmpty(valuesText))
 							description += "(" + valuesText + ")";
 						
-						columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pTable.DefaultDatabase);
+						columnComment = Sql.Database.GenertateSql.CreateColumnComment(pTable.TableName, column.ColumnName, description, pDatabase);
 					}
 					
 					sql.Append(columnComment).Append(System.Environment.NewLine);					

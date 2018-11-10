@@ -65,7 +65,7 @@ namespace Sql.Tests {
 			
 			foreach(Sql.ARow row in rows) {
 
-				List<ValidationError> errors = DefinitionChecker.CheckTable(row);
+				List<ValidationError> errors = DefinitionChecker.CheckTable(row, DB.TestDB);
 
                 foreach(ValidationError error in errors) {
                     output.Append(error.Message).Append(System.Environment.NewLine);

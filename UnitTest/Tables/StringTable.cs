@@ -29,7 +29,7 @@ namespace Sql.Tables.StringTable {
 
 		public readonly Sql.Column.StringColumn Str;
 
-		public Table() : base(DB.TestDB, "StringTable", "", false, typeof(Row)) {
+		public Table() : base("StringTable", "", false, typeof(Row)) {
 
 			Str = new Sql.Column.StringColumn(this, "Str", true, 10);
 

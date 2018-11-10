@@ -23,7 +23,7 @@ namespace Postgresql.ReferentialConstraints {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(PgDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Constraint_catalog { get; private set; }
 		public Sql.Column.StringColumn Constraint_schema { get; private set; }
@@ -35,8 +35,8 @@ namespace Postgresql.ReferentialConstraints {
 		public Sql.Column.StringColumn Update_rule { get; private set; }
 		public Sql.Column.StringColumn Delete_rule { get; private set; }
 
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "referential_constraints", "information_schema", true, typeof(Row)) {
+		public Table()
+			: base("referential_constraints", "information_schema", true, typeof(Row)) {
 
 				Constraint_catalog = new Sql.Column.StringColumn(this, "constraint_catalog", false, int.MaxValue);
 				Constraint_schema = new Sql.Column.StringColumn(this, "constraint_schema", false, int.MaxValue);

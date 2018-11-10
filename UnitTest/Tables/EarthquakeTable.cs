@@ -34,7 +34,7 @@ namespace Sql.Tables.Earthquake {
 		public readonly Sql.Column.DecimalColumn MAG;
 		public readonly Sql.Column.DecimalColumn DEPTH;
 
-		public Table() : base(DB.TestDB, "Earthquake", "", false, typeof(Row)) {
+		public Table() : base("Earthquake", "", false, typeof(Row)) {
 
 			CUSP_ID = new Sql.Column.IntegerColumn(this, "earCUSP_ID", true);
 			LAT = new Sql.Column.DecimalColumn(this, "earLAT", false);

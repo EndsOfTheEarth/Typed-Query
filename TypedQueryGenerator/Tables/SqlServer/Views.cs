@@ -23,19 +23,14 @@ namespace SqlServer.Views {
 
 	public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table(SqlServerDatabase.Instance);
+		public readonly static Table Instance = new Table();
 
 		public Sql.Column.StringColumn Table_Name { get; private set; }
 		public Sql.Column.StringColumn Table_Schema { get; private set; }
 		public Sql.Column.StringColumn Table_Catalog { get; private set; }
 
-		//public Table()
-		//	: this(SqlServerDatabase.Instance) {
-
-		//}
-
-		public Table(Sql.ADatabase pDatabase)
-			: base(pDatabase, "Views", "information_schema", true, typeof(Row)) {
+		public Table()
+			: base("Views", "information_schema", true, typeof(Row)) {
 
 				Table_Name = new Sql.Column.StringColumn(this, "table_name", false, int.MaxValue);
 				Table_Schema = new Sql.Column.StringColumn(this, "table_schema", false, int.MaxValue);
