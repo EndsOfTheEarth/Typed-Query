@@ -240,7 +240,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
         Sql.Query.Select(userTable)
             .From(userTable)
             .Where(userTable.Id == 2)
-            .Execute();
+            .Execute(MainDatabase.INSTANCE);
 
     Row userRow = userTable[0, result];    //Get first row
 
@@ -314,7 +314,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
         Sql.Query.Select(userTable)
             .From(userTable)
             .Where(userTable.Id == 2)
-            .Execute();
+            .Execute(MainDatabase.INSTANCE);
 
     Row userRow = userTable[0, result];
 
@@ -372,7 +372,7 @@ Sql.IResult result = Sql.Query
     .Select(userTable.Id, userTable.FirstName, userTable.LastName)
     .From(userTable)
     .Where(userTable.FirstName == "james")
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 for (int index = 0; index < result.Count; index++) {
     Row userRow = userTable[index, result];
@@ -395,7 +395,7 @@ Sql.IResult result = Sql.Query
         userTable.LastName == "smith" &
         (userTable.FirstName.Like("j%") | userTable.FirstName.Like("s%"))
     )
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Numeric Conditions
@@ -405,20 +405,20 @@ Sql.IResult result = Sql.Query
     .Select(userTable.Id)
     .From(userTable)
     .Where(userTable.Id % 2 != 0)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 Sql.IResult result = Sql.Query
     .Select(userTable.Id)
     .From(userTable)
     .Where(userTable.Id + 5 > 0 & (userTable.Id * userTable.Id) > userTable.Id)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 Sql.IResult result = Sql.Query
     .Select(userTable.Id)
     .From(userTable)
     .GroupBy(userTable.Id)
     .Having((userTable.Id * userTable.Id) - 2 > 0)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Dynamic Conditions
@@ -436,7 +436,7 @@ Sql.IResult result = Sql.Query
     .Select(userTable.Id, userTable.FirstName, userTable.LastName)
     .From(userTable)
     .Where(condition)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 Example 2: Using 'AndIf' condition. (Also "AndOr(...)"). This will only include the condition if the first parameter is true.
 ```C#
@@ -451,7 +451,7 @@ Sql.IResult result = Sql.Query
     .Select(userTable.Id, userTable.FirstName, userTable.LastName)
     .From(userTable)
     .Where(condition)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Select Fields
@@ -461,7 +461,7 @@ Example: This selected every column in the userTable and the id field (A second 
 Sql.IResult result = Sql.Query
     .Select(userTable, userTable.Id)
     .From(userTable)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Select Options
@@ -470,16 +470,16 @@ Example:
 ```C#
 Sql.Query.Select(userTable).Distinct
     .From(userTable)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 Sql.Query.Select(userTable).Top(1)
     .From(userTable)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 Sql.Query.Select(userTable)
     .Into(tempTable)
     .From(userTable)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Joins
@@ -494,19 +494,19 @@ Sql.IResult result = Sql.Query
     .Select(userTableA)
     .From(userTableA)
     .Join(userTableB, userTableA.Id == userTableB.Id)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 result = Sql.Query
     .Select(userTableA)
     .From(userTableA)
     .LeftJoin(userTableB, userTableA.Id == userTableB.Id)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 result = Sql.Query
     .Select(userTableA)
     .From(userTableA)
     .RightJoin(userTableB, userTableA.Id == userTableB.Id)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Group By And Having
@@ -518,7 +518,7 @@ Sql.IResult result = Sql.Query
     .From(userTable)
     .GroupBy(userTable.FirstName)
     .Having(count > 1)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Order By
@@ -528,7 +528,7 @@ Sql.IResult result = Sql.Query
     .Select(userTable)
     .From(userTable)
     .OrderBy(userTable.FirstName, userTable.LastName.ASC, userTable.Code.DESC)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Query Hints (Append)
@@ -538,7 +538,7 @@ Sql.IResult result = Sql.Query
     .Select(userTable)
     .From(userTable)
     .Append("OPTION(MAXDOP 1)")
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Aggregate Functions
@@ -592,7 +592,7 @@ IResult result = Query.Select(year, month, day, hour, minute, second)
     .GroupBy(year, month, day, hour, minute, second)
     .Having(year > 20 & year < 3000)
     .OrderBy(year, month, day, hour, minute, second)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
     
 int? yearValue = year[0, result];
 int? monthValue = month[0, result];
@@ -609,7 +609,7 @@ Sql.Query
     .Select(userTable)
     .From(userTable)
     .Timeout(60)    //60 seconds
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 Parameters can be turned on or off on a query. This overrides the global setting in Sql.Settings.UseParameters. This can be useful when using parameters produces an undesirable query plan.
 ```C#
@@ -617,7 +617,7 @@ Sql.Query
     .Select(userTable)
     .From(userTable)
     .UseParameters(false)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 ```
 
 ## Execute Uncommitted Query
@@ -815,7 +815,7 @@ public void Example() {
         Sql.Query.Select(enumTable)
         .From(enumTable)
         .Where(enumTable.EnumValue == EnumTypes.A)
-        .Execute();
+        .Execute(MainDatabase.INSTANCE);
 
     for(int index = 0; index < result.Count; index++) {
 
@@ -1069,7 +1069,7 @@ Sql.Query.Select(userTable)
             .Select(userTableB.Id)
             .From(userTableB)
             .Where(userTableB.FirstName == "james"))
-    ).Execute();
+    ).Execute(MainDatabase.INSTANCE);
 ```
 
 ## Union, Except
@@ -1086,7 +1086,7 @@ Sql.IResult result = Sql.Query
     .Union(userTableB.FirstName, userTableB.LastName)
     .From(userTableB)
     .OrderBy(userTableB.FirstName)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 for (int index = 0; index < result.Count; index++) {
     //Note result is only accessable from the last query tables
@@ -1293,7 +1293,7 @@ Sql.IResult result = Sql.Query.Select(
     )
     .From(userTable)
     .OrderBy(userTable.Id.ASC)
-    .Execute();
+    .Execute(MainDatabase.INSTANCE);
 
 for(int index = 0; index < result.Count; index++) {
 
