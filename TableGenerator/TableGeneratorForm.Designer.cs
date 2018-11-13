@@ -28,6 +28,7 @@
 			this.btnClose = new System.Windows.Forms.Button();
 			this.tabDefinitions = new System.Windows.Forms.TabControl();
 			this.tabPageTableDefinition = new System.Windows.Forms.TabPage();
+			this.chkGenerateKeyTypes = new System.Windows.Forms.CheckBox();
 			this.txtNamespace = new System.Windows.Forms.TextBox();
 			this.lblNamespace = new System.Windows.Forms.Label();
 			this.chkRemoveUnderscores = new System.Windows.Forms.CheckBox();
@@ -42,7 +43,6 @@
 			this.btnMaintainConnections = new System.Windows.Forms.Button();
 			this.cboConnections = new System.Windows.Forms.ComboBox();
 			this.lblConnections = new System.Windows.Forms.Label();
-			this.chkGenerateKeyTypes = new System.Windows.Forms.CheckBox();
 			this.tabDefinitions.SuspendLayout();
 			this.tabPageTableDefinition.SuspendLayout();
 			this.tabClassCode.SuspendLayout();
@@ -119,13 +119,26 @@
 			this.tabPageTableDefinition.TabIndex = 0;
 			this.tabPageTableDefinition.Text = "Table Definition";
 			// 
+			// chkGenerateKeyTypes
+			// 
+			this.chkGenerateKeyTypes.AutoSize = true;
+			this.chkGenerateKeyTypes.Checked = true;
+			this.chkGenerateKeyTypes.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkGenerateKeyTypes.Location = new System.Drawing.Point(616, 32);
+			this.chkGenerateKeyTypes.Name = "chkGenerateKeyTypes";
+			this.chkGenerateKeyTypes.Size = new System.Drawing.Size(123, 17);
+			this.chkGenerateKeyTypes.TabIndex = 7;
+			this.chkGenerateKeyTypes.Text = "Generate Key Types";
+			this.chkGenerateKeyTypes.UseVisualStyleBackColor = true;
+			this.chkGenerateKeyTypes.CheckedChanged += new System.EventHandler(this.chkGenerateKeyTypes_CheckedChanged);
+			// 
 			// txtNamespace
 			// 
 			this.txtNamespace.Location = new System.Drawing.Point(76, 4);
 			this.txtNamespace.Name = "txtNamespace";
 			this.txtNamespace.Size = new System.Drawing.Size(212, 20);
 			this.txtNamespace.TabIndex = 1;
-			this.txtNamespace.Text = "Tables";
+			this.txtNamespace.Text = "Logic";
 			this.txtNamespace.TextChanged += new System.EventHandler(this.txtNamespace_TextChanged);
 			// 
 			// lblNamespace
@@ -278,19 +291,6 @@
 			this.lblConnections.Size = new System.Drawing.Size(66, 13);
 			this.lblConnections.TabIndex = 1;
 			this.lblConnections.Text = "Connections";
-			// 
-			// chkGenerateKeyTypes
-			// 
-			this.chkGenerateKeyTypes.AutoSize = true;
-			this.chkGenerateKeyTypes.Checked = true;
-			this.chkGenerateKeyTypes.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkGenerateKeyTypes.Location = new System.Drawing.Point(616, 32);
-			this.chkGenerateKeyTypes.Name = "chkGenerateKeyTypes";
-			this.chkGenerateKeyTypes.Size = new System.Drawing.Size(123, 17);
-			this.chkGenerateKeyTypes.TabIndex = 7;
-			this.chkGenerateKeyTypes.Text = "Generate Key Types";
-			this.chkGenerateKeyTypes.UseVisualStyleBackColor = true;
-			this.chkGenerateKeyTypes.CheckedChanged += new System.EventHandler(this.chkGenerateKeyTypes_CheckedChanged);
 			// 
 			// TableGeneratorForm
 			// 
