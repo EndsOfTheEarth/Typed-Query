@@ -295,6 +295,7 @@ namespace TypedQuery.Logic {
 				sTypeLookup.Add("_aclitem", System.Data.DbType.Object);
 				sTypeLookup.Add("bytea", System.Data.DbType.Binary);
 				sTypeLookup.Add("_int2", System.Data.DbType.Object);
+				sTypeLookup.Add("date", System.Data.DbType.DateTime);
 				sTypeLookup.Add("timestamptz", System.Data.DbType.DateTime);
 				sTypeLookup.Add("int4", System.Data.DbType.Int32);
 				sTypeLookup.Add("int8", System.Data.DbType.Int64);
@@ -311,6 +312,7 @@ namespace TypedQuery.Logic {
 				sTypeLookup.Add("_oid", System.Data.DbType.Object);
 				sTypeLookup.Add("varchar", System.Data.DbType.String);
 				sTypeLookup.Add("regproc", System.Data.DbType.Object);
+				sTypeLookup.Add("bpchar", System.Data.DbType.String);
 				sTypeLookup.Add("text", System.Data.DbType.String);
 				sTypeLookup.Add("_regtype", System.Data.DbType.Object);
 				sTypeLookup.Add("timestamp", System.Data.DbType.DateTime);
