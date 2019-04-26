@@ -70,7 +70,8 @@ namespace Sql.Column {
 			return (byte[])pReader.GetValue(pColumnIndex);
 		}
 		public byte[] ValueOf(ARow pRow) {
-			return (byte[])pRow.GetValue(this);
+            object value = pRow.GetValue(this);
+            return value != null ? (byte[])pRow.GetValue(this) : null;
 		}
 		public void SetValue(ARow pRow, byte[] pValue) {
 			pRow.SetValue(this, pValue);

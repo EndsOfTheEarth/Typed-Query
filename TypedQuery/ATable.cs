@@ -100,7 +100,8 @@ namespace Sql {
 				throw new ArgumentException($"{nameof(pTempTableName)} cannot be null or empty");
 
 			mRowType = pRowType;
-			mIsTemporaryTable = true;
+            mSchema = string.Empty;
+            mIsTemporaryTable = true;
 			mTableName = pTempTableName;
 			mUseConcurrenyChecking = null;
 		}
