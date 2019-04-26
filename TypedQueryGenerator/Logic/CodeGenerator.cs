@@ -117,7 +117,7 @@ namespace TypedQuery.Logic {
 			}
 
 			code.Append(endl);
-			code.Append(tab).Append(tab).Append("public Table() : base(DATABASE, \"").Append(pTableDetails.TableName).Append("\", \"").Append(pIncludeSchema ? pTableDetails.Schema : string.Empty).Append("\", ").Append(pTableDetails.IsView ? "true" : "false").Append(", typeof(Row)) {").Append(endl);
+			code.Append(tab).Append(tab).Append("public Table() : base(\"").Append(pTableDetails.TableName).Append("\", \"").Append(pIncludeSchema ? pTableDetails.Schema : string.Empty).Append("\", ").Append(pTableDetails.IsView ? "true" : "false").Append(", typeof(Row)) {").Append(endl);
 			code.Append(endl);
 
 			for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
@@ -450,14 +450,15 @@ namespace TypedQuery.Logic {
 			}
 			else if(pColumn.DbType == System.Data.DbType.String) {
 
+
 				if(matchingKeyColumns.Count > 0) {
 					if(matchingKeyColumns.Count == 1)
-						value = "StringKeyColumn<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
+						value = (!pColumn.IsNullable ? "StringKeyColumn" : "NStringKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
 					else
-						value = "StringKeyColumn<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
+						value = (!pColumn.IsNullable ? "StringKeyColumn" : "NStringKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
 				}
 				else if(pColumn.IsPrimaryKey)
-					value = "StringKeyColumn<" + pTable.TableName + ".Table>";
+					value = (!pColumn.IsNullable ? "StringKeyColumn" : "NStringKeyColumn") + "<" + pTable.TableName + ".Table>";
 				else
 					value = typeof(Sql.Column.StringColumn).Name;
 			}

@@ -64,7 +64,25 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
 
-		public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
+        public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, NStringKeyColumn<TABLE> pColumnB) {
+
+            if(((object)pColumnB) == null) {
+                throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+            }
+
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
+        }
+
+        public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, NStringKeyColumn<TABLE> pColumnB) {
+
+            if(((object)pColumnB) == null) {
+                throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+            }
+
+            return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
+        }
+
+        public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
 
 			if(pValue == null) {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn = null' is an undefined condition in sql so this library disallows it.");
@@ -153,7 +171,6 @@ namespace Sql.Column {
 					throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
 			}
-
 			return new NotInCondition<StringKey<TABLE>>(this, pValues);
 		}
 
@@ -166,7 +183,7 @@ namespace Sql.Column {
 				throw new Exception($"Row column data is not of the correct type. Expected string value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
 			}
 
-			return pReader.GetString(pColumnIndex);
+			return new StringKey<TABLE>(pReader.GetString(pColumnIndex));
 		}
 		public StringKey<TABLE> ValueOf(ARow pRow) {
 			return (StringKey<TABLE>)pRow.GetValue(this);

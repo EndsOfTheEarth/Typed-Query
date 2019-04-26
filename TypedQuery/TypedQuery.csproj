@@ -107,6 +107,7 @@
     <Compile Include="Column\KeyColumns\NIntegerKeyColumn.cs" />
     <Compile Include="Column\KeyColumns\NSmallIntColumn.cs" />
     <Compile Include="Column\KeyColumns\SmallIntKeyColumn.cs" />
+    <Compile Include="Column\KeyColumns\NStringKeyColumn.cs" />
     <Compile Include="Column\KeyColumns\StringKeyColumn.cs" />
     <Compile Include="Column\NBigIntegerColumn.cs" />
     <Compile Include="Column\NBinaryColumn.cs" />
