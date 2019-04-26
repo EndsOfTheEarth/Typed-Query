@@ -39,15 +39,9 @@ namespace Postgresql {
 			mConnectionString = pConnectionString;
 		}
 
-		protected override string ConnectionString {
-			get {
-				return mConnectionString;
-			}
-		}
-
 		public override System.Data.Common.DbConnection GetConnection(bool pCanBeReadonly) {
 			lock(this) {
-				Npgsql.NpgsqlConnection connection = new Npgsql.NpgsqlConnection(ConnectionString);
+				Npgsql.NpgsqlConnection connection = new Npgsql.NpgsqlConnection(mConnectionString);
 				connection.Open();
 				return connection;
 			}

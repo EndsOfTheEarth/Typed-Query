@@ -44,11 +44,6 @@ namespace Sql {
 		}
 
 		/// <summary>
-		/// Returns database connection string
-		/// </summary>
-		protected abstract string ConnectionString { get; }
-
-		/// <summary>
 		/// Returns connection to database.
 		/// 
 		/// The parameter pCanBeReadonly indicates that the connection is allowed to be readonly. This is can be used as a security feature.

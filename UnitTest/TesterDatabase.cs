@@ -53,7 +53,7 @@ namespace Sql {
 			Assert.IsNotNull(pIsolationLevel);
 		}
 
-		protected override string ConnectionString {
+		private string ConnectionString {
 			get {
 				
 				if(DatabaseType == DatabaseType.Mssql)

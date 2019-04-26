@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,53 +15,61 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Data.SqlClient;
 
-namespace Sql.Database.SqlServer {
-	
-	public sealed class SqlServerDatabase : Sql.ADatabase {
-		
-		private readonly string mConnectionString;
-		
-		public SqlServerDatabase(String pDbTitle, string pServerName, string pDbName, string pUserName, string pPassword, bool pEncrypt) : base(pDbTitle, DatabaseType.Mssql) {
-			
-			if(string.IsNullOrEmpty(pServerName))
-				throw new Exception("pServerName cannot be null or empty");
-			
-			if(string.IsNullOrEmpty(pDbName))
-				throw new Exception("pDbName cannot be null or empty");
-			
-			if(string.IsNullOrEmpty(pUserName))
-				throw new Exception("pUserName cannot be null or empty");
-			
-			if(string.IsNullOrEmpty(pPassword))
-				throw new Exception("pPassword cannot be null or empty");
-			
-			SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-			
-			builder.DataSource = pServerName;
-			builder.InitialCatalog = pDbName;
-			builder.UserID = pUserName;
-			builder.Password = pPassword;
-			builder.Encrypt = pEncrypt;
-			
-			mConnectionString = builder.ConnectionString;
-		}
-		
-		protected override string ConnectionString {
-			get { return mConnectionString; }
-		}
-		
-		public string GetConnectionString() {
-			return mConnectionString;
-		}
-		
-		public override System.Data.Common.DbConnection GetConnection(bool pCanBeReadonly) {
-			SqlConnection connection = new SqlConnection(ConnectionString);
-			connection.Open();
-			return connection;
-		}
-	}
+namespace Sql {
+
+    public sealed class SqlServerDatabase : Sql.ADatabase {
+
+        private readonly string mConnectionString;
+
+        public SqlServerDatabase(string pDbTitle, string pServerName, string pDbName, string pUserName, string pPassword, bool pEncrypt) : base(pDbTitle, DatabaseType.Mssql) {
+
+            if(string.IsNullOrEmpty(pServerName)) {
+                throw new Exception($"{ nameof(pServerName) } cannot be null or empty");
+            }
+
+            if(string.IsNullOrEmpty(pDbName)) {
+                throw new Exception($"{ nameof(pDbName) } cannot be null or empty");
+            }
+
+            if(string.IsNullOrEmpty(pUserName)) {
+                throw new Exception($"{ nameof(pUserName) } cannot be null or empty");
+            }
+
+            if(string.IsNullOrEmpty(pPassword)) {
+                throw new Exception($"{ nameof(pPassword) } cannot be null or empty");
+            }
+
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+
+            builder.DataSource = pServerName;
+            builder.InitialCatalog = pDbName;
+            builder.UserID = pUserName;
+            builder.Password = pPassword;
+            builder.Encrypt = pEncrypt;
+
+            mConnectionString = builder.ConnectionString;
+        }
+
+        public SqlServerDatabase(string pDbTitle, SqlConnectionStringBuilder pSqlConnectionStringBuilder) : base(pDbTitle, DatabaseType.Mssql) {
+            mConnectionString = pSqlConnectionStringBuilder.ConnectionString;
+        }
+
+        public SqlServerDatabase(string pDbTitle, string pConnectionString) : base(pDbTitle, DatabaseType.Mssql) {
+
+            if(string.IsNullOrEmpty(pConnectionString)) {
+                throw new Exception($"{ nameof(pConnectionString) } cannot be null or empty");
+            }
+            mConnectionString = pConnectionString;
+        }
+
+        public override System.Data.Common.DbConnection GetConnection(bool pCanBeReadonly) {
+            SqlConnection connection = new SqlConnection(mConnectionString);
+            connection.Open();
+            return connection;
+        }
+    }
 }
