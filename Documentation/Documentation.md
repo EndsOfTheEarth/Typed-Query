@@ -126,8 +126,8 @@ public sealed class Table : Sql.ATable {
         AddColumns(Id, Code, Password, FirstName, LastName);
     }
 
-    public Row this[int pIndex, Sql.IResult pQueryResult] {
-        get { return (Row)pQueryResult.GetRow(this, pIndex); }
+    public Row GetRow(int pIndex, Sql.IResult pQueryResult) {
+        return (Row)pQueryResult.GetRow(this, pIndex);
     }
 }
 ```
@@ -221,8 +221,10 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 
     transaction.Commit();
 
-    int autoId = userTable[0, result].Id;    //Get the returned auto id
-    string code = userTable[0, result].Code;    //Get code field to show that multiple fields can be returned
+    Row userRow = userTable.GetRow(0, result);
+
+    int autoId = userRow.Id;    //Get the returned auto id
+    string code = userRow.Code;    //Get code field to show that multiple fields can be returned
 }
 ```
 
@@ -242,7 +244,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
             .Where(userTable.Id == 2)
             .Execute(MainDatabase.INSTANCE);
 
-    Row userRow = userTable[0, result];    //Get first row
+    Row userRow = userTable.GetRow(0, result);    //Get first row
 
     userRow.Code = "user_code";
     userRow.Password = "password";
@@ -294,7 +296,7 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 
     for(int index = 0; index < result.Count; index++) { //Get returned fields from result
 
-        Row userRow = userTable[index, result];
+        Row userRow = userTable.GetRow(index, result);
         int autoIdsUpdated = userRow.Id;
     }
 }
@@ -316,7 +318,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
             .Where(userTable.Id == 2)
             .Execute(MainDatabase.INSTANCE);
 
-    Row userRow = userTable[0, result];
+    Row userRow = userTable.GetRow(0, result);
 
     userRow.Delete();    //Flag to be deleted
 
@@ -352,7 +354,7 @@ using(Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE)) 
 
     for(int index = 0; index < result.Count; index++) {    //Get id and code of deleted row(s)
 
-        Row userRow = userTable[index, result];
+        Row userRow = userTable.GetRow(index, result);
 
         int autoId = userRow.Id;
         string code = userRow.Code;
@@ -375,7 +377,8 @@ Sql.IResult result = Sql.Query
     .Execute(MainDatabase.INSTANCE);
 
 for (int index = 0; index < result.Count; index++) {
-    Row userRow = userTable[index, result];
+
+    Row userRow = userTable.GetRow(index, result);
 
     int? id = userRow.Id;
     string firstName = userRow.FirstName;
@@ -429,8 +432,9 @@ Table userTable = Table.INSTANCE;
 Sql.Condition condition = userTable.LastName == "smith" &
             (userTable.FirstName.Like("j%") | userTable.FirstName.Like("s%"));
 
-if (pId != null)
+if(pId != null) {
     condition = condition & userTable.Id == pId;
+}
 
 Sql.IResult result = Sql.Query
     .Select(userTable.Id, userTable.FirstName, userTable.LastName)
@@ -642,7 +646,7 @@ using (Sql.Transaction transaction = new Sql.Transaction(MainDatabase.INSTANCE))
                 .From(userTable)
                 .Execute(transaction);
 
-        Row userRow = userTable[0, result];
+        Row userRow = userTable.GetRow(0, result);
 
         userRow.Delete();
         userRow.Update(transaction);
@@ -726,6 +730,8 @@ IntegerKeyColumn | Int Not Null
 NIntegerKeyColumn | Int? Null
 SmallIntKeyColumn | Int16 Not Null
 NSmallIntKeyColumn | Int16 Null
+StringKeyColumn | String Not Null
+NStringKeyColumn | String Null
 
 Code Example:
 Here we have two tables, the PersonTable and the OrderLogTable. The OrderLogTable has a foreign key to the PersonTable. This is mapped using a 'GuidKeyColumn' to the Person table using a generic argument.
@@ -756,21 +762,47 @@ namespace Sql.Tables.Person {
 
         public static readonly Table INSTANCE = new Table();
 
-        public Sql.Column.GuidKeyColumn<Table> Key { get; private set; }    //Primary Key Column
+        public Sql.Column.GuidKeyColumn<Person.Table> Key { get; private set; }    //Primary Key Column
         public Sql.Column.StringColumn FirstName { get; private set; }
         public Sql.Column.StringColumn Surname { get; private set; }
 
-        public Table() : base(Database, "Person", typeof(Row)) {
+        public Table() : base("Person", "", false, typeof(Row)) {
 
             Key = new Sql.Column.GuidKeyColumn<Table>(this, "perKey", true);
-            FirstName = new Sql.Column.StringColumn(this, "perFirstName", false);
-            Surname = new Sql.Column.StringColumn(this, "perSurname", false);
+            FirstName = new Sql.Column.StringColumn(this, "perFirstName", 100, false);
+            Surname = new Sql.Column.StringColumn(this, "perSurname", 100, false);
 
-            AddColumns(Key,FirstName,Surname);
+            AddColumns(Key, FirstName, Surname);
         }
 
-        public Row this[int pIndex, Sql.IResult pResult]{
-            get { return (Row)pResult.GetRow(this, pIndex); }
+        public Row GetRow(int pIndex, Sql.IResult pResult) {
+            return (Row)pResult.GetRow(this, pIndex);
+        }
+    }
+
+    public sealed class Row : Sql.ARow {
+
+        private new Table Tbl {
+            get { return (Table)base.Tbl; }
+        }
+
+        public Row() : base(Table.INSTANCE) {
+
+        }
+
+        public Types.GuidKey<Person.Table> Key {
+            get { return Tbl.Key.ValueOf(this); }
+            set { Tbl.Key.SetValue(this, value); }
+        }
+
+        public string FirstName {
+            get { return Tbl.FirstName.ValueOf(this); }
+            set { Tbl.FirstName.SetValue(this, value); }
+        }
+
+        public string Surname {
+            get { return Tbl.Surname.ValueOf(this); }
+            set { Tbl.Surname.SetValue(this, value); }
         }
     }
 }
@@ -783,21 +815,47 @@ namespace Sql.Tables.OrderLog {
 
         public static readonly Table INSTANCE = new Table();
 
-        public Sql.Column.GuidColumn Key { get; private set; }
+        public Sql.Column.GuidKeyColumn<OrderLog.Table> Key { get; private set; }
         public Sql.Column.GuidKeyColumn<Sql.Tables.Person.Table> PersonKey { get; private set; }    //Foreign Key Column To Person Table
-        public Sql.Column.StringColumn Item_ { get; private set; }
+        public Sql.Column.StringColumn Item { get; private set; }
 
-        public Table() : base(Database, "OrderLog", typeof(Row)) {
+        public Table() : base("OrderLog", "", false, typeof(Row)) {
 
-            Key = new Sql.Column.GuidColumn(this, "ordKey", true);
+            Key = new Sql.Column.GuidKeyColumn<Table>(this, "ordKey", true);
             PersonKey = new Sql.Column.GuidKeyColumn<Sql.Tables.Person.Table>(this, "ordPersonKey", false);
-            Item_ = new Sql.Column.StringColumn(this, "ordItem", false);
+            Item = new Sql.Column.StringColumn(this, "ordItem", 100, false);
 
-            AddColumns(Key,PersonKey,Item_);
+            AddColumns(Key, PersonKey, Item);
         }
 
-        public Row this[int pIndex, Sql.IResult pResult]{
-            get { return (Row)pResult.GetRow(this, pIndex); }
+        public Row GetRow(int pIndex, Sql.IResult pResult) {
+            return (Row)pResult.GetRow(this, pIndex);
+        }
+    }
+
+    public sealed class Row : Sql.ARow {
+
+        private new Table Tbl {
+            get { return (Table)base.Tbl; }
+        }
+
+        public Row() : base(Table.INSTANCE) {
+
+        }
+
+        public Types.GuidKey<OrderLog.Table> Key {
+            get { return Tbl.Key.ValueOf(this); }
+            set { Tbl.Key.SetValue(this, value); }
+        }
+
+        public Types.GuidKey<Sql.Tables.Person.Table> PersonKey {
+            get { return Tbl.PersonKey.ValueOf(this); }
+            set { Tbl.PersonKey.SetValue(this, value); }
+        }
+
+        public string Item {
+            get { return Tbl.Item.ValueOf(this); }
+            set { Tbl.Item.SetValue(this, value); }
         }
     }
 }
@@ -819,7 +877,7 @@ public void Example() {
 
     for(int index = 0; index < result.Count; index++) {
 
-        EnumTypes value = enumTable[index, result].EnumValue;
+        EnumTypes value = enumTable.GetRow(index, result).EnumValue;
     }
 }
 
@@ -843,8 +901,8 @@ public sealed class Table : Sql.ATable {
         AddColumns(EnumValue);
     }
 
-    public Row this[int pIndex, Sql.IResult pQueryResult] {
-        get { return (Row)pQueryResult.GetRow(this, pIndex); }
+    public Row GetRow(int pIndex, Sql.IResult pQueryResult) {
+        return (Row)pQueryResult.GetRow(this, pIndex);
     }
 }
 
@@ -917,8 +975,8 @@ public sealed class Table : Sql.ATable {
         AddColumns(Str);
     }
 
-    public Row this[int pIndex, Sql.IResult pQueryResult] {
-        get { return (Row)pQueryResult.GetRow(this, pIndex); }
+    public Row GetRow(int pIndex, Sql.IResult pQueryResult) {
+        return (Row)pQueryResult.GetRow(this, pIndex);
     }
 }
 public sealed class Row : Sql.ARow {
@@ -928,6 +986,7 @@ public sealed class Row : Sql.ARow {
     }
 
     public Row() : base(Table.INSTANCE) {
+
     }
     public string Str {
         get { return Tbl.Str.ValueOf(this); }
@@ -1132,7 +1191,7 @@ namespace SP_Test_In_Out {
  
                 for(int index = 0; index < result.Count; index++) {
  
-                    Row row = proc[index, result];
+                    Row row = proc.GetRow(index, result);
  
                     Guid id = row.Id;
                     int intValue = row.IntValue;
@@ -1205,8 +1264,8 @@ GO
             return result;
         }
  
-        public Row this[int pIndex, Sql.IResult pResult] {
-            get { return (Row)pResult.GetRow(this, pIndex); }
+        public Row GetRow(int pIndex, Sql.IResult pResult) {
+            return (Row)pResult.GetRow(this, pIndex);
         }
     }
  
@@ -1297,7 +1356,8 @@ Sql.IResult result = Sql.Query.Select(
 
 for(int index = 0; index < result.Count; index++) {
 
-    int id = userTable[index, result].Id;
+    int id = userTable.GetRow(index, result).Id;
+
     decimal? avgValue = avg[0, result];
     int? rankValue = rank[index, result];
 }
@@ -1313,10 +1373,12 @@ public override System.Data.Common.DbConnection GetConnection(bool pCanBeReadonl
     SqlConnection connection;
     
     //If the connection can be readonly then return a readonly connection
-    if(!pCanBeReadonly)
+    if(!pCanBeReadonly) {
         connection = new SqlConnection(ConnectionString);
-    else
+    }
+    else {
         connection = new SqlConnection(ReadonlyConnectionString);
+    }
         
     connection.Open();
     return connection;
@@ -1343,8 +1405,8 @@ public sealed class Table : Sql.ATable {
         AddColumns(Id);
     }
 
-    public Row this[int pIndex, Sql.IResult pQueryResult]{
-        get { return (Row)pQueryResult.GetRow(this, pIndex); }
+    public Row GetRow(int pIndex, Sql.IResult pQueryResult) {
+        return (Row)pQueryResult.GetRow(this, pIndex);
     }
 }
 ```
