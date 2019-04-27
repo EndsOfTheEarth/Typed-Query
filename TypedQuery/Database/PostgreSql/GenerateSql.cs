@@ -711,7 +711,6 @@ namespace Sql.Database.PostgreSql {
             else if(pValue is AColumn) {
                 return GetColumnSql((AColumn)pValue, pAliasManager);
             }
-
             else if(pValue.GetType().IsGenericType && KeyTypes.Contains(pValue.GetType().GetGenericTypeDefinition())) {
 
                 object value = pValue.GetType().GetProperty("Value").GetValue(pValue);  //Reflect Value property because we don't know the generic type
