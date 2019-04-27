@@ -21,7 +21,7 @@ Documentation can be found [here](https://github.com/EndsOfTheEarth/Typed-Query/
 
 Compile time join checking on key columns.
 
-![Alt Text](https://raw.githubusercontent.com/EndsOfTheEarth/Typed-Query/master/NorthwindJoinExample.gif)
+![Alt Text](https://raw.githubusercontent.com/EndsOfTheEarth/Typed-Query/master/Images/NorthwindJoinExample.gif)
 ### Select Query
 ```C#
 User.Table userTable = new User.Table();
@@ -70,5 +70,10 @@ Sql.Query.Select(userTable.Id)
      ).Execute(MyDatabase.Instance);
 ```
 
+## Table Generator
+
+TQ has a tool to generate schema definitions.
+
+![Alt Text](https://raw.githubusercontent.com/EndsOfTheEarth/Typed-Query/master/Images/CodeDefinitionGenerator.png)
 ## Licensing
 TQ is released under the GNU Lesser General Public License (LGLP) version 3 license. This means the library can be used by both open and closed source applications.
