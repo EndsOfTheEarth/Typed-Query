@@ -282,7 +282,7 @@ namespace Sql.Core {
 			return this;
 		}
 
-		public IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue) {
+		public IUpdateSet Set<TABLE>(Column.NStringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue) {
 
 			if(pValue != null && pValue.Value.Value.Length > pColumn.MaxLength) {
 				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");

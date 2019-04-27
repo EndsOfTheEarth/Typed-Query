@@ -499,195 +499,241 @@ namespace Sql.Database.PostgreSql {
 			return GetValue(pDatabase, pValue, null, pDbType, pAliasManager);
 		}
 		internal static string GetValue(ADatabase pDatabase, object pValue, Core.Parameters pParameters, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
-			if (pValue is int) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
+            if(pValue is int) {
 
-				return pValue.ToString();
-			}
-			else if (pValue is int?) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
+                }
+                return pValue.ToString();
+            }
+            else if(pValue is int?) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
+                }
+                return pValue == null ? "NULL" : pValue.ToString();
+            }
+            else if(pValue is string) {
 
-				return pValue == null ? "NULL" : pValue.ToString();
-			}
-			else if (pValue is string) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.String, pValue);
+                }
+                return "'" + ((string)pValue).Replace("'", "''") + "'";
+            }
+            else if(pValue is Int16) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.String, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
+                }
+                return pValue.ToString();
+            }
+            else if(pValue is Int16?) {
 
-				return "'" + ((string)pValue).Replace("'", "''") + "'";
-			}
-			else if (pValue is Int16) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
+                }
+                return pValue == null ? "NULL" : pValue.ToString();
+            }
+            else if(pValue is Int64) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
+                }
+                return pValue.ToString();
 
-				return pValue.ToString();
-			}
-			else if (pValue is Int16?) {
+            }
+            else if(pValue is Int64?) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
+                }
+                return pValue == null ? "NULL" : pValue.ToString();
+            }
+            else if(pValue is decimal) {
 
-				return pValue == null ? "NULL" : pValue.ToString();
-			}
-			else if (pValue is Int64) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
+                }
+                return pValue.ToString();
+            }
+            else if(pValue is decimal?) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
+                }
+                return pValue == null ? "NULL" : pValue.ToString();
+            }
+            else if(pValue is DateTime) {
 
-				return pValue.ToString();
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.DateTime, pValue);
+                }
 
-			}
-			else if (pValue is Int64?) {
+                if(pDbType != null && pDbType == System.Data.DbType.DateTime2) {
+                    return "'" + ((DateTime)pValue).ToString("yyyy-MM-dd HH:mm:ss.fffffff") + "'";
+                }
+                return "'" + ((DateTime)pValue).ToString("yyyy-MM-dd HH:mm:ss.fff") + "'";
+            }
+            else if(pValue is DateTime?) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.DateTime, pValue);
+                }
 
-				return pValue == null ? "NULL" : pValue.ToString();
-			}
-			else if (pValue is decimal) {
+                if(pDbType != null && pDbType == System.Data.DbType.DateTime2) {
+                    return pValue == null ? "NULL" : ((DateTime?)pValue).Value.ToString("YYYY-MM-dd HH:mm:ss.fffffff");
+                }
+                return pValue == null ? "NULL" : ((DateTime?)pValue).Value.ToString("YYYY-MM-dd HH:mm:ss.fff");
+            }
+            else if(pValue is DateTimeOffset) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.DateTimeOffset, pValue);
+                }
+                return "'" + ((DateTimeOffset)pValue).ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz") + "'";
+            }
+            else if(pValue is DateTimeOffset?) {
 
-				return pValue.ToString();
-			}
-			else if (pValue is decimal?) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.DateTimeOffset, pValue);
+                }
+                return pValue == null ? "NULL" : ((DateTimeOffset?)pValue).Value.ToString("YYYY-MM-dd HH:mm:ss.fffffff zzz");
+            }
+            else if(pValue is bool) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Boolean, pValue);
+                }
+                return ((bool)pValue) ? "TRUE" : "FALSE";
+            }
+            else if(pValue is bool?) {
 
-				return pValue == null ? "NULL" : pValue.ToString();
-			}
-			else if (pValue is DateTime) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Boolean, pValue);
+                }
+                return pValue == null ? "NULL" : (((bool?)pValue).Value ? "TRUE" : "FALSE");
+            }
+            else if(pValue is Guid) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.DateTime, pValue);
-				
-				if(pDbType != null && pDbType == System.Data.DbType.DateTime2)
-					return "'" + ((DateTime)pValue).ToString("yyyy-MM-dd HH:mm:ss.fffffff") + "'";
-				
-				return "'" + ((DateTime)pValue).ToString("yyyy-MM-dd HH:mm:ss.fff") + "'";
-			}
-			else if (pValue is DateTime?) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Guid, pValue);
+                }
+                return "'" + ((Guid)pValue).ToString() + "'";
+            }
+            else if(pValue is Guid?) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.DateTime, pValue);
-				
-				if(pDbType != null && pDbType == System.Data.DbType.DateTime2)
-					return pValue == null ? "NULL" : ((DateTime?)pValue).Value.ToString("YYYY-MM-dd HH:mm:ss.fffffff");
-				
-				return pValue == null ? "NULL" : ((DateTime?)pValue).Value.ToString("YYYY-MM-dd HH:mm:ss.fff");
-			}
-			else if (pValue is DateTimeOffset) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Guid, pValue);
+                }
+                return pValue == null ? "NULL" : "'" + ((Guid)pValue).ToString() + "'";
+            }
+            else if(pValue is byte) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.DateTimeOffset, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Byte, pValue);
+                }
+                return ((byte)pValue).ToString();
+            }
+            else if(pValue is byte?) {
 
-				return "'" + ((DateTimeOffset)pValue).ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz") + "'";
-			}
-			else if (pValue is DateTimeOffset?) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Byte, pValue);
+                }
+                return pValue == null ? "NULL" : ((byte)pValue).ToString();
+            }
+            else if(pValue is byte[]) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.DateTimeOffset, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Binary, pValue);
+                }
+                return "'" + ConvertBytes((byte[])pValue) + "'";
+            }
+            else if(pValue is float) {
 
-				return pValue == null ? "NULL" : ((DateTimeOffset?)pValue).Value.ToString("YYYY-MM-dd HH:mm:ss.fffffff zzz");
-			}
-			else if (pValue is bool) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Single, pValue);
+                }
+                return "'" + ((float)pValue).ToString() + "'";
+            }
+            else if(pValue is float?) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Boolean, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Single, pValue);
+                }
+                return pValue == null ? "NULL" : "'" + ((float)pValue).ToString() + "'";
+            }
+            else if(pValue is double) {
 
-				return ((bool)pValue) ? "TRUE" : "FALSE";
-			}
-			else if (pValue is bool?) {
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Double, pValue);
+                }
+                return "'" + ((double)pValue).ToString() + "'";
+            }
+            else if(pValue is double?) {
 
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Boolean, pValue);
+                if(pParameters != null) {
+                    return pParameters.AddParameter(System.Data.DbType.Double, pValue);
+                }
+                return pValue == null ? "NULL" : "'" + ((double)pValue).ToString() + "'";
+            }
+            else if(pValue is System.Collections.IEnumerable) {
 
-				return pValue == null ? "NULL" : (((bool?)pValue).Value ? "TRUE" : "FALSE");
-			}
-			else if (pValue is Guid) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Guid, pValue);
-				return "'" + ((Guid)pValue).ToString() + "'";
-			}
-			else if (pValue is Guid?) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Guid, pValue);
-				return pValue == null ? "NULL" : "'" + ((Guid)pValue).ToString() + "'";
-			}
-			else if (pValue is byte) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Byte, pValue);
-				return ((byte)pValue).ToString();
-			}
-			else if (pValue is byte?) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Byte, pValue);
-				return pValue == null ? "NULL" : ((byte)pValue).ToString();
-			}
-			else if (pValue is byte[]) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Binary, pValue);
-				return "'" + ConvertBytes((byte[]) pValue) + "'";
-			}
-			else if (pValue is float) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Single, pValue);
-				return "'" + ((float)pValue).ToString() + "'";
-			}
-			else if (pValue is float?) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Single, pValue);
-				return pValue == null ? "NULL" : "'" + ((float)pValue).ToString() + "'";
-			}			
-			else if (pValue is double) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Double, pValue);
-				return "'" + ((double)pValue).ToString() + "'";
-			}
-			else if (pValue is double?) {
-				if (pParameters != null)
-					return pParameters.AddParameter(System.Data.DbType.Double, pValue);
-				return pValue == null ? "NULL" : "'" + ((double)pValue).ToString() + "'";
-			}
-			else if (pValue is System.Collections.IEnumerable) {
+                StringBuilder sql = new StringBuilder("(");
 
-				StringBuilder sql = new StringBuilder("(");
+                int index = 0;
 
-				int index = 0;
+                foreach(object value in ((System.Collections.IEnumerable)pValue)) {
 
-				foreach(object value in ((System.Collections.IEnumerable) pValue)){
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
 
-					if (index > 0)
-						sql.Append(',');
+                    index++;
 
-					index++;
+                    if(value == null) {
+                        throw new Exception("Null values in an 'IN' or 'NOT IN' clause are not supported");
+                    }
+                    sql.Append(GetValue(pDatabase, value, pParameters, pDbType, pAliasManager));
+                }
+                sql.Append(")");
+                return sql.ToString();
+            }
+            else if(pValue is IFunction) {
+                return ((IFunction)pValue).GetFunctionSql(pDatabase, true, pAliasManager);
+            }
+            else if(pValue is Enum) {
+                return ((int)pValue).ToString();
+            }
+            else if(pValue is Sql.Function.CustomSql) {
+                return ((Sql.Function.CustomSql)pValue).GetCustomSql();
+            }
+            else if(pValue is AColumn) {
+                return GetColumnSql((AColumn)pValue, pAliasManager);
+            }
 
-					if(value == null)
-						throw new Exception("Null values in an 'IN' or 'NOT IN' clause are not supported");
-					
-					sql.Append(GetValue(pDatabase, value, pParameters, pDbType, pAliasManager));
-				}
-				sql.Append(")");
-				return sql.ToString();
-			}
-			else if (pValue is IFunction)
-				return ((IFunction)pValue).GetFunctionSql(pDatabase, true, pAliasManager);
-			else if(pValue is Enum)
-				return ((int)pValue).ToString();
-			else if(pValue is Sql.Function.CustomSql)
-				return ((Sql.Function.CustomSql) pValue).GetCustomSql();
-			else if(pValue is AColumn)
-				return GetColumnSql((AColumn) pValue, pAliasManager);
-			else
-				throw new Exception("Unknown type: " + pValue.GetType().ToString());
+            else if(pValue.GetType().IsGenericType && KeyTypes.Contains(pValue.GetType().GetGenericTypeDefinition())) {
+
+                object value = pValue.GetType().GetProperty("Value").GetValue(pValue);  //Reflect Value property because we don't know the generic type
+                return GetValue(pDatabase, value, pDbType, pAliasManager);
+            }
+            else {
+                throw new Exception("Unknown type: " + pValue.GetType().ToString());
+            }
 		}
+
+        private static readonly IList<Type> KeyTypes = new List<Type>() {
+            typeof(Types.GuidKey<string>).GetGenericTypeDefinition(),
+            typeof(Types.GuidKey<string>?).GetGenericTypeDefinition(),
+            typeof(Types.Int16Key<string>).GetGenericTypeDefinition(),
+            typeof(Types.Int16Key<string>?).GetGenericTypeDefinition(),
+            typeof(Types.Int32Key<string>).GetGenericTypeDefinition(),
+            typeof(Types.Int32Key<string>?).GetGenericTypeDefinition(),
+            typeof(Types.Int64Key<string>).GetGenericTypeDefinition(),
+            typeof(Types.Int64Key<string>?).GetGenericTypeDefinition(),
+            typeof(Types.StringKey<string>).GetGenericTypeDefinition(),
+            typeof(Types.StringKey<string>?).GetGenericTypeDefinition()
+        };
 		
 		private static string ConvertBytes(byte[] pBytes){
 			
