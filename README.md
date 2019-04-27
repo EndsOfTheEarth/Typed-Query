@@ -70,9 +70,9 @@ Sql.Query.Select(userTable.Id)
      ).Execute(MyDatabase.Instance);
 ```
 
-## Table Generator
+## Code Generator
 
-TQ has a tool to generate schema definitions.
+TQ has a tool to generate C# schema definitions.
 
 ![Alt Text](https://raw.githubusercontent.com/EndsOfTheEarth/Typed-Query/master/Images/CodeDefinitionGenerator.png)
 ## Licensing
