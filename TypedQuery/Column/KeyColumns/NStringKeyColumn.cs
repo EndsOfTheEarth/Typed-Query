@@ -86,7 +86,7 @@ namespace Sql.Column {
                 throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'NStringKeyColumn = null' is an undefined condition in sql so this library disallows it.");
             }
 
-            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue.Value);
         }
 
         public static Condition operator !=(NStringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {

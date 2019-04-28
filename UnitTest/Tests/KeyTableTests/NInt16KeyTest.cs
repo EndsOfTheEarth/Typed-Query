@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Sql.Tables.KeyTables.StringKeyTestTable;
+using Sql.Tables.KeyTables.NInt16KeyTestTable;
 using System.Collections.Generic;
 using Sql.Types;
 
 namespace Sql.Tests {
 
     [TestClass]
-    public class StringKeyTest {
+    public class NInt16KeyTest {
 
         [TestInitialize()]
         public void Init() {
@@ -27,15 +27,15 @@ namespace Sql.Tests {
 
             Table table = new Table();
 
-            List<StringKey<Table>> list = new List<StringKey<Table>>();
+            List<Int16Key<Table>> list = new List<Int16Key<Table>>();
 
             int iterations = 10;
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {
 
-                for(int index = 0; index < iterations; index++) {
+                for(short index = 0; index < iterations; index++) {
 
-                    StringKey<Table> id = new StringKey<Table>(index.ToString());
+                    Int16Key<Table> id = new Int16Key<Table>(index);
 
                     list.Add(id);
                     Row row = new Row();
@@ -55,7 +55,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id));
+                Assert.IsTrue(list.Contains(row.Id.Value));
             }
 
             result = Sql.Query
@@ -68,13 +68,13 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id));
+                Assert.IsTrue(list.Contains(row.Id.Value));
             }
 
             list.Clear();
 
-            for(int index = 0; index < iterations; index++) {
-                list.Add(new Types.StringKey<Table>((index + 1000).ToString()));
+            for(short index = 100; index < iterations + 100; index++) {
+                list.Add(new Int16Key<Table>(index));
             }
 
             result = Sql.Query
@@ -87,7 +87,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id.Value != int.MaxValue.ToString());
+                Assert.IsTrue(row.Id.Value.Value != short.MaxValue);
             }
 
             result = Sql.Query
@@ -100,7 +100,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id.Value != int.MaxValue.ToString());
+                Assert.IsTrue(row.Id.Value.Value != short.MaxValue);
             }
         }
 
@@ -109,15 +109,15 @@ namespace Sql.Tests {
 
             Table table = new Table();
 
-            List<StringKey<Table>> list = new List<StringKey<Table>>();
+            List<Int16Key<Table>> list = new List<Int16Key<Table>>();
 
             int iterations = 10;
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {
 
-                for(int index = 0; index < iterations; index++) {
+                for(short index = 0; index < iterations; index++) {
 
-                    StringKey<Table> id = new StringKey<Table>(index.ToString());
+                    Int16Key<Table> id = new Int16Key<Table>(index);
 
                     list.Add(id);
                     Row row = new Row();
@@ -127,7 +127,7 @@ namespace Sql.Tests {
                 transaction.Commit();
             }
 
-            foreach(StringKey<Table> key in list) {
+            foreach(Int16Key<Table> key in list) {
 
                 Sql.IResult result = Sql.Query
                     .Select(table)
@@ -139,7 +139,7 @@ namespace Sql.Tests {
                 Assert.AreEqual(table.GetRow(0, result).Id, key);
             }
 
-            foreach(StringKey<Table> key in list) {
+            foreach(Int16Key<Table> key in list) {
 
                 Sql.IResult result = Sql.Query
                     .Select(table)
@@ -156,15 +156,15 @@ namespace Sql.Tests {
 
             Table table = new Table();
 
-            List<StringKey<Table>> list = new List<StringKey<Table>>();
+            List<Int16Key<Table>> list = new List<Int16Key<Table>>();
 
             int iterations = 10;
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {
 
-                for(int index = 0; index < iterations; index++) {
+                for(short index = 0; index < iterations; index++) {
 
-                    StringKey<Table> id = new StringKey<Table>(index.ToString());
+                    Int16Key<Table> id = new Int16Key<Table>(index);
 
                     list.Add(id);
                     Row row = new Row();
@@ -175,7 +175,7 @@ namespace Sql.Tests {
             }
 
             Table table2 = new Table();
-            foreach(StringKey<Table> key in list) {
+            foreach(Int16Key<Table> key in list) {
 
                 Sql.IResult result = Sql.Query
                     .Select(table, table2)
@@ -188,7 +188,7 @@ namespace Sql.Tests {
                 Assert.AreEqual(table.GetRow(0, result).Id, key);
             }
 
-            foreach(StringKey<Table> key in list) {
+            foreach(Int16Key<Table> key in list) {
 
                 Sql.IResult result = Sql.Query
                     .Select(table, table2)
@@ -207,15 +207,15 @@ namespace Sql.Tests {
 
             Table table = new Table();
 
-            List<StringKey<Table>> list = new List<StringKey<Table>>();
+            List<Int16Key<Table>> list = new List<Int16Key<Table>>();
 
             int iterations = 10;
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {
 
-                for(int index = 0; index < iterations; index++) {
+                for(short index = 0; index < iterations; index++) {
 
-                    StringKey<Table> id = new StringKey<Table>(index.ToString());
+                    Int16Key<Table> id = new Int16Key<Table>(index);
 
                     list.Add(id);
                     Row row = new Row();
@@ -227,7 +227,7 @@ namespace Sql.Tests {
 
             Table table2 = new Table();
 
-            foreach(StringKey<Table> key in list) {
+            foreach(Int16Key<Table> key in list) {
 
                 Sql.IResult result = Sql.Query
                     .Select(table)
@@ -246,7 +246,7 @@ namespace Sql.Tests {
                 Assert.AreEqual(table.GetRow(0, result).Id, key);
             }
 
-            foreach(StringKey<Table> key in list) {
+            foreach(Int16Key<Table> key in list) {
 
                 Sql.IResult result = Sql.Query
                     .Select(table)
@@ -270,15 +270,15 @@ namespace Sql.Tests {
 
             Table table = new Table();
 
-            List<StringKey<Table>> list = new List<StringKey<Table>>();
+            List<Int16Key<Table>> list = new List<Int16Key<Table>>();
 
             int iterations = 10;
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {
 
-                for(int index = 0; index < iterations; index++) {
+                for(short index = 0; index < iterations; index++) {
 
-                    StringKey<Table> id = new StringKey<Table>(index.ToString());
+                    Int16Key<Table> id = new Int16Key<Table>(index);
 
                     list.Add(id);
 
@@ -302,14 +302,14 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id));
+                Assert.IsTrue(list.Contains(row.Id.Value));
             }
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {
 
-                foreach(StringKey<Table> id in list) {
+                foreach(Int16Key<Table> id in list) {
 
-                    StringKey<Table> newId = new StringKey<Table>(id.Value + 100);
+                    Int16Key<Table> newId = new Int16Key<Table>((short)(id.Value + 100));
 
                     Sql.IResult updateResult = Sql.Query
                         .Update(table)
@@ -328,6 +328,43 @@ namespace Sql.Tests {
                     Assert.AreEqual(result.Count, 1);
                     Assert.AreEqual(table.GetRow(0, result).Id, newId);
                 }
+                transaction.Commit();
+            }
+        }
+
+        [TestMethod]
+        public void Test_06() {
+
+            Table table = new Table();
+
+            using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
+
+                Int16Key<Table> id = new Int16Key<Table>(1);
+
+                Sql.IResult result = Sql.Query
+                    .Insert(table)
+                    .Set(table.Id, id)
+                    .Execute(transaction);
+
+                Assert.AreEqual(result.RowsEffected, 1);
+
+                result = Sql.Query
+                    .Select(table)
+                    .From(table)
+                    .Where(table.Id.IsNull)
+                    .Execute(transaction);
+
+                Assert.AreEqual(result.Count, 0);
+
+                result = Sql.Query
+                    .Select(table)
+                    .From(table)
+                    .Where(table.Id.IsNotNull)
+                    .Execute(transaction);
+
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(table.GetRow(0, result).Id, id);
+
                 transaction.Commit();
             }
         }

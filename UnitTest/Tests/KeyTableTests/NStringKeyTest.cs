@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Sql.Tables.KeyTables.StringKeyTestTable;
+using Sql.Tables.KeyTables.NStringKeyTestTable;
 using System.Collections.Generic;
 using Sql.Types;
 
 namespace Sql.Tests {
 
     [TestClass]
-    public class StringKeyTest {
+    public class NStringKeyTest {
 
         [TestInitialize()]
         public void Init() {
@@ -55,7 +55,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id));
+                Assert.IsTrue(list.Contains(row.Id.Value));
             }
 
             result = Sql.Query
@@ -68,7 +68,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id));
+                Assert.IsTrue(list.Contains(row.Id.Value));
             }
 
             list.Clear();
@@ -87,7 +87,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id.Value != int.MaxValue.ToString());
+                Assert.IsTrue(row.Id.Value.Value != int.MaxValue.ToString());
             }
 
             result = Sql.Query
@@ -100,7 +100,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id.Value != int.MaxValue.ToString());
+                Assert.IsTrue(row.Id.Value.Value != int.MaxValue.ToString());
             }
         }
 
@@ -302,7 +302,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id));
+                Assert.IsTrue(list.Contains(row.Id.Value));
             }
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {
@@ -328,6 +328,43 @@ namespace Sql.Tests {
                     Assert.AreEqual(result.Count, 1);
                     Assert.AreEqual(table.GetRow(0, result).Id, newId);
                 }
+                transaction.Commit();
+            }
+        }
+
+        [TestMethod]
+        public void Test_06() {
+
+            Table table = new Table();
+
+            using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
+
+                StringKey<Table> id = new StringKey<Table>("abc");
+
+                Sql.IResult result = Sql.Query
+                    .Insert(table)
+                    .Set(table.Id, id)
+                    .Execute(transaction);
+
+                Assert.AreEqual(result.RowsEffected, 1);
+
+                result = Sql.Query
+                    .Select(table)
+                    .From(table)
+                    .Where(table.Id.IsNull)
+                    .Execute(transaction);
+
+                Assert.AreEqual(result.Count, 0);
+
+                result = Sql.Query
+                    .Select(table)
+                    .From(table)
+                    .Where(table.Id.IsNotNull)
+                    .Execute(transaction);
+
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(table.GetRow(0, result).Id, id);
+
                 transaction.Commit();
             }
         }

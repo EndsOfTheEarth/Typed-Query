@@ -264,5 +264,72 @@ namespace Sql.Tests {
                 Assert.AreEqual(result.Count, iterations - 1);
             }
         }
+
+        [TestMethod]
+        public void Test_05() {
+
+            Table table = new Table();
+
+            List<GuidKey<Table>> list = new List<GuidKey<Table>>();
+
+            int iterations = 10;
+
+            using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+                for(int index = 0; index < iterations; index++) {
+
+                    GuidKey<Table> id = new GuidKey<Table>(Guid.NewGuid());
+
+                    list.Add(id);
+
+                    Sql.IResult insertResult = Sql.Query
+                        .Insert(table)
+                        .Set(table.Id, id)
+                        .Execute(transaction);
+
+                    Assert.AreEqual(insertResult.RowsEffected, 1);
+                }
+                transaction.Commit();
+            }
+
+            Sql.IResult result = Sql.Query
+                .Select(table.Id)
+                .From(table)
+                .Where(table.Id.In(list))
+                .Execute(DB.TestDB);
+
+            Assert.AreEqual(iterations, result.Count);
+
+            for(int index = 0; index < result.Count; index++) {
+                Row row = table.GetRow(index, result);
+                Assert.IsTrue(list.Contains(row.Id));
+            }
+
+            using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+                foreach(GuidKey<Table> id in list) {
+
+                    GuidKey<Table> newId = new GuidKey<Table>(Guid.NewGuid());
+
+                    Sql.IResult updateResult = Sql.Query
+                        .Update(table)
+                        .Set(table.Id, newId)
+                        .Where(table.Id == id)
+                        .Execute(transaction);
+
+                    Assert.AreEqual(updateResult.RowsEffected, 1);
+
+                    result = Sql.Query
+                        .Select(table)
+                        .From(table)
+                        .Where(table.Id == newId)
+                        .Execute(transaction);
+
+                    Assert.AreEqual(result.Count, 1);
+                    Assert.AreEqual(table.GetRow(0, result).Id, newId);
+                }
+                transaction.Commit();
+            }
+        }
     }
 }

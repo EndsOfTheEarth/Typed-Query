@@ -91,9 +91,14 @@
     <Compile Include="Tables\FloatTable.cs" />
     <Compile Include="Tables\GuidTable.cs" />
     <Compile Include="Tables\IntTable.cs" />
+    <Compile Include="Tables\KeyTables\NGuidKeyTestTable.cs" />
     <Compile Include="Tables\KeyTables\GuidKeyTestTable.cs" />
+    <Compile Include="Tables\KeyTables\NInt64KeyTestTable.cs" />
+    <Compile Include="Tables\KeyTables\NIntKey16TestTable.cs" />
     <Compile Include="Tables\KeyTables\IntKey16TestTable.cs" />
+    <Compile Include="Tables\KeyTables\NIntKey32TestTable.cs" />
     <Compile Include="Tables\KeyTables\IntKey32TestTable.cs" />
+    <Compile Include="Tables\KeyTables\NStringKeyTestTable.cs" />
     <Compile Include="Tables\KeyTables\StringKeyTestTable.cs" />
     <Compile Include="Tables\NDateTime2Table.cs" />
     <Compile Include="Tables\NDateTimeTable.cs" />
@@ -130,6 +135,11 @@
     <Compile Include="Tests\InsertSelectTest.cs" />
     <Compile Include="Tests\IntegerTest.cs" />
     <Compile Include="Tests\KeyColumnTests.cs" />
+    <Compile Include="Tests\KeyTableTests\NGuidKeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\NInt16KeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\NInt32KeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\NInt64KeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\NStringKeyTest.cs" />
     <Compile Include="Tests\KeyTableTests\StringKeyTest.cs" />
     <Compile Include="Tests\KeyTableTests\Int16KeyTest.cs" />
     <Compile Include="Tests\KeyTableTests\Int32KeyTest.cs" />
