@@ -39,7 +39,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
 		}
 		public static Condition operator ==(NGuidKeyColumn<TABLE> pColumnA, GuidKey<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue.Value);
 		}
 
 		public static Condition operator !=(NGuidKeyColumn<TABLE> pColumnA, GuidKeyColumn<TABLE> pColumnB) {
@@ -49,15 +49,27 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
 		public static Condition operator !=(NGuidKeyColumn<TABLE> pColumnA, GuidKey<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue.Value);
 		}
 
-		public Condition In(List<GuidKey<TABLE>> pList) {
-			return new InCondition<GuidKey<TABLE>>(this, pList);
-		}
-		public Condition NotIn(List<GuidKey<TABLE>> pList) {
-			return new NotInCondition<GuidKey<TABLE>>(this, pList);
-		}
+		public Condition In(IList<GuidKey<TABLE>> pList) {
+
+            List<Guid> list = new List<Guid>(pList.Count);
+
+            foreach(GuidKey<TABLE> value in pList) {
+                list.Add(value.Value);
+            }
+            return new InCondition<Guid>(this, list);
+        }
+		public Condition NotIn(IList<GuidKey<TABLE>> pList) {
+
+            List<Guid> list = new List<Guid>(pList.Count);
+
+            foreach(GuidKey<TABLE> value in pList) {
+                list.Add(value.Value);
+            }
+            return new NotInCondition<Guid>(this, list);
+        }
 
 		public Condition In(Interfaces.IExecute pNestedQuery) {
 			return new NestedQueryCondition(this, Sql.Operator.IN, pNestedQuery);
@@ -67,10 +79,22 @@ namespace Sql.Column {
 		}
 
 		public Condition In(params GuidKey<TABLE>[] pValues) {
-			return new InCondition<GuidKey<TABLE>>(this, pValues);
+
+            List<Guid> list = new List<Guid>(pValues.Length);
+
+            foreach(GuidKey<TABLE> value in pValues) {
+                list.Add(value.Value);
+            }
+			return new InCondition<Guid>(this, list);
 		}
 		public Condition NotIn(params GuidKey<TABLE>[] pValues) {
-			return new NotInCondition<GuidKey<TABLE>>(this, pValues);
+
+            List<Guid> list = new List<Guid>(pValues.Length);
+
+            foreach(GuidKey<TABLE> value in pValues) {
+                list.Add(value.Value);
+            }
+            return new NotInCondition<Guid>(this, list);
 		}
 		
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -89,10 +113,11 @@ namespace Sql.Column {
 			return (Guid?)pReader.GetGuid(pColumnIndex);
 		}
 		public GuidKey<TABLE>? ValueOf(ARow pRow) {
-			return (GuidKey<TABLE>?)pRow.GetValue(this);
+            object value = pRow.GetValue(this);
+            return value != null ? new GuidKey<TABLE>((Guid) value) : (GuidKey<TABLE>?)null;
 		}
 		public void SetValue(ARow pRow, GuidKey<TABLE>? pValue) {
-			pRow.SetValue(this, pValue);
+			pRow.SetValue(this, pValue != null ? pValue.Value.Value : (Guid?)null);
 		}
 		
 		internal override void TestSetValue(ARow pRow, object pValue) {

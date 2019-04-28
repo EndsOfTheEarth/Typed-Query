@@ -44,7 +44,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
 		}
 		public static Condition operator ==(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue.Value);
 		}
 
 		public static Condition operator !=(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -54,7 +54,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
 		public static Condition operator !=(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue.Value);
 		}
 
 		public static Condition operator >(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -64,7 +64,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN, pColumnB);
 		}
 		public static Condition operator >(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN, pValue.Value);
 		}
 
 		public static Condition operator >=(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -74,7 +74,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN_OR_EQUAL, pColumnB);
 		}
 		public static Condition operator >=(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN_OR_EQUAL, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.GREATER_THAN_OR_EQUAL, pValue.Value);
 		}
 
 		public static Condition operator <(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -84,7 +84,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN, pColumnB);
 		}
 		public static Condition operator <(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN, pValue.Value);
 		}
 
 		public static Condition operator <=(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -94,7 +94,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN_OR_EQUAL, pColumnB);
 		}
 		public static Condition operator <=(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN_OR_EQUAL, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.LESS_THAN_OR_EQUAL, pValue.Value);
 		}
 		
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator +(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -104,7 +104,7 @@ namespace Sql.Column {
 			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.ADD, pColumnB);
 		}
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator +(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.ADD, pValue);
+			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.ADD, pValue.Value);
 		}
 
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator -(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -114,7 +114,7 @@ namespace Sql.Column {
 			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.SUBTRACT, pColumnB);
 		}
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator -(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.SUBTRACT, pValue);
+			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.SUBTRACT, pValue.Value);
 		}
 
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator /(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -124,7 +124,7 @@ namespace Sql.Column {
 			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.DIVIDE, pColumnB);
 		}
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator /(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.DIVIDE, pValue);
+			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.DIVIDE, pValue.Value);
 		}
 
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator *(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -134,7 +134,7 @@ namespace Sql.Column {
 			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.MULTIPLY, pColumnB);
 		}
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator *(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.MULTIPLY, pValue);
+			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.MULTIPLY, pValue.Value);
 		}
 		
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator %(IntegerKeyColumn<TABLE> pColumnA, IntegerKeyColumn<TABLE> pColumnB) {
@@ -144,14 +144,26 @@ namespace Sql.Column {
 			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.MODULO, pColumnB);
 		}
 		public static NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int> operator %(IntegerKeyColumn<TABLE> pColumnA, Int32Key<TABLE> pValue) {
-			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.MODULO, pValue);
+			return new NumericCondition<IntegerKeyColumn<TABLE>, NIntegerKeyColumn<TABLE>, int>(pColumnA, NumericOperator.MODULO, pValue.Value);
 		}
 		
 		public Condition In(IList<Int32Key<TABLE>> pIntegerList) {
-			return new InCondition<Int32Key<TABLE>>(this, pIntegerList);
+
+            List<int> list = new List<int>(pIntegerList.Count);
+
+            foreach(Int32Key<TABLE> value in pIntegerList) {
+                list.Add(value.Value);
+            }
+            return new InCondition<int>(this, list);
 		}
 		public Condition NotIn(IList<Int32Key<TABLE>> pIntegerList) {
-			return new NotInCondition<Int32Key<TABLE>>(this, pIntegerList);
+
+            List<int> list = new List<int>(pIntegerList.Count);
+
+            foreach(Int32Key<TABLE> value in pIntegerList) {
+                list.Add(value.Value);
+            }
+            return new NotInCondition<int>(this, list);
 		}
 
 		public Condition In(Interfaces.IExecute pNestedQuery) {
@@ -162,10 +174,22 @@ namespace Sql.Column {
 		}
 
 		public Condition In(params Int32Key<TABLE>[] pValues) {
-			return new InCondition<Int32Key<TABLE>>(this, pValues);
+
+            List<int> list = new List<int>(pValues.Length);
+
+            foreach(Int32Key<TABLE> value in pValues) {
+                list.Add(value.Value);
+            }
+            return new InCondition<int>(this, list);
 		}
 		public Condition NotIn(params Int32Key<TABLE>[] pValues) {
-			return new NotInCondition<Int32Key<TABLE>>(this, pValues);
+
+            List<int> list = new List<int>(pValues.Length);
+
+            foreach(Int32Key<TABLE> value in pValues) {
+                list.Add(value.Value);
+            }
+            return new NotInCondition<int>(this, list);
 		}
 		
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -201,10 +225,10 @@ namespace Sql.Column {
 			return intValue;
 		}
 		public Int32Key<TABLE> ValueOf(ARow pRow) {
-			return (Int32Key<TABLE>)pRow.GetValue(this);
+			return new Int32Key<TABLE>((int)pRow.GetValue(this));
 		}
 		public void SetValue(ARow pRow, Int32Key<TABLE> pValue) {
-			pRow.SetValue(this, pValue);
+			pRow.SetValue(this, pValue.Value);
 		}
 		
 		internal override void TestSetValue(ARow pRow, object pValue) {

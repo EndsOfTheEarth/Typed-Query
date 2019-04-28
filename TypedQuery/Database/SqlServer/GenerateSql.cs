@@ -788,28 +788,10 @@ namespace Sql.Database.SqlServer {
             else if(pValue is AColumn) {
                 return GetColumnSql((AColumn)pValue, pUseColumnAlias, pAliasManager);
             }
-            else if(pValue.GetType().IsGenericType && KeyTypes.Contains(pValue.GetType().GetGenericTypeDefinition())) {
-
-                object value = pValue.GetType().GetProperty("Value").GetValue(pValue);  //Reflect Value property because we don't know the generic type
-                return GetValue(pDatabase, value, pDbType, pAliasManager);
-            }
             else {
                 throw new Exception("Unknown type: " + pValue.GetType().ToString());
             }
         }
-
-        private static readonly IList<Type> KeyTypes = new List<Type>() {
-            typeof(Types.GuidKey<string>).GetGenericTypeDefinition(),
-            typeof(Types.GuidKey<string>?).GetGenericTypeDefinition(),
-            typeof(Types.Int16Key<string>).GetGenericTypeDefinition(),
-            typeof(Types.Int16Key<string>?).GetGenericTypeDefinition(),
-            typeof(Types.Int32Key<string>).GetGenericTypeDefinition(),
-            typeof(Types.Int32Key<string>?).GetGenericTypeDefinition(),
-            typeof(Types.Int64Key<string>).GetGenericTypeDefinition(),
-            typeof(Types.Int64Key<string>?).GetGenericTypeDefinition(),
-            typeof(Types.StringKey<string>).GetGenericTypeDefinition(),
-            typeof(Types.StringKey<string>?).GetGenericTypeDefinition()
-        };
 
         private static string GetOperator(Operator pOperator) {
 

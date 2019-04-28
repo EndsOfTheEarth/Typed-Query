@@ -88,7 +88,7 @@ namespace Sql.Column {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn = null' is an undefined condition in sql so this library disallows it.");
 			}
 
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue.Value);
 		}
 
 		public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
@@ -97,7 +97,7 @@ namespace Sql.Column {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the != operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn != null' is an undefined condition in sql so this library disallows it.");
 			}
 
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue.Value);
 		}
 
 		public Condition Like(StringKey<TABLE> pValue) {
@@ -106,7 +106,7 @@ namespace Sql.Column {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'like' operator. 'StringKeyColumn like null' is an undefined condition in sql so this library disallows it.");
 			}
 
-			return new ColumnCondition(this, Operator.LIKE, pValue);
+			return new ColumnCondition(this, Operator.LIKE, pValue.Value);
 		}
 
 		public Condition NotLike(StringKey<TABLE> pValue) {
@@ -115,28 +115,34 @@ namespace Sql.Column {
 				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'not like' operator. 'StringKeyColumn not like null' is an undefined condition in sql so this library disallows it.");
 			}
 
-			return new ColumnCondition(this, Operator.NOT_LIKE, pValue);
+			return new ColumnCondition(this, Operator.NOT_LIKE, pValue.Value);
 		}
 
 		public Condition In(List<StringKey<TABLE>> pList) {
 
+            List<string> list = new List<string>(pList.Count);
+
 			foreach(StringKey<TABLE> value in pList) {
+
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
+                list.Add(value.Value);
 			}
-
-			return new InCondition<StringKey<TABLE>>(this, pList);
+			return new InCondition<string>(this, list);
 		}
 		public Condition NotIn(List<StringKey<TABLE>> pList) {
 
-			foreach(StringKey<TABLE> value in pList) {
+            List<string> list = new List<string>(pList.Count);
+
+            foreach(StringKey<TABLE> value in pList) {
+
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
+                list.Add(value.Value);
 			}
-
-			return new NotInCondition<StringKey<TABLE>>(this, pList);
+			return new NotInCondition<string>(this, list);
 		}
 
 		public Condition In(Interfaces.IExecute pNestedQuery) {
@@ -152,13 +158,17 @@ namespace Sql.Column {
 				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
 			}
 
-			foreach(StringKey<TABLE> value in pValues) {
+            List<string> list = new List<string>(pValues.Length);
+
+            foreach(StringKey<TABLE> value in pValues) {
+
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
+                list.Add(value.Value);
 			}
 
-			return new InCondition<StringKey<TABLE>>(this, pValues);
+			return new InCondition<string>(this, list);
 		}
 		public Condition NotIn(params StringKey<TABLE>[] pValues) {
 
@@ -166,12 +176,16 @@ namespace Sql.Column {
 				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
 			}
 
-			foreach(StringKey<TABLE> value in pValues) {
+            List<string> list = new List<string>(pValues.Length);
+
+            foreach(StringKey<TABLE> value in pValues) {
+
 				if(value == null) {
 					throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
 				}
+                list.Add(value.Value);
 			}
-			return new NotInCondition<StringKey<TABLE>>(this, pValues);
+			return new NotInCondition<string>(this, list);
 		}
 
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -183,18 +197,17 @@ namespace Sql.Column {
 				throw new Exception($"Row column data is not of the correct type. Expected string value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
 			}
 
-			return new StringKey<TABLE>(pReader.GetString(pColumnIndex));
+			return pReader.GetString(pColumnIndex);
 		}
 		public StringKey<TABLE> ValueOf(ARow pRow) {
-			return (StringKey<TABLE>)pRow.GetValue(this);
+			return new StringKey<TABLE>((string)pRow.GetValue(this));
 		}
 		public void SetValue(ARow pRow, StringKey<TABLE> pValue) {
 
-			if(pValue != null && pValue.Value.Length > MaxLength) {
+            if(pValue.Value.Length > MaxLength) {
 				throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
 			}
-
-			pRow.SetValue(this, pValue);
+			pRow.SetValue(this, pValue.Value);
 		}
 
 		internal override void TestSetValue(ARow pRow, object pValue) {

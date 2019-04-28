@@ -39,7 +39,7 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
 		}
 		public static Condition operator ==(GuidKeyColumn<TABLE> pColumnA, GuidKey<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue.Value);
 		}
 
 		public static Condition operator !=(GuidKeyColumn<TABLE> pColumnA, GuidKeyColumn<TABLE> pColumnB) {
@@ -49,14 +49,26 @@ namespace Sql.Column {
 			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
 		}
 		public static Condition operator !=(GuidKeyColumn<TABLE> pColumnA, GuidKey<TABLE> pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
+			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue.Value);
 		}
 
 		public Condition In(List<GuidKey<TABLE>> pList) {
-			return new InCondition<GuidKey<TABLE>>(this, pList);
+
+            List<Guid> list = new List<Guid>(pList.Count);
+
+            foreach(GuidKey<TABLE> key in pList) {
+                list.Add(key.Value);
+            }
+			return new InCondition<Guid>(this, list);
 		}
 		public Condition NotIn(List<GuidKey<TABLE>> pList) {
-			return new NotInCondition<GuidKey<TABLE>>(this, pList);
+
+            List<Guid> list = new List<Guid>(pList.Count);
+
+            foreach(GuidKey<TABLE> key in pList) {
+                list.Add(key.Value);
+            }
+            return new NotInCondition<Guid>(this, list);
 		}
 
 		public Condition In(Interfaces.IExecute pNestedQuery) {
@@ -67,10 +79,22 @@ namespace Sql.Column {
 		}
 
 		public Condition In(params GuidKey<TABLE>[] pValues) {
-			return new InCondition<GuidKey<TABLE>>(this, pValues);
+
+            List<Guid> list = new List<Guid>(pValues.Length);
+
+            foreach(GuidKey<TABLE> key in pValues) {
+                list.Add(key.Value);
+            }
+            return new InCondition<Guid>(this, list);
 		}
 		public Condition NotIn(params GuidKey<TABLE>[] pValues) {
-			return new NotInCondition<GuidKey<TABLE>>(this, pValues);
+
+            List<Guid> list = new List<Guid>(pValues.Length);
+
+            foreach(GuidKey<TABLE> key in pValues) {
+                list.Add(key.Value);
+            }
+            return new NotInCondition<Guid>(this, list);
 		}
 		
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

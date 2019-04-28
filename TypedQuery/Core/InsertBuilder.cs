@@ -56,7 +56,7 @@ namespace Sql.Core {
 		}
 
 		internal IInsertSet SetInternal(Sql.AColumn pColumn, object pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue, true));
 			return this;
 		}
 
@@ -211,62 +211,62 @@ namespace Sql.Core {
 		}
 
 		public IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 		
 		public IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (Guid?)null));
 			return this;
 		}
 
 		public IInsertSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 		
 		public IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (short?)null));
 			return this;
 		}
 
 		public IInsertSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 		
 		public IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (int?) null));
 			return this;
 		}
 
 		public IInsertSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 		
 		public IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (long?)null));
 			return this;
 		}
 
@@ -276,7 +276,7 @@ namespace Sql.Core {
 				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
 			}
 			
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
@@ -286,7 +286,7 @@ namespace Sql.Core {
 				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
 			}
 
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : null));
 			return this;
 		}
 
@@ -412,10 +412,80 @@ namespace Sql.Core {
 
 	public class SetValue {
 
-		private readonly AColumn mColumn;
-		private readonly object mValue;
+		private AColumn mColumn;
+		private object mValue;
 
-		public SetValue(AColumn pColumn, object pValue) {
+        public SetValue(AColumn pColumn, object pValue, bool pIsInternal) {
+            SetObjectValue(pColumn, pValue);
+        }
+        //Using particular types to help filter out types that are not allowed
+        public SetValue(AColumn pColumn, short pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, short? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, int pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, int? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, long pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, long? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, decimal pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, decimal? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, string pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, DateTime pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, DateTime? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, Function.CurrentDateTime pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, DateTimeOffset pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, DateTimeOffset? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, Function.CurrentDateTimeOffset pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, bool pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, bool? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, Guid pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, Guid? pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, byte[] pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+        public SetValue(AColumn pColumn, Sql.Function.CustomSql pValue) {
+            SetObjectValue(pColumn, pValue);
+        }
+
+
+
+        private void SetObjectValue(AColumn pColumn, object pValue) {
 
 			if(pColumn == null) {
 				throw new NullReferenceException($"{ nameof(pColumn) } cannot be null");
@@ -423,6 +493,7 @@ namespace Sql.Core {
 			mColumn = pColumn;
 			mValue = pValue;
 		}
+        
 		public AColumn Column {
 			get { return mColumn; }
 		}

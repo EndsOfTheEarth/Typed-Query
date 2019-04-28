@@ -59,7 +59,7 @@ namespace Sql.Core {
 		}
 
 		internal IUpdateSet SetInternal(AColumn pColumn, object pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue, true));
 			return this;
 		}
 
@@ -69,7 +69,7 @@ namespace Sql.Core {
 				throw new NullReferenceException($"{ nameof(pColumnB) } cannot be null");
 			}
 
-			mSetValueList.Add(new SetValue(pColumnA, pColumnB));
+			mSetValueList.Add(new SetValue(pColumnA, pColumnB, true));
 			return this;
 		}
 		public IUpdateSet Set(Sql.Column.SmallIntegerColumn pColumn, Int16 pValue) {
@@ -213,62 +213,62 @@ namespace Sql.Core {
 		}
 
 		public IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (Guid?)null));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (short?)null));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (int?)null));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
 		public IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue) {
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (long?)null));
 			return this;
 		}
 
@@ -278,7 +278,7 @@ namespace Sql.Core {
 				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
 			}
 
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue.Value));
 			return this;
 		}
 
@@ -288,7 +288,7 @@ namespace Sql.Core {
 				throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
 			}
 
-			mSetValueList.Add(new SetValue(pColumn, pValue));
+			mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : null));
 			return this;
 		}
 

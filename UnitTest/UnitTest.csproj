@@ -91,6 +91,10 @@
     <Compile Include="Tables\FloatTable.cs" />
     <Compile Include="Tables\GuidTable.cs" />
     <Compile Include="Tables\IntTable.cs" />
+    <Compile Include="Tables\KeyTables\GuidKeyTestTable.cs" />
+    <Compile Include="Tables\KeyTables\IntKey16TestTable.cs" />
+    <Compile Include="Tables\KeyTables\IntKey32TestTable.cs" />
+    <Compile Include="Tables\KeyTables\StringKeyTestTable.cs" />
     <Compile Include="Tables\NDateTime2Table.cs" />
     <Compile Include="Tables\NDateTimeTable.cs" />
     <Compile Include="Tables\NDecimalTable.cs" />
@@ -126,6 +130,12 @@
     <Compile Include="Tests\InsertSelectTest.cs" />
     <Compile Include="Tests\IntegerTest.cs" />
     <Compile Include="Tests\KeyColumnTests.cs" />
+    <Compile Include="Tests\KeyTableTests\StringKeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\Int16KeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\Int32KeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\Int64KeyTest.cs" />
+    <Compile Include="Tests\KeyTableTests\GuidKeyTest.cs" />
+    <Compile Include="Tables\KeyTables\Int64KeyTestTable.cs" />
     <Compile Include="Tests\MetaDataTest.cs" />
     <Compile Include="Tests\MultithreadTest.cs" />
     <Compile Include="Tests\NDateTime2Test.cs" />
