@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,259 +15,273 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Sql.Function {
 
-	public sealed class MinInteger : ANumericFunction {
+    public sealed class MinInteger : ANumericFunction {
 
-		private readonly AColumn mColumn;
+        private readonly AColumn mColumn;
 
-		public MinInteger(Column.IntegerColumn pColumn) {
+        public MinInteger(Column.IntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public MinInteger(Column.NIntegerColumn pColumn) {
 
-		public MinInteger(Column.NIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public int? this[int pIndex, IResult pResult] {
+            get {
+                return (int?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			mColumn = pColumn;
-		}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            if(pReader.GetFieldType(pColumnIndex) == typeof(Int64)) {
+                return (int?)Convert.ToInt32(pReader.GetInt64(pColumnIndex));
+            }
+            return (int?)pReader.GetInt32(pColumnIndex);
+        }
+    }
 
-		public int? this[int pIndex, IResult pResult] {
-			get {
-				return (int?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			if (pReader.GetFieldType(pColumnIndex) == typeof(Int64))
-				return (int?)Convert.ToInt32(pReader.GetInt64(pColumnIndex));
-			return (int?)pReader.GetInt32(pColumnIndex);
-		}
-	}
-	
-	
-	public sealed class MinBigInteger : ANumericFunction {
+    public sealed class MinBigInteger : ANumericFunction {
 
-		private readonly AColumn mColumn;
+        private readonly AColumn mColumn;
 
-		public MinBigInteger(Column.BigIntegerColumn pColumn) {
+        public MinBigInteger(Column.BigIntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public MinBigInteger(Column.NBigIntegerColumn pColumn) {
 
-		public MinBigInteger(Column.NBigIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public Int64? this[int pIndex, IResult pResult] {
+            get {
+                return (Int64?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			mColumn = pColumn;
-		}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (Int64?)pReader.GetInt64(pColumnIndex);
+        }
+    }
 
-		public Int64? this[int pIndex, IResult pResult] {
-			get {
-				return (Int64?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (Int64?)pReader.GetInt64(pColumnIndex);
-		}
-	}
+    public sealed class MinDecimal : ANumericFunction {
 
-	public sealed class MinDecimal : ANumericFunction {
+        private readonly AColumn mColumn;
 
-		private readonly AColumn mColumn;
+        public MinDecimal(Column.DecimalColumn pColumn) {
 
-		public MinDecimal(Column.DecimalColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public MinDecimal(Column.NDecimalColumn pColumn) {
 
-			mColumn = pColumn;
-		}
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MinDecimal(Column.NDecimalColumn pColumn) {
+        public decimal? this[int pIndex, IResult pResult] {
+            get {
+                return (decimal?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (decimal?)pReader.GetDecimal(pColumnIndex);
+        }
+    }
 
-			mColumn = pColumn;
-		}
+    public sealed class MinSmallInt : ANumericFunction {
 
-		public decimal? this[int pIndex, IResult pResult] {
-			get {
-				return (decimal?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (decimal?)pReader.GetDecimal(pColumnIndex);
-		}
-	}
-	
-	public sealed class MinSmallInt : ANumericFunction {
+        private readonly AColumn mColumn;
 
-		private readonly AColumn mColumn;
+        public MinSmallInt(Column.SmallIntegerColumn pColumn) {
 
-		public MinSmallInt(Column.SmallIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public MinSmallInt(Column.NSmallIntegerColumn pColumn) {
 
-			mColumn = pColumn;
-		}
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MinSmallInt(Column.NSmallIntegerColumn pColumn) {
+        public Int16? this[int pIndex, IResult pResult] {
+            get {
+                return (Int16?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (Int16?)pReader.GetInt16(pColumnIndex);
+        }
+    }
 
-			mColumn = pColumn;
-		}
+    public sealed class MinDateTime : ADateTimeFunction {
 
-		public Int16? this[int pIndex, IResult pResult] {
-			get {
-				return (Int16?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (Int16?)pReader.GetInt16(pColumnIndex);
-		}
-	}
+        private readonly AColumn mColumn;
 
-	public sealed class MinDateTime : ADateTimeFunction {
+        public MinDateTime(Column.DateTimeColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MinDateTime(Column.DateTimeColumn pColumn) {
+        public MinDateTime(Column.NDateTimeColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public DateTime? this[int pIndex, IResult pResult] {
+            get {
+                return (DateTime?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public MinDateTime(Column.NDateTimeColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (DateTime?)pReader.GetDateTime(pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class MinFloat : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public DateTime? this[int pIndex, IResult pResult] {
-			get {
-				return (DateTime?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (DateTime?)pReader.GetDateTime(pColumnIndex);
-		}
-	}
-	
-	public sealed class MinFloat : ANumericFunction {
+        public MinFloat(Column.FloatColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MinFloat(Column.FloatColumn pColumn) {
+        public MinFloat(Column.NFloatColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public float? this[int pIndex, IResult pResult] {
+            get {
+                return (float?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public MinFloat(Column.NFloatColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (float?)pReader.GetFloat(pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class MinDouble : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public float? this[int pIndex, IResult pResult] {
-			get {
-				return (float?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (float?)pReader.GetFloat(pColumnIndex);
-		}
-	}
-	
-	public sealed class MinDouble : ANumericFunction {
+        public MinDouble(Column.DoubleColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MinDouble(Column.DoubleColumn pColumn) {
+        public MinDouble(Column.NDoubleColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public double? this[int pIndex, IResult pResult] {
+            get {
+                return (double?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public MinDouble(Column.NDoubleColumn pColumn) {
-
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
-
-			mColumn = pColumn;
-		}
-
-		public double? this[int pIndex, IResult pResult] {
-			get {
-				return (double?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MIN(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (double?)pReader.GetDouble(pColumnIndex);
-		}
-	}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (double?)pReader.GetDouble(pColumnIndex);
+        }
+    }
 }

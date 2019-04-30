@@ -1,4 +1,22 @@
-﻿using Sql;
+﻿
+/*
+ * 
+ * Copyright (C) 2009-2019 JFo.nz
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/.
+ **/
+
+using Sql;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,39 +28,39 @@ namespace TypedQuery.Logic {
 
     public class DocumentationGenerator {
 
-		public void GenerateTestOnly(string pVersion, DateTime? pDateTime, List<Sql.ARow> pRows) {
+        public void GenerateTestOnly(string pVersion, DateTime? pDateTime, List<Sql.ARow> pRows) {
 
-			if(pRows == null) {
-				throw new NullReferenceException($"{nameof(pRows)} cannot be null");
-			}
+            if(pRows == null) {
+                throw new NullReferenceException($"{nameof(pRows)} cannot be null");
+            }
 
-			if(pRows.Count == 0) {
-				throw new ArgumentException($"{nameof(pRows)} must contain at least one table");
-			}
+            if(pRows.Count == 0) {
+                throw new ArgumentException($"{nameof(pRows)} must contain at least one table");
+            }
 
-			string path = "C:\\Temp\\Schema\\";
+            string path = "C:\\Temp\\Schema\\";
 
-			string stylePath = Path.Combine(path, "style.css");
+            string stylePath = Path.Combine(path, "style.css");
 
-			if(File.Exists(stylePath)) {
-				File.Delete(stylePath);
-			}
-			File.WriteAllText(stylePath, GenerateStyleSheet());
+            if(File.Exists(stylePath)) {
+                File.Delete(stylePath);
+            }
+            File.WriteAllText(stylePath, GenerateStyleSheet());
 
-			foreach(Sql.ARow row in pRows) {
+            foreach(Sql.ARow row in pRows) {
 
-				string filePath = Path.Combine(path, row.ParentTable.TableName + ".html");
+                string filePath = Path.Combine(path, row.ParentTable.TableName + ".html");
 
-				if(File.Exists(filePath)) {
-					File.Delete(filePath);
-				}
-				File.WriteAllText(filePath, GenerateForTable(pVersion, pDateTime, row.ParentTable));
-			}
-		}
+                if(File.Exists(filePath)) {
+                    File.Delete(filePath);
+                }
+                File.WriteAllText(filePath, GenerateForTable(pVersion, pDateTime, row.ParentTable));
+            }
+        }
 
-		private string GenerateStyleSheet() {
+        private string GenerateStyleSheet() {
 
-			string text = @"
+            string text = @"
 table {
     border-collapse: collapse;
 	width: 100%;
@@ -51,15 +69,15 @@ table, th, td {
    border: 1px solid black;
 }
 ";
-			return text;
-		}
-		private string GenerateForTable(string pVersion, DateTime? pDateTime, Sql.ATable pTable) {
+            return text;
+        }
+        private string GenerateForTable(string pVersion, DateTime? pDateTime, Sql.ATable pTable) {
 
-			if(pTable == null) {
-				throw new NullReferenceException($"{nameof(pTable)} cannot be null");
-			}
+            if(pTable == null) {
+                throw new NullReferenceException($"{nameof(pTable)} cannot be null");
+            }
 
-			string html = $@"
+            string html = $@"
 <html>
 	<head>
 		<title>{ HttpUtility.HtmlEncode(pTable.TableName) } { HttpUtility.HtmlEncode(pTable.IsView ? "(View)" : "(Table)") }</title>
@@ -75,107 +93,107 @@ table, th, td {
 	</body>
 </html>
 				";
-			return html;
-		}
+            return html;
+        }
 
-		private string GetTableComment(Sql.ATable pTable) {
+        private string GetTableComment(Sql.ATable pTable) {
 
-			object[] tableAttributes = pTable.GetType().GetCustomAttributes(true);
+            object[] tableAttributes = pTable.GetType().GetCustomAttributes(true);
 
-			string tableComment = string.Empty;
+            string tableComment = string.Empty;
 
-			foreach(object attribute in tableAttributes) {
+            foreach(object attribute in tableAttributes) {
 
-				if(attribute is Sql.TableAttribute) {
-					tableComment = ((Sql.TableAttribute)attribute).Description;
-					break;
-				}
-			}
-			return tableComment;
-		}
+                if(attribute is Sql.TableAttribute) {
+                    tableComment = ((Sql.TableAttribute)attribute).Description;
+                    break;
+                }
+            }
+            return tableComment;
+        }
 
-		private Dictionary<string, string> GetColumnComments(Sql.ATable pTable) {
+        private Dictionary<string, string> GetColumnComments(Sql.ATable pTable) {
 
-			Dictionary<string, string> columnLookup = new Dictionary<string, string>();
+            Dictionary<string, string> columnLookup = new Dictionary<string, string>();
 
-			foreach(PropertyInfo fieldInfo in pTable.GetType().GetProperties()) {
+            foreach(PropertyInfo fieldInfo in pTable.GetType().GetProperties()) {
 
-				if(typeof(AColumn).IsAssignableFrom(fieldInfo.PropertyType)) {
+                if(typeof(AColumn).IsAssignableFrom(fieldInfo.PropertyType)) {
 
-					AColumn column = (AColumn)fieldInfo.GetValue(pTable);
+                    AColumn column = (AColumn)fieldInfo.GetValue(pTable);
 
-					object[] columnAttributes = fieldInfo.GetCustomAttributes(true);
+                    object[] columnAttributes = fieldInfo.GetCustomAttributes(true);
 
-					string columnComment = null;
+                    string columnComment = null;
 
-					string valuesText = string.Empty;
+                    string valuesText = string.Empty;
 
-					if(column is Sql.Column.IEnumColumn) {
+                    if(column is Sql.Column.IEnumColumn) {
 
-						valuesText = GetEnumColumnValues((Sql.Column.IEnumColumn)column);
-					}
+                        valuesText = GetEnumColumnValues((Sql.Column.IEnumColumn)column);
+                    }
 
-					foreach(object attribute in columnAttributes) {
+                    foreach(object attribute in columnAttributes) {
 
-						if(attribute is Sql.ColumnAttribute) {
+                        if(attribute is Sql.ColumnAttribute) {
 
-							string description = ((Sql.ColumnAttribute)attribute).Description;
+                            string description = ((Sql.ColumnAttribute)attribute).Description;
 
-							if(!string.IsNullOrWhiteSpace(description))
-								description += " ";
+                            if(!string.IsNullOrWhiteSpace(description)) {
+                                description += " ";
+                            }
 
-							if(!string.IsNullOrEmpty(valuesText))
-								description += "(" + valuesText + ")";
+                            if(!string.IsNullOrEmpty(valuesText)) {
+                                description += "(" + valuesText + ")";
+                            }
+                            columnComment = description;
+                            break;
+                        }
+                    }
 
-							columnComment = description;
-							break;
-						}
-					}
+                    if(columnComment == null) {
 
-					if(columnComment == null) {
+                        string description = string.Empty;
 
-						string description = string.Empty;
+                        if(!string.IsNullOrEmpty(valuesText)) {
+                            description += "(" + valuesText + ")";
+                        }
+                        columnComment = description;
+                    }
+                    columnLookup.Add(column.ColumnName, columnComment);
+                }
+            }
+            return columnLookup;
+        }
 
-						if(!string.IsNullOrEmpty(valuesText))
-							description += "(" + valuesText + ")";
+        private string GetEnumColumnValues(Sql.Column.IEnumColumn pEnumColumn) {
 
-						columnComment = description;
-					}
+            Array enumValues = pEnumColumn.GetEnumType().GetEnumValues();
 
-					columnLookup.Add(column.ColumnName, columnComment);
-				}
-			}
-			return columnLookup;
-		}
+            StringBuilder text = new StringBuilder();
 
-		private string GetEnumColumnValues(Sql.Column.IEnumColumn pEnumColumn) {
+            foreach(object enumValue in enumValues) {
 
-			Array enumValues = pEnumColumn.GetEnumType().GetEnumValues();
+                if(text.Length > 0) {
+                    text.Append(", ");
+                }
+                text.Append(enumValue.ToString()).Append(" = ").Append(((int)enumValue).ToString());
+            }
+            return text.ToString();
+        }
 
-			StringBuilder text = new StringBuilder();
+        private string GetColumnHtml(Sql.ATable pTable) {
 
-			foreach(object enumValue in enumValues) {
+            StringBuilder html = new StringBuilder();
 
-				if(text.Length > 0)
-					text.Append(", ");
+            Dictionary<string, string> columnDescLookup = GetColumnComments(pTable);
 
-				text.Append(enumValue.ToString()).Append(" = ").Append(((int)enumValue).ToString());
-			}
-			return text.ToString();
-		}
+            html.Append("<table>");
+            html.Append("<tr><td>Column</td><td>Data Type</td><td>Nullable</td><td>Description</d></tr>");
 
-		private string GetColumnHtml(Sql.ATable pTable) {
+            foreach(var column in pTable.Columns) {
 
-			StringBuilder html = new StringBuilder();
-
-			Dictionary<string, string> columnDescLookup = GetColumnComments(pTable);
-
-			html.Append("<table>");
-			html.Append("<tr><td>Column</td><td>Data Type</td><td>Nullable</td><td>Description</d></tr>");
-
-			foreach(var column in pTable.Columns) {
-
-				string text = $@"
+                string text = $@"
 <tr>
 	<td>{ HttpUtility.HtmlEncode(column.ColumnName) }</td>
 	<td>{ HttpUtility.HtmlEncode(column.DbType.ToString() + GetLengthInformation(column)) }</td>
@@ -183,22 +201,21 @@ table, th, td {
 	<td>{ HttpUtility.HtmlEncode((columnDescLookup.ContainsKey(column.ColumnName) ? columnDescLookup[column.ColumnName] : string.Empty))}</td>
 </tr>";
 
-				html.Append(text);
-			}
+                html.Append(text);
+            }
 
-			html.Append("</table>");
-			return html.ToString();
-		}
+            html.Append("</table>");
+            return html.ToString();
+        }
 
-		private string GetLengthInformation(Sql.AColumn pColumn) {
+        private string GetLengthInformation(Sql.AColumn pColumn) {
 
-			string lengthInfo = string.Empty;
+            string lengthInfo = string.Empty;
 
-			if(pColumn is Sql.IColumnLength) {
-				lengthInfo = "(" + ((Sql.IColumnLength)pColumn).MaxLength.ToString() + ")";
-			}
-
-			return lengthInfo;
-		}
-	}
+            if(pColumn is Sql.IColumnLength) {
+                lengthInfo = "(" + ((Sql.IColumnLength)pColumn).MaxLength.ToString() + ")";
+            }
+            return lengthInfo;
+        }
+    }
 }

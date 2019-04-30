@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,158 +15,160 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Sql.Core {
 
-	internal class QueryResult : IResult {
+    internal class QueryResult : IResult {
 
-		private readonly IDictionary<ATable, IList<ARow>> mTableRows = new Dictionary<ATable, IList<ARow>>();
-		private readonly IDictionary<ISelectable, IList<object>> mFunctionValues = new Dictionary<ISelectable, IList<object>>();
+        private readonly IDictionary<ATable, IList<ARow>> mTableRows = new Dictionary<ATable, IList<ARow>>();
+        private readonly IDictionary<ISelectable, IList<object>> mFunctionValues = new Dictionary<ISelectable, IList<object>>();
 
-		private readonly int mRows;
-		public int RowsEffected { get; private set; }
+        private readonly int mRows;
+        public int RowsEffected { get; private set; }
 
-		private readonly string mSqlQuery;
+        private readonly string mSqlQuery;
 
-		internal QueryResult(int pRowsEffected, string pSqlQuery) {
-			RowsEffected = pRowsEffected;
-			mSqlQuery = !string.IsNullOrEmpty(pSqlQuery) ? pSqlQuery : string.Empty;
-		}
-		internal QueryResult(ADatabase pDatabase, IList<ISelectable> pSelectColumns, System.Data.Common.DbDataReader pReader, string pSqlQuery) {
+        internal QueryResult(int pRowsEffected, string pSqlQuery) {
+            RowsEffected = pRowsEffected;
+            mSqlQuery = !string.IsNullOrEmpty(pSqlQuery) ? pSqlQuery : string.Empty;
+        }
+        internal QueryResult(ADatabase pDatabase, IList<ISelectable> pSelectColumns, System.Data.Common.DbDataReader pReader, string pSqlQuery) {
 
-			if(pDatabase == null) {
-				throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
-			}
-			
-			mSqlQuery = !string.IsNullOrEmpty(pSqlQuery) ? pSqlQuery : string.Empty;
+            if(pDatabase == null) {
+                throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
+            }
 
-			List<ATable> tables = new List<ATable>();
-			List<ISelectable> functions = new List<ISelectable>();
+            mSqlQuery = !string.IsNullOrEmpty(pSqlQuery) ? pSqlQuery : string.Empty;
 
-			for(int index = 0; index < pSelectColumns.Count; index++){
+            List<ATable> tables = new List<ATable>();
+            List<ISelectable> functions = new List<ISelectable>();
 
-				ISelectable column = pSelectColumns[index];
+            for(int index = 0; index < pSelectColumns.Count; index++) {
 
-				if(column is AColumn) {
-					ATable table = ((AColumn)column).Table;
-					if(!tables.Contains(table)) {
-						tables.Add(table);
-					}
-				}
-				else {
-					if(!functions.Contains(column)) {
-						functions.Add(column);
-					}
-				}
-			}
+                ISelectable column = pSelectColumns[index];
 
-			while (pReader.Read()) {
+                if(column is AColumn) {
 
-				for (int tablesIndex = 0; tablesIndex < tables.Count; tablesIndex++) {
+                    ATable table = ((AColumn)column).Table;
 
-					ATable table = tables[tablesIndex];
+                    if(!tables.Contains(table)) {
+                        tables.Add(table);
+                    }
+                }
+                else {
 
-					IList<ARow> rows;
+                    if(!functions.Contains(column)) {
+                        functions.Add(column);
+                    }
+                }
+            }
 
-					if(!mTableRows.ContainsKey(table)) {
-						rows = new List<ARow>();
-						mTableRows.Add(table, rows);
-					}
-					else {
-						rows = mTableRows[table];
-					}
-					
-					ARow row;
-					
-					try {	
-						row = (ARow) table.RowType.GetConstructor(new Type[]{}).Invoke(null);
-					}
-					catch(Exception e) {
-						throw new Exception("Failed to create a new instance of Row. This might be because there is no constructor on the row that has no parameters. Also see inner exception.", e);
-					}
-					
-					row.LoadFromQuery(pDatabase, table, pSelectColumns, pReader);
-					rows.Add(row);
-				}
+            while(pReader.Read()) {
 
-				for (int functionIndex = 0; functionIndex < functions.Count; functionIndex++) {
-					
-					ISelectable function = functions[functionIndex];
+                for(int tablesIndex = 0; tablesIndex < tables.Count; tablesIndex++) {
 
-					IList<object> values;
+                    ATable table = tables[tablesIndex];
 
-					if(!mFunctionValues.ContainsKey(function)) {
-						values = new List<object>();
-						mFunctionValues.Add(function, values);
-					}
-					else {
-						values = mFunctionValues[function];
-					}
+                    IList<ARow> rows;
 
-					values.Add(function.GetValue(pDatabase, pReader, pSelectColumns.IndexOf(function)));
-				}
-				mRows++;
-			}
-			RowsEffected = mRows;
-		}
+                    if(!mTableRows.ContainsKey(table)) {
+                        rows = new List<ARow>();
+                        mTableRows.Add(table, rows);
+                    }
+                    else {
+                        rows = mTableRows[table];
+                    }
 
-		public int Count {
-			get { return mRows; }
-		}
-		public string SqlQuery {
-			get { return mSqlQuery; }
-		}
+                    ARow row;
 
-		public ARow GetRow(ATable pTable, int pIndex) {
+                    try {
+                        row = (ARow)table.RowType.GetConstructor(new Type[] { }).Invoke(null);
+                    }
+                    catch(Exception e) {
+                        throw new Exception("Failed to create a new instance of Row. This might be because there is no constructor on the row that has no parameters. Also see inner exception.", e);
+                    }
 
-			if(pTable == null) {
-				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
-			}
+                    row.LoadFromQuery(pDatabase, table, pSelectColumns, pReader);
+                    rows.Add(row);
+                }
 
-			if(pIndex < 0) {
-				throw new IndexOutOfRangeException($"{ nameof(pIndex) } must >= 0. pIndex == { pIndex.ToString() }");
-			}
+                for(int functionIndex = 0; functionIndex < functions.Count; functionIndex++) {
 
-			if(!mTableRows.ContainsKey(pTable)) {
-				throw new Exception($"Table instance of type '{ pTable.GetType() }' does not exist in result. Check that is was included in select portion of query");
-			}
-			
-			return mTableRows[pTable][pIndex];
-		}
-		
-		public object GetValue(ISelectable pFunction, int pIndex) {
+                    ISelectable function = functions[functionIndex];
 
-			if(pFunction == null) {
-				throw new NullReferenceException($"{ nameof(pFunction) } cannot be null");
-			}
+                    IList<object> values;
 
-			if(pIndex < 0) {
-				throw new IndexOutOfRangeException($"{ nameof(pIndex) } must >= 0. pIndex == { pIndex.ToString() }");
-			}
-			
-			return mFunctionValues[pFunction][pIndex];
-		}
-		
-		public int GetDataSetSizeInBytes() {
-			
-			int bytes = 0;
-			
-			foreach(ATable table in mTableRows.Keys){
-				foreach(ARow row in mTableRows[table]) {
-					bytes += row.GetOrigRowDataSizeInBytes();
-				}
-			}
-			
-			foreach(ISelectable function in mFunctionValues.Keys){
-				foreach(object value in mFunctionValues[function]) {
-					bytes += SqlHelper.GetAproxByteSizeOf(value);
-				}
-			}
-			return bytes;
-		}
-	}
+                    if(!mFunctionValues.ContainsKey(function)) {
+                        values = new List<object>();
+                        mFunctionValues.Add(function, values);
+                    }
+                    else {
+                        values = mFunctionValues[function];
+                    }
+                    values.Add(function.GetValue(pDatabase, pReader, pSelectColumns.IndexOf(function)));
+                }
+                mRows++;
+            }
+            RowsEffected = mRows;
+        }
+
+        public int Count {
+            get { return mRows; }
+        }
+        public string SqlQuery {
+            get { return mSqlQuery; }
+        }
+
+        public ARow GetRow(ATable pTable, int pIndex) {
+
+            if(pTable == null) {
+                throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+            }
+
+            if(pIndex < 0) {
+                throw new IndexOutOfRangeException($"{ nameof(pIndex) } must >= 0. pIndex == { pIndex.ToString() }");
+            }
+
+            if(!mTableRows.ContainsKey(pTable)) {
+                throw new Exception($"Table instance of type '{ pTable.GetType() }' does not exist in result. Check that is was included in select portion of query");
+            }
+            return mTableRows[pTable][pIndex];
+        }
+
+        public object GetValue(ISelectable pFunction, int pIndex) {
+
+            if(pFunction == null) {
+                throw new NullReferenceException($"{ nameof(pFunction) } cannot be null");
+            }
+
+            if(pIndex < 0) {
+                throw new IndexOutOfRangeException($"{ nameof(pIndex) } must >= 0. pIndex == { pIndex.ToString() }");
+            }
+            return mFunctionValues[pFunction][pIndex];
+        }
+
+        public int GetDataSetSizeInBytes() {
+
+            int bytes = 0;
+
+            foreach(ATable table in mTableRows.Keys) {
+
+                foreach(ARow row in mTableRows[table]) {
+                    bytes += row.GetOrigRowDataSizeInBytes();
+                }
+            }
+
+            foreach(ISelectable function in mFunctionValues.Keys) {
+
+                foreach(object value in mFunctionValues[function]) {
+                    bytes += SqlHelper.GetAproxByteSizeOf(value);
+                }
+            }
+            return bytes;
+        }
+    }
 }

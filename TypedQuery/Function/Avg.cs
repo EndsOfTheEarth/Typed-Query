@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,201 +22,201 @@ using System.Text;
 
 namespace Sql.Function {
 
-	public sealed class AvgInteger : ANumericFunction {
+    public sealed class AvgInteger : ANumericFunction {
 
-		private readonly AColumn mColumn;
+        private readonly AColumn mColumn;
 
-		public AvgInteger(Column.IntegerColumn pColumn) {
+        public AvgInteger(Column.IntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public AvgInteger(Column.NIntegerColumn pColumn) {
 
-		public AvgInteger(Column.NIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public decimal? this[int pIndex, IResult pResult] {
+            get {
+                return (decimal?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+            return GetValueAsDecimal(pReader, pColumnIndex);
+        }
+    }
 
-			mColumn = pColumn;
-		}
+    public sealed class AvgBigInteger : ANumericFunction {
 
-		public decimal? this[int pIndex, IResult pResult] {
-			get {
-				return (decimal?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			return GetValueAsDecimal(pReader, pColumnIndex);
-		}
-	}
-	
-	public sealed class AvgBigInteger : ANumericFunction {
+        private readonly AColumn mColumn;
 
-		private readonly AColumn mColumn;
+        public AvgBigInteger(Column.BigIntegerColumn pColumn) {
 
-		public AvgBigInteger(Column.BigIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public AvgBigInteger(Column.NBigIntegerColumn pColumn) {
 
-			mColumn = pColumn;
-		}
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public AvgBigInteger(Column.NBigIntegerColumn pColumn) {
+        public decimal? this[int pIndex, IResult pResult] {
+            get {
+                return (decimal?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+            return GetValueAsDecimal(pReader, pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class AvgDecimal : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public decimal? this[int pIndex, IResult pResult] {
-			get {
-				return (decimal?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			return GetValueAsDecimal(pReader, pColumnIndex);
-		}
-	}
+        public AvgDecimal(Column.DecimalColumn pColumn) {
 
-	public sealed class AvgDecimal : ANumericFunction {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		private readonly AColumn mColumn;
+        public AvgDecimal(Column.NDecimalColumn pColumn) {
 
-		public AvgDecimal(Column.DecimalColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public decimal? this[int pIndex, IResult pResult] {
+            get {
+                return (decimal?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+            return GetValueAsDecimal(pReader, pColumnIndex);
+        }
+    }
 
-			mColumn = pColumn;
-		}
+    public sealed class AvgSmallInt : ANumericFunction {
 
-		public AvgDecimal(Column.NDecimalColumn pColumn) {
+        private readonly AColumn mColumn;
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public AvgSmallInt(Column.SmallIntegerColumn pColumn) {
 
-			mColumn = pColumn;
-		}
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public decimal? this[int pIndex, IResult pResult] {
-			get {
-				return (decimal?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			return GetValueAsDecimal(pReader, pColumnIndex);
-		}
-	}
-	
-	public sealed class AvgSmallInt : ANumericFunction {
+        public AvgSmallInt(Column.NSmallIntegerColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public AvgSmallInt(Column.SmallIntegerColumn pColumn) {
+        public decimal? this[int pIndex, IResult pResult] {
+            get {
+                return (decimal?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+            return GetValueAsDecimal(pReader, pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class AvgFloat : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public AvgSmallInt(Column.NSmallIntegerColumn pColumn) {
+        public AvgFloat(Column.FloatColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public AvgFloat(Column.NFloatColumn pColumn) {
 
-		public decimal? this[int pIndex, IResult pResult] {
-			get {
-				return (decimal?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			return GetValueAsDecimal(pReader, pColumnIndex);
-		}
-	}
-	
-	public sealed class AvgFloat : ANumericFunction {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		private readonly AColumn mColumn;
+        public double? this[int pIndex, IResult pResult] {
+            get {
+                return (double?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+            return GetValueAsDouble(pReader, pColumnIndex);
+        }
+    }
 
-		public AvgFloat(Column.FloatColumn pColumn) {
+    public sealed class AvgDouble : ANumericFunction {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        private readonly AColumn mColumn;
 
-			mColumn = pColumn;
-		}
+        public AvgDouble(Column.DoubleColumn pColumn) {
 
-		public AvgFloat(Column.NFloatColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public AvgDouble(Column.NDoubleColumn pColumn) {
 
-			mColumn = pColumn;
-		}
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public double? this[int pIndex, IResult pResult] {
-			get {
-				return (double?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			return GetValueAsDouble(pReader, pColumnIndex);
-		}
-	}
-	
-	public sealed class AvgDouble : ANumericFunction {
-
-		private readonly AColumn mColumn;
-
-		public AvgDouble(Column.DoubleColumn pColumn) {
-
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
-
-			mColumn = pColumn;
-		}
-
-		public AvgDouble(Column.NDoubleColumn pColumn) {
-
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
-
-			mColumn = pColumn;
-		}
-
-		public double? this[int pIndex, IResult pResult] {
-			get {
-				return (double?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			return GetValueAsDouble(pReader, pColumnIndex);
-		}
-	}
+        public double? this[int pIndex, IResult pResult] {
+            get {
+                return (double?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "AVG(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+            return GetValueAsDouble(pReader, pColumnIndex);
+        }
+    }
 }

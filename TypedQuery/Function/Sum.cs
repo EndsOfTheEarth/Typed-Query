@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,219 +23,233 @@ using Sql.Column;
 
 namespace Sql.Function {
 
-	public sealed class SumInteger : ANumericFunction {
+    public sealed class SumInteger : ANumericFunction {
 
-		private readonly AColumn mColumn;
+        private readonly AColumn mColumn;
 
-		public SumInteger(Column.IntegerColumn pColumn) {
+        public SumInteger(Column.IntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public SumInteger(Column.NIntegerColumn pColumn) {
 
-		public SumInteger(Column.NIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public int? this[int pIndex, IResult pResult] {
+            get {
+                return (int?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			mColumn = pColumn;
-		}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            if(pReader.GetFieldType(pColumnIndex) == typeof(Int64)) {
+                return (int?)Convert.ToInt32(pReader.GetInt64(pColumnIndex));
+            }
+            return (int?)pReader.GetInt32(pColumnIndex);
+        }
+    }
 
-		public int? this[int pIndex, IResult pResult] {
-			get {
-				return (int?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+    public sealed class SumBigInteger : ANumericFunction {
 
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			if (pReader.GetFieldType(pColumnIndex) == typeof(Int64))
-				return (int?)Convert.ToInt32(pReader.GetInt64(pColumnIndex));
-			return (int?)pReader.GetInt32(pColumnIndex);
-		}
-	}
+        private readonly AColumn mColumn;
 
-	public sealed class SumBigInteger : ANumericFunction {
+        public SumBigInteger(Column.BigIntegerColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public SumBigInteger(Column.BigIntegerColumn pColumn) {
+        public SumBigInteger(Column.NBigIntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public Int64? this[int pIndex, IResult pResult] {
+            get {
+                return (Int64?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public SumBigInteger(Column.NBigIntegerColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            if(pReader.GetFieldType(pColumnIndex) == typeof(decimal)) {
+                return decimal.ToInt64(pReader.GetDecimal(pColumnIndex));
+            }
+            else {
+                return (Int64?)pReader.GetInt64(pColumnIndex);
+            }
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class SumDecimal : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public Int64? this[int pIndex, IResult pResult] {
-			get {
-				return (Int64?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;			
-			if(pReader.GetFieldType(pColumnIndex) == typeof(decimal))
-				return decimal.ToInt64(pReader.GetDecimal(pColumnIndex));
-			else			
-				return (Int64?)pReader.GetInt64(pColumnIndex);
-		}
-	}
-	
-	public sealed class SumDecimal : ANumericFunction {
+        public SumDecimal(Column.DecimalColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public SumDecimal(Column.DecimalColumn pColumn) {
+        public SumDecimal(Column.NDecimalColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public decimal? this[int pIndex, IResult pResult] {
+            get {
+                return (decimal?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public SumDecimal(Column.NDecimalColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (decimal?)pReader.GetDecimal(pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class SumSmallInt : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public decimal? this[int pIndex, IResult pResult] {
-			get {
-				return (decimal?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (decimal?)pReader.GetDecimal(pColumnIndex);
-		}
-	}
-	
-	public sealed class SumSmallInt : ANumericFunction {
+        public SumSmallInt(Column.SmallIntegerColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public SumSmallInt(Column.SmallIntegerColumn pColumn) {
+        public SumSmallInt(Column.NSmallIntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public Int16? this[int pIndex, IResult pResult] {
+            get {
+                return (Int16?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public SumSmallInt(Column.NSmallIntegerColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (Int16?)pReader.GetInt16(pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class SumFloat : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public Int16? this[int pIndex, IResult pResult] {
-			get {
-				return (Int16?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (Int16?)pReader.GetInt16(pColumnIndex);
-		}
-	}
-	
-	public sealed class SumFloat : ANumericFunction {
+        public SumFloat(Column.FloatColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public SumFloat(Column.FloatColumn pColumn) {
+        public SumFloat(Column.NFloatColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public float? this[int pIndex, IResult pResult] {
+            get {
+                return (float?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public SumFloat(Column.NFloatColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (float?)pReader.GetFloat(pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class SumDouble : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public float? this[int pIndex, IResult pResult] {
-			get {
-				return (float?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (float?)pReader.GetFloat(pColumnIndex);
-		}
-	}
-	
-	public sealed class SumDouble : ANumericFunction {
+        public SumDouble(Column.DoubleColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public SumDouble(Column.DoubleColumn pColumn) {
+        public SumDouble(Column.NDoubleColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public double? this[int pIndex, IResult pResult] {
+            get {
+                return (double?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public SumDouble(Column.NDoubleColumn pColumn) {
-
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
-
-			mColumn = pColumn;
-		}
-
-		public double? this[int pIndex, IResult pResult] {
-			get {
-				return (double?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "SUM(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (double?)pReader.GetDouble(pColumnIndex);
-		}
-	}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (double?)pReader.GetDouble(pColumnIndex);
+        }
+    }
 }

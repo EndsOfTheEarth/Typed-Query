@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,189 +22,196 @@ using System.Text;
 using System.Data;
 
 namespace TypedQuery.Logic {
-	
-	public static class CodeGenerator {
 
-		public static string GenerateTableAndRowCode(ITableDetails pTableDetails, string pNamespace, ref string pColumnPrefix, bool pIncludeSchema, bool pGuessPrefix, bool pGenerateComments, bool pRemoveUnderscores, bool pGenerateKeyTypes) {
+    public static class CodeGenerator {
 
-			if(pTableDetails == null)
-				return "Unable to load table details";
+        public static string GenerateTableAndRowCode(ITableDetails pTableDetails, string pNamespace, ref string pColumnPrefix, bool pIncludeSchema, bool pGuessPrefix, bool pGenerateComments, bool pRemoveUnderscores, bool pGenerateKeyTypes) {
+
+            if(pTableDetails == null) {
+                return "Unable to load table details";
+            }
 
             if(string.IsNullOrEmpty(pNamespace)) {
                 pNamespace = "Tables";
             }
-			
-			if(pGuessPrefix && pTableDetails.Columns.Count > 1) {
 
-				bool stop = false;
+            if(pGuessPrefix && pTableDetails.Columns.Count > 1) {
 
-				int charIndex = 0;
+                bool stop = false;
 
-				string prefix = string.Empty;
+                int charIndex = 0;
 
-				while(!stop) {
+                string prefix = string.Empty;
 
-					char? c = null;
+                while(!stop) {
 
-					for(int index = 0; index < pTableDetails.Columns.Count; index++) {
+                    char? c = null;
 
-						IColumn column = pTableDetails.Columns[index];
+                    for(int index = 0; index < pTableDetails.Columns.Count; index++) {
 
-						if(charIndex >= column.ColumnName.Length - 1) {
-							stop = true;
-							break;
-						}
-						
-						if(index == 0) {
-							c = column.ColumnName[charIndex];
-						}
-						else if(char.ToLower(c.Value) != char.ToLower(column.ColumnName[charIndex])) {
-							stop = true;
-							break;
-						}
-					}
+                        IColumn column = pTableDetails.Columns[index];
 
-					if(!stop && c != null) {
-						prefix += c.Value;
-						charIndex++;
-					}
-					else {
-						break; //Just incase
-					}
-				}
+                        if(charIndex >= column.ColumnName.Length - 1) {
+                            stop = true;
+                            break;
+                        }
 
-				if(prefix.Length > 1 && prefix.Length < 6)
-					pColumnPrefix = prefix;
-			}
+                        if(index == 0) {
+                            c = column.ColumnName[charIndex];
+                        }
+                        else if(char.ToLower(c.Value) != char.ToLower(column.ColumnName[charIndex])) {
+                            stop = true;
+                            break;
+                        }
+                    }
 
-			string endl = Environment.NewLine;
-			string tab = "\t";
+                    if(!stop && c != null) {
+                        prefix += c.Value;
+                        charIndex++;
+                    }
+                    else {
+                        break; //Just incase
+                    }
+                }
 
-			StringBuilder code = new StringBuilder();
+                if(prefix.Length > 1 && prefix.Length < 6) {
+                    pColumnPrefix = prefix;
+                }
+            }
 
-			code.Append("using System;").Append(endl);
+            string endl = Environment.NewLine;
+            string tab = "\t";
 
-			if(pGenerateKeyTypes) {
-				code.Append("using Sql.Types;").Append(endl);
-			}
-			code.Append("using Sql.Column;").Append(endl);
+            StringBuilder code = new StringBuilder();
 
-			code.Append(endl);
-			code.Append("namespace ").Append(pNamespace).Append(".").Append(pTableDetails.TableName.Replace(" ", string.Empty)).Append(" {").Append(endl);
-			code.Append(endl);
+            code.Append("using System;").Append(endl);
 
-			if(pGenerateComments) {				
-				code.Append(tab).Append("[Sql.TableAttribute(\"").Append(pTableDetails.Description).Append("\")]").Append(endl);
-			}
+            if(pGenerateKeyTypes) {
+                code.Append("using Sql.Types;").Append(endl);
+            }
+            code.Append("using Sql.Column;").Append(endl);
 
-			code.Append(tab).Append("public sealed class Table : ").Append(typeof(Sql.ATable).ToString()).Append(" {").Append(endl);
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("public static readonly Table Instance = new Table();").Append(endl);
-			code.Append(endl);
+            code.Append(endl);
+            code.Append("namespace ").Append(pNamespace).Append(".").Append(pTableDetails.TableName.Replace(" ", string.Empty)).Append(" {").Append(endl);
+            code.Append(endl);
 
-			for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
+            if(pGenerateComments) {
+                code.Append(tab).Append("[Sql.TableAttribute(\"").Append(pTableDetails.Description).Append("\")]").Append(endl);
+            }
 
-				IColumn column = pTableDetails.Columns[columnIndex];
+            code.Append(tab).Append("public sealed class Table : ").Append(typeof(Sql.ATable).ToString()).Append(" {").Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("public static readonly Table Instance = new Table();").Append(endl);
+            code.Append(endl);
 
-				if(pGenerateComments) {
+            for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-					if(columnIndex > 0)
-						code.Append(endl);
+                IColumn column = pTableDetails.Columns[columnIndex];
 
-					code.Append(tab).Append(tab).Append("[Sql.ColumnAttribute(\"").Append(column.Description).Append("\")]").Append(endl);
-				}
-				code.Append(tab).Append(tab).Append("public ").Append(GetColumnType(column, pTableDetails, pGenerateKeyTypes)).Append(" ").Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores))).Append(" { get; private set; }").Append(endl);
-			}
+                if(pGenerateComments) {
 
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("public Table() : base(\"").Append(pTableDetails.TableName).Append("\", \"").Append(pIncludeSchema ? pTableDetails.Schema : string.Empty).Append("\", ").Append(pTableDetails.IsView ? "true" : "false").Append(", typeof(Row)) {").Append(endl);
-			code.Append(endl);
+                    if(columnIndex > 0) {
+                        code.Append(endl);
+                    }
+                    code.Append(tab).Append(tab).Append("[Sql.ColumnAttribute(\"").Append(column.Description).Append("\")]").Append(endl);
+                }
+                code.Append(tab).Append(tab).Append("public ").Append(GetColumnType(column, pTableDetails, pGenerateKeyTypes)).Append(" ").Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores))).Append(" { get; private set; }").Append(endl);
+            }
 
-			for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
-				
-				IColumn column = pTableDetails.Columns[columnIndex];
-				string primaryKey = column.IsPrimaryKey ? "true" : "false";
-				string isAutoGenerated = column.IsAutoGenerated ? "true" : "false";
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("public Table() : base(\"").Append(pTableDetails.TableName).Append("\", \"").Append(pIncludeSchema ? pTableDetails.Schema : string.Empty).Append("\", ").Append(pTableDetails.IsView ? "true" : "false").Append(", typeof(Row)) {").Append(endl);
+            code.Append(endl);
 
-				code.Append(tab).Append(tab).Append(tab).Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores))).Append(" = new ").Append(GetColumnType(column, pTableDetails, pGenerateKeyTypes)).Append("(this, \"").Append(column.ColumnName).Append("\", ").Append(primaryKey);
+            for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-				if(column.IsAutoGenerated) {
-					code.Append(", ").Append(isAutoGenerated);
-				}
+                IColumn column = pTableDetails.Columns[columnIndex];
+                string primaryKey = column.IsPrimaryKey ? "true" : "false";
+                string isAutoGenerated = column.IsAutoGenerated ? "true" : "false";
 
-				if(column.MaxLength != null && column.DbType != System.Data.DbType.Binary && column.DbType != DbType.Byte) {
-					if(column.MaxLength == -1) {
-						code.Append(", int.MaxValue");
-					}
-					else {
-						code.Append(", " + column.MaxLength.Value.ToString());
-					}
-				}
-				code.Append(");").Append(endl);
-			}
+                code.Append(tab).Append(tab).Append(tab).Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores))).Append(" = new ").Append(GetColumnType(column, pTableDetails, pGenerateKeyTypes)).Append("(this, \"").Append(column.ColumnName).Append("\", ").Append(primaryKey);
 
-			code.Append(endl);
+                if(column.IsAutoGenerated) {
+                    code.Append(", ").Append(isAutoGenerated);
+                }
 
-			code.Append(tab).Append(tab).Append(tab).Append("AddColumns(");
+                if(column.MaxLength != null && column.DbType != DbType.Binary && column.DbType != DbType.Byte) {
 
-			for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
-				IColumn column = pTableDetails.Columns[columnIndex];
-				if(columnIndex > 0)
-					code.Append(", ");
-				code.Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores)));
-			}
+                    if(column.MaxLength == -1) {
+                        code.Append(", int.MaxValue");
+                    }
+                    else {
+                        code.Append(", " + column.MaxLength.Value.ToString());
+                    }
+                }
+                code.Append(");").Append(endl);
+            }
 
-			code.Append(");").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
-			code.Append(endl);
+            code.Append(endl);
 
-			code.Append(tab).Append(tab).Append("public Row GetRow(int pIndex, Sql.IResult pResult) {").Append(endl);
-			code.Append(tab).Append(tab).Append(tab).Append("return (Row)pResult.GetRow(this, pIndex);").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
-			code.Append(tab).Append("}").Append(endl);
+            code.Append(tab).Append(tab).Append(tab).Append("AddColumns(");
 
-			code.Append(endl);
+            for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-			//
-			//	Generate row code
-			//
-			code.Append(tab).Append("public sealed class Row : ").Append(typeof(Sql.ARow).ToString()).Append(" {").Append(endl);
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("private new Table Tbl {").Append(endl);
-			code.Append(tab).Append(tab).Append(tab).Append("get { return (Table)base.Tbl; }").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("public Row() : base(Table.Instance) {").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
-			code.Append(endl);
+                IColumn column = pTableDetails.Columns[columnIndex];
 
-			for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
-				
-				IColumn column = pTableDetails.Columns[columnIndex];
+                if(columnIndex > 0) {
+                    code.Append(", ");
+                }
+                code.Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores)));
+            }
 
-				string columnName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
+            code.Append(");").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(endl);
 
-				if(columnIndex > 0)
-					code.Append(endl);
+            code.Append(tab).Append(tab).Append("public Row GetRow(int pIndex, Sql.IResult pResult) {").Append(endl);
+            code.Append(tab).Append(tab).Append(tab).Append("return (Row)pResult.GetRow(this, pIndex);").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(tab).Append("}").Append(endl);
 
-				code.Append(tab).Append(tab).Append("public ").Append(GetReturnType(column.DbType, column.IsNullable, column, pTableDetails, pGenerateKeyTypes)).Append(" ").Append(columnName).Append(" {").Append(endl);
-				code.Append(tab).Append(tab).Append(tab).Append("get { return Tbl.").Append(columnName).Append(".ValueOf(this); }").Append(endl);
+            code.Append(endl);
 
-				if(!column.IsAutoGenerated && !pTableDetails.IsView)
-					code.Append(tab).Append(tab).Append(tab).Append("set { Tbl.").Append(columnName).Append(".SetValue(this, value); }").Append(endl);
+            //
+            //	Generate row code
+            //
+            code.Append(tab).Append("public sealed class Row : ").Append(typeof(Sql.ARow).ToString()).Append(" {").Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("private new Table Tbl {").Append(endl);
+            code.Append(tab).Append(tab).Append(tab).Append("get { return (Table)base.Tbl; }").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("public Row() : base(Table.Instance) {").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(endl);
 
-				code.Append(tab).Append(tab).Append("}").Append(endl);
-			}
-			code.Append(tab).Append("}").Append(endl);
-			code.Append("}");
+            for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-			return code.ToString();
-		}
+                IColumn column = pTableDetails.Columns[columnIndex];
 
-		public static string GenerateClassCode(ITableDetails pTableDetails, string pNamespace, string pColumnPrefix, bool pRemoveUnderscores, bool pGenerateKeyTypes) {
+                string columnName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
 
-			string endl = Environment.NewLine;
-			string tab = "\t";
+                if(columnIndex > 0) {
+                    code.Append(endl);
+                }
+
+                code.Append(tab).Append(tab).Append("public ").Append(GetReturnType(column.DbType, column.IsNullable, column, pTableDetails, pGenerateKeyTypes)).Append(" ").Append(columnName).Append(" {").Append(endl);
+                code.Append(tab).Append(tab).Append(tab).Append("get { return Tbl.").Append(columnName).Append(".ValueOf(this); }").Append(endl);
+
+                if(!column.IsAutoGenerated && !pTableDetails.IsView) {
+                    code.Append(tab).Append(tab).Append(tab).Append("set { Tbl.").Append(columnName).Append(".SetValue(this, value); }").Append(endl);
+                }
+                code.Append(tab).Append(tab).Append("}").Append(endl);
+            }
+            code.Append(tab).Append("}").Append(endl);
+            code.Append("}");
+
+            return code.ToString();
+        }
+
+        public static string GenerateClassCode(ITableDetails pTableDetails, string pNamespace, string pColumnPrefix, bool pRemoveUnderscores, bool pGenerateKeyTypes) {
+
+            string endl = Environment.NewLine;
+            string tab = "\t";
 
             if(string.IsNullOrEmpty(pNamespace)) {
                 pNamespace = "Logic";
@@ -212,50 +219,51 @@ namespace TypedQuery.Logic {
 
             string className = FormatName(pTableDetails.TableName);
 
-			StringBuilder code = new StringBuilder();
+            StringBuilder code = new StringBuilder();
 
-			code.Append("using System;").Append(endl);
+            code.Append("using System;").Append(endl);
 
-			if(pGenerateKeyTypes) {
-				code.Append("using Sql.Types;").Append(endl);
-			}
-			code.Append("using Sql.Column;").Append(endl);
-			code.Append(endl);
+            if(pGenerateKeyTypes) {
+                code.Append("using Sql.Types;").Append(endl);
+            }
+            code.Append("using Sql.Column;").Append(endl);
+            code.Append(endl);
 
-			code.Append("namespace ").Append(pNamespace).Append(".").Append(pTableDetails.TableName).Append(" {").Append(endl);
-			code.Append(endl);
+            code.Append("namespace ").Append(pNamespace).Append(".").Append(pTableDetails.TableName).Append(" {").Append(endl);
+            code.Append(endl);
 
-			code.Append(tab).Append("public class ").Append("Info").Append(" {").Append(endl);
-			code.Append(endl);
+            code.Append(tab).Append("public class ").Append("Info").Append(" {").Append(endl);
+            code.Append(endl);
 
-			for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
+            for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-				IColumn column = pTableDetails.Columns[columnIndex];
+                IColumn column = pTableDetails.Columns[columnIndex];
 
-				code.Append(tab).Append(tab).Append("public ").Append(GetReturnType(column.DbType, column.IsNullable, column, pTableDetails, pGenerateKeyTypes)).Append(" ").Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores))).Append(" { get;");
+                code.Append(tab).Append(tab).Append("public ").Append(GetReturnType(column.DbType, column.IsNullable, column, pTableDetails, pGenerateKeyTypes)).Append(" ").Append(FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores))).Append(" { get;");
 
-				if(!column.IsAutoGenerated && !pTableDetails.IsView)
-					code.Append(" private set; }");
-				else
-					code.Append(" private set; }");
+                if(!column.IsAutoGenerated && !pTableDetails.IsView) {
+                    code.Append(" private set; }");
+                }
+                else {
+                    code.Append(" private set; }");
+                }
+                code.Append(endl);
+            }
 
-				code.Append(endl);
-			}
+            code.Append(endl);
 
-			code.Append(endl);
+            code.Append(tab).Append(tab).Append("public ").Append("Info").Append("(Row pRow) {").Append(endl);
+            code.Append(endl);
 
-			code.Append(tab).Append(tab).Append("public ").Append("Info").Append("(Row pRow) {").Append(endl);
-			code.Append(endl);
+            for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-			for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
+                IColumn column = pTableDetails.Columns[columnIndex];
+                string fieldName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
 
-				IColumn column = pTableDetails.Columns[columnIndex];
-				string fieldName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
+                code.Append(tab).Append(tab).Append(tab).Append(fieldName).Append(" = pRow.").Append(fieldName).Append(";").Append(endl);
+            }
 
-				code.Append(tab).Append(tab).Append(tab).Append(fieldName).Append(" = pRow.").Append(fieldName).Append(";").Append(endl);
-			}
-
-			code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
 
             if(!pTableDetails.IsView) {
 
@@ -274,69 +282,70 @@ namespace TypedQuery.Logic {
 
                 code.Append(tab).Append(tab).Append("}").Append(endl);
 
-				code.Append(endl);
-				code.Append(tab).Append(tab).Append("public void SetValues(");
+                code.Append(endl);
+                code.Append(tab).Append(tab).Append("public void SetValues(");
 
-				for(int columnIndex = 0, paramCount = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
+                for(int columnIndex = 0, paramCount = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-					IColumn column = pTableDetails.Columns[columnIndex];
-					string fieldName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
+                    IColumn column = pTableDetails.Columns[columnIndex];
+                    string fieldName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
 
-					if(!column.IsAutoGenerated) {
+                    if(!column.IsAutoGenerated) {
 
-						if(paramCount > 0) {
-							code.Append(", ");
-						}
-						code.Append(GetReturnType(column.DbType, column.IsNullable, column, pTableDetails, pGenerateKeyTypes)).Append(" p").Append(fieldName);
-						paramCount++;
-					}
-				}
-				code.Append(") {").Append(endl);
+                        if(paramCount > 0) {
+                            code.Append(", ");
+                        }
+                        code.Append(GetReturnType(column.DbType, column.IsNullable, column, pTableDetails, pGenerateKeyTypes)).Append(" p").Append(fieldName);
+                        paramCount++;
+                    }
+                }
+                code.Append(") {").Append(endl);
 
-				for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
+                for(int columnIndex = 0; columnIndex < pTableDetails.Columns.Count; columnIndex++) {
 
-					IColumn column = pTableDetails.Columns[columnIndex];
-					string fieldName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
+                    IColumn column = pTableDetails.Columns[columnIndex];
+                    string fieldName = FormatName(GetColumnName(column, pColumnPrefix, pRemoveUnderscores));
 
-					if(!column.IsAutoGenerated) {
-						code.Append(tab).Append(tab).Append(tab).Append(fieldName).Append(" = p").Append(fieldName).Append(";").Append(endl);
-					}
-				}
-				code.Append(tab).Append(tab).Append("}").Append(endl);
-			}
+                    if(!column.IsAutoGenerated) {
+                        code.Append(tab).Append(tab).Append(tab).Append(fieldName).Append(" = p").Append(fieldName).Append(";").Append(endl);
+                    }
+                }
+                code.Append(tab).Append(tab).Append("}").Append(endl);
+            }
 
-			code.Append(tab).Append("}").Append(endl);
-			code.Append("}");
+            code.Append(tab).Append("}").Append(endl);
+            code.Append("}");
 
-			return code.ToString();
-		}
+            return code.ToString();
+        }
 
-		private static string GetColumnName(IColumn pColumn, string pColumnPrefix, bool pRemoveUnderscores) {
+        private static string GetColumnName(IColumn pColumn, string pColumnPrefix, bool pRemoveUnderscores) {
 
-			string value;
+            string value;
 
-            if (!string.IsNullOrEmpty(pColumnPrefix) && pColumn.ColumnName.ToLower().StartsWith(pColumnPrefix.ToLower())) {
+            if(!string.IsNullOrEmpty(pColumnPrefix) && pColumn.ColumnName.ToLower().StartsWith(pColumnPrefix.ToLower())) {
                 value = pColumn.ColumnName.Substring(pColumnPrefix.Length);
             }
             else {
                 value = pColumn.ColumnName;
             }
 
-            if (pRemoveUnderscores) {
+            if(pRemoveUnderscores) {
 
                 StringBuilder name = new StringBuilder();
 
                 bool upperCaseNextChar = true;
 
-                for (int index = 0; index < value.Length; index++) {
+                for(int index = 0; index < value.Length; index++) {
 
                     char c = value[index];
 
-                    if (c == '_') {
+                    if(c == '_') {
                         upperCaseNextChar = true;
                     }
                     else {
-                        if (upperCaseNextChar) {
+
+                        if(upperCaseNextChar) {
                             name.Append(Char.ToUpper(c));
                             upperCaseNextChar = false;
                         }
@@ -348,57 +357,58 @@ namespace TypedQuery.Logic {
                 return name.ToString();
             }
             return value;
-		}
+        }
 
-		private static string FormatName(string pString) {
+        private static string FormatName(string pString) {
 
-			StringBuilder str = new StringBuilder();
+            StringBuilder str = new StringBuilder();
 
-			for(int index = 0; index < pString.Length; index++) {
+            for(int index = 0; index < pString.Length; index++) {
 
-				char c = pString[index];
+                char c = pString[index];
 
-				if(index == 0 || (index > 0 && pString[index - 1] == '_')) {
-					str.Append((string.Empty + c).ToUpper());
-				}
-				else
-					str.Append(c);
-			}
-			return str.ToString();
-		}
+                if(index == 0 || (index > 0 && pString[index - 1] == '_')) {
+                    str.Append((string.Empty + c).ToUpper());
+                }
+                else {
+                    str.Append(c);
+                }
+            }
+            return str.ToString();
+        }
 
-		private static string GetColumnType(IColumn pColumn, ITableDetails pTable, bool pGenerateKeyTypes) {
+        private static string GetColumnType(IColumn pColumn, ITableDetails pTable, bool pGenerateKeyTypes) {
 
-			string value;
+            string value;
 
-			List<KeyColumn> matchingKeyColumns = new List<KeyColumn>();
+            List<KeyColumn> matchingKeyColumns = new List<KeyColumn>();
 
-			foreach(IForeignKey foreignKey in pTable.ForeignKeys) {
+            foreach(IForeignKey foreignKey in pTable.ForeignKeys) {
 
-				foreach(KeyColumn keyColumn in foreignKey.KeyColumns) {
+                foreach(KeyColumn keyColumn in foreignKey.KeyColumns) {
 
                     if(keyColumn.ForeignKeyColumn == pColumn) {
                         matchingKeyColumns.Add(keyColumn);
                     }
-				}
-			}
+                }
+            }
 
-			if(pColumn.DbType == System.Data.DbType.Boolean) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.BoolColumn).Name : typeof(Sql.Column.NBoolColumn).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.DateTime) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeColumn).Name : typeof(Sql.Column.NDateTimeColumn).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.DateTime2) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTime2Column).Name : typeof(Sql.Column.NDateTime2Column).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.DateTimeOffset) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeOffsetColumn).Name : typeof(Sql.Column.NDateTimeOffsetColumn).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.Decimal) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DecimalColumn).Name : typeof(Sql.Column.NDecimalColumn).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.Guid) {
+            if(pColumn.DbType == DbType.Boolean) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.BoolColumn).Name : typeof(Sql.Column.NBoolColumn).Name;
+            }
+            else if(pColumn.DbType == DbType.DateTime) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeColumn).Name : typeof(Sql.Column.NDateTimeColumn).Name;
+            }
+            else if(pColumn.DbType == DbType.DateTime2) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.DateTime2Column).Name : typeof(Sql.Column.NDateTime2Column).Name;
+            }
+            else if(pColumn.DbType == DbType.DateTimeOffset) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.DateTimeOffsetColumn).Name : typeof(Sql.Column.NDateTimeOffsetColumn).Name;
+            }
+            else if(pColumn.DbType == DbType.Decimal) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.DecimalColumn).Name : typeof(Sql.Column.NDecimalColumn).Name;
+            }
+            else if(pColumn.DbType == DbType.Guid) {
 
                 if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -415,15 +425,17 @@ namespace TypedQuery.Logic {
                 else {
                     value = !pColumn.IsNullable ? typeof(Sql.Column.GuidColumn).Name : typeof(Sql.Column.NGuidColumn).Name;
                 }
-			}
-			else if(pColumn.DbType == System.Data.DbType.Int16) {
+            }
+            else if(pColumn.DbType == DbType.Int16) {
 
                 if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
-                    if(matchingKeyColumns.Count == 1)
+                    if(matchingKeyColumns.Count == 1) {
                         value = (!pColumn.IsNullable ? "SmallIntegerKeyColumn" : "NSmallIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + ".Table>";
-                    else
+                    }
+                    else {
                         value = (!pColumn.IsNullable ? "SmallIntegerKeyColumn" : "NSmallIntegerKeyColumn") + "<" + matchingKeyColumns[0].PrimaryKeyTableName + "<??? Column Belongs to multipule foreign keys ???>.Table>";
+                    }
                 }
                 else if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
                     value = (!pColumn.IsNullable ? "SmallIntegerKeyColumn" : "NSmallIntegerKeyColumn") + "<" + pTable.TableName + ".Table>";
@@ -431,8 +443,8 @@ namespace TypedQuery.Logic {
                 else {
                     value = !pColumn.IsNullable ? typeof(Sql.Column.SmallIntegerColumn).Name : typeof(Sql.Column.NSmallIntegerColumn).Name;
                 }
-			}
-			else if(pColumn.DbType == System.Data.DbType.Int32) {
+            }
+            else if(pColumn.DbType == DbType.Int32) {
 
                 if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -449,8 +461,8 @@ namespace TypedQuery.Logic {
                 else {
                     value = !pColumn.IsNullable ? typeof(Sql.Column.IntegerColumn).Name : typeof(Sql.Column.NIntegerColumn).Name;
                 }
-			}
-			else if(pColumn.DbType == System.Data.DbType.Int64) {
+            }
+            else if(pColumn.DbType == DbType.Int64) {
 
                 if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -467,8 +479,8 @@ namespace TypedQuery.Logic {
                 else {
                     value = !pColumn.IsNullable ? typeof(Sql.Column.BigIntegerColumn).Name : typeof(Sql.Column.NBigIntegerColumn).Name;
                 }
-			}
-			else if(pColumn.DbType == System.Data.DbType.String) {
+            }
+            else if(pColumn.DbType == DbType.String) {
 
                 if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -485,294 +497,310 @@ namespace TypedQuery.Logic {
                 else {
                     value = typeof(Sql.Column.StringColumn).Name;
                 }
-			}
-			else if(pColumn.DbType == System.Data.DbType.Binary) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.BinaryColumn).Name : typeof(Sql.Column.NBinaryColumn).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.Byte) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.ByteColumn).Name : typeof(Sql.Column.NByteColumn).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.Single) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.FloatColumn).Name : typeof(Sql.Column.NFloatColumn).Name;
-			}
-			else if(pColumn.DbType == System.Data.DbType.Double) {
-				value = !pColumn.IsNullable ? typeof(Sql.Column.DoubleColumn).Name : typeof(Sql.Column.NDoubleColumn).Name;
-			}
-			else {
-				value = "UNKNOWN_COLUMN_TYPE";
-			}
-			return value;
-		}
+            }
+            else if(pColumn.DbType == DbType.Binary) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.BinaryColumn).Name : typeof(Sql.Column.NBinaryColumn).Name;
+            }
+            else if(pColumn.DbType == DbType.Byte) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.ByteColumn).Name : typeof(Sql.Column.NByteColumn).Name;
+            }
+            else if(pColumn.DbType == DbType.Single) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.FloatColumn).Name : typeof(Sql.Column.NFloatColumn).Name;
+            }
+            else if(pColumn.DbType == DbType.Double) {
+                value = !pColumn.IsNullable ? typeof(Sql.Column.DoubleColumn).Name : typeof(Sql.Column.NDoubleColumn).Name;
+            }
+            else {
+                value = "UNKNOWN_COLUMN_TYPE";
+            }
+            return value;
+        }
 
-		public static string GenerateStoredProcedureCode(Logic.IStoredProcedureDetail pProc, string pColumnPrefix, bool pIncludeSchema) {
+        public static string GenerateStoredProcedureCode(Logic.IStoredProcedureDetail pProc, string pColumnPrefix, bool pIncludeSchema) {
 
-			string endl = Environment.NewLine;
-			string tab = "\t";
+            string endl = Environment.NewLine;
+            string tab = "\t";
 
-			StringBuilder code = new StringBuilder();
+            StringBuilder code = new StringBuilder();
 
-			code.Append("using System;").Append(endl);
-			code.Append("using System.Data;").Append(endl);
-			code.Append("using System.Data.SqlClient;").Append(endl).Append(endl);
+            code.Append("using System;").Append(endl);
+            code.Append("using System.Data;").Append(endl);
+            code.Append("using System.Data.SqlClient;").Append(endl).Append(endl);
 
-			code.Append("namespace Tables.").Append(pProc.Name).Append(" {").Append(endl);
-			code.Append(endl);
-			code.Append(tab).Append("public sealed class Proc : ").Append(typeof(Sql.AStoredProc).ToString()).Append(" {").Append(endl);
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("public static readonly Proc Instance = new Proc();").Append(endl);
+            code.Append("namespace Tables.").Append(pProc.Name).Append(" {").Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append("public sealed class Proc : ").Append(typeof(Sql.AStoredProc).ToString()).Append(" {").Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("public static readonly Proc Instance = new Proc();").Append(endl);
 
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("public Proc() : base(DATABASE, \"").Append(pIncludeSchema && !string.IsNullOrEmpty(pProc.Schema) ? pProc.Schema + "." : string.Empty).Append(pProc.Name).Append("\", typeof(Row)) {").Append(endl);
-			code.Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("public Proc() : base(DATABASE, \"").Append(pIncludeSchema && !string.IsNullOrEmpty(pProc.Schema) ? pProc.Schema + "." : string.Empty).Append(pProc.Name).Append("\", typeof(Row)) {").Append(endl);
+            code.Append(endl);
 
-			code.Append(tab).Append(tab).Append(tab).Append("//AddColumns(");
-			code.Append(");").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
-			code.Append(endl);
+            code.Append(tab).Append(tab).Append(tab).Append("//AddColumns(");
+            code.Append(");").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(endl);
 
-			code.Append(tab).Append(tab).Append("public Sql.IResult Execute(");
+            code.Append(tab).Append(tab).Append("public Sql.IResult Execute(");
 
-			for(int index = 0; index < pProc.Parameters.Count; index++) {
+            for(int index = 0; index < pProc.Parameters.Count; index++) {
 
-				Logic.ISpParameter param = pProc.Parameters[index];
+                Logic.ISpParameter param = pProc.Parameters[index];
 
-				if(index > 0)
-					code.Append(", ");
+                if(index > 0) {
+                    code.Append(", ");
+                }
 
-				if(param.Direction == System.Data.ParameterDirection.Output || param.Direction == System.Data.ParameterDirection.ReturnValue)
-					code.Append("out ");
+                if(param.Direction == ParameterDirection.Output || param.Direction == ParameterDirection.ReturnValue) {
+                    code.Append("out ");
+                }
+                code.Append(GetReturnType(param.ParamType, false, null, null, false)).Append(" ").Append(param.Name);
+            }
 
-				code.Append(GetReturnType(param.ParamType, false, null, null, false)).Append(" ").Append(param.Name);
-			}
+            if(pProc.Parameters.Count > 0) {
+                code.Append(", ");
+            }
 
-			if(pProc.Parameters.Count > 0)
-				code.Append(", ");
+            code.Append("Sql.Transaction pTransaction) {").Append(endl).Append(endl);
 
-			code.Append("Sql.Transaction pTransaction) {").Append(endl).Append(endl);
+            for(int index = 0; index < pProc.Parameters.Count; index++) {
 
-			for(int index = 0; index < pProc.Parameters.Count; index++) {
+                Logic.ISpParameter param = pProc.Parameters[index];
 
-				Logic.ISpParameter param = pProc.Parameters[index];
+                code.Append(tab).Append(tab).Append(tab).Append("SqlParameter p").Append(index.ToString()).Append(" = new SqlParameter(\"").Append(param.Name).Append("\", SqlDbType.").Append(ConvertToSqlDbType(param.ParamType).ToString()).Append(");").Append(endl);
 
-				code.Append(tab).Append(tab).Append(tab).Append("SqlParameter p").Append(index.ToString()).Append(" = new SqlParameter(\"").Append(param.Name).Append("\", SqlDbType.").Append(ConvertToSqlDbType(param.ParamType).ToString()).Append(");").Append(endl);
+                code.Append(tab).Append(tab).Append(tab).Append("p").Append(index.ToString()).Append(".Direction = ParameterDirection.").Append(param.Direction.ToString()).Append(";").Append(endl);
 
-				code.Append(tab).Append(tab).Append(tab).Append("p").Append(index.ToString()).Append(".Direction = ParameterDirection.").Append(param.Direction.ToString()).Append(";").Append(endl);
+                if(param.Direction == ParameterDirection.Input || param.Direction == ParameterDirection.InputOutput) {
+                    code.Append(tab).Append(tab).Append(tab).Append("p").Append(index.ToString()).Append(".Value = ").Append(param.Name).Append(";").Append(endl);
+                }
+                code.Append(endl);
+            }
 
-				if(param.Direction == System.Data.ParameterDirection.Input || param.Direction == System.Data.ParameterDirection.InputOutput)
-					code.Append(tab).Append(tab).Append(tab).Append("p").Append(index.ToString()).Append(".Value = ").Append(param.Name).Append(";").Append(endl);
+            code.Append(tab).Append(tab).Append(tab).Append("Sql.IResult result = ExecuteProcedure(pTransaction");
 
-				code.Append(endl);
-			}
+            for(int index = 0; index < pProc.Parameters.Count; index++) {
+                code.Append(", p").Append(index.ToString());
+            }
 
-			code.Append(tab).Append(tab).Append(tab).Append("Sql.IResult result = ExecuteProcedure(pTransaction");
+            code.Append(");").Append(endl).Append(endl);
 
-			for(int index = 0; index < pProc.Parameters.Count; index++)
-				code.Append(", p").Append(index.ToString());
+            for(int index = 0; index < pProc.Parameters.Count; index++) {
 
-			code.Append(");").Append(endl).Append(endl);
+                Logic.ISpParameter param = pProc.Parameters[index];
 
-			for(int index = 0; index < pProc.Parameters.Count; index++) {
+                if(param.Direction == ParameterDirection.InputOutput || param.Direction == ParameterDirection.Output || param.Direction == ParameterDirection.ReturnValue) {
+                    code.Append(tab).Append(tab).Append(tab).Append(param.Name).Append(" = (").Append(GetReturnType(param.ParamType, false, null, null, false)).Append(")").Append("p").Append(index.ToString()).Append(".Value;").Append(endl);
+                }
+            }
 
-				Logic.ISpParameter param = pProc.Parameters[index];
+            code.Append(tab).Append(tab).Append(tab).Append("return result;").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl).Append(endl);
 
-				if(param.Direction == System.Data.ParameterDirection.InputOutput || param.Direction == System.Data.ParameterDirection.Output || param.Direction == System.Data.ParameterDirection.ReturnValue)
-					code.Append(tab).Append(tab).Append(tab).Append(param.Name).Append(" = (").Append(GetReturnType(param.ParamType, false, null, null, false)).Append(")").Append("p").Append(index.ToString()).Append(".Value;").Append(endl);
-			}
+            code.Append(tab).Append(tab).Append("public Row this[int pIndex, Sql.IResult pResult] {").Append(endl);
+            code.Append(tab).Append(tab).Append(tab).Append("get { return (Row)pResult.GetRow(this, pIndex); }").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(tab).Append("}").Append(endl);
 
-			code.Append(tab).Append(tab).Append(tab).Append("return result;").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl).Append(endl);
+            code.Append(endl);
 
-			code.Append(tab).Append(tab).Append("public Row this[int pIndex, Sql.IResult pResult] {").Append(endl);
-			code.Append(tab).Append(tab).Append(tab).Append("get { return (Row)pResult.GetRow(this, pIndex); }").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
-			code.Append(tab).Append("}").Append(endl);
+            //
+            //	Generate row code
+            //
+            code.Append(tab).Append("public sealed class Row : ").Append(typeof(Sql.ARow).ToString()).Append(" {").Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("private new Proc Tbl {").Append(endl);
+            code.Append(tab).Append(tab).Append(tab).Append("get { return (Proc)base.Tbl; }").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
+            code.Append(endl);
+            code.Append(tab).Append(tab).Append("public Row() : base(Proc.Instance) {").Append(endl);
+            code.Append(tab).Append(tab).Append("}").Append(endl);
 
-			code.Append(endl);
+            code.Append(tab).Append("}").Append(endl);
+            code.Append("}");
 
-			//
-			//	Generate row code
-			//
-			code.Append(tab).Append("public sealed class Row : ").Append(typeof(Sql.ARow).ToString()).Append(" {").Append(endl);
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("private new Proc Tbl {").Append(endl);
-			code.Append(tab).Append(tab).Append(tab).Append("get { return (Proc)base.Tbl; }").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
-			code.Append(endl);
-			code.Append(tab).Append(tab).Append("public Row() : base(Proc.Instance) {").Append(endl);
-			code.Append(tab).Append(tab).Append("}").Append(endl);
+            return code.ToString();
+        }
 
-			code.Append(tab).Append("}").Append(endl);
-			code.Append("}");
+        private static SqlDbType ConvertToSqlDbType(DbType pDbType) {
 
-			return code.ToString();
-		}
+            if(pDbType == DbType.Int16) {
+                return SqlDbType.SmallInt;
+            }
+            if(pDbType == DbType.Int32) {
+                return SqlDbType.Int;
+            }
+            if(pDbType == DbType.Int64) {
+                return SqlDbType.BigInt;
+            }
+            if(pDbType == DbType.String) {
+                return SqlDbType.VarChar;
+            }
+            if(pDbType == DbType.Decimal) {
+                return SqlDbType.Decimal;
+            }
+            if(pDbType == DbType.DateTime) {
+                return SqlDbType.DateTime;
+            }
+            if(pDbType == DbType.DateTime2) {
+                return SqlDbType.DateTime2;
+            }
+            if(pDbType == DbType.DateTimeOffset) {
+                return SqlDbType.DateTimeOffset;
+            }
+            if(pDbType == DbType.Byte) {
+                return SqlDbType.TinyInt;
+            }
+            if(pDbType == DbType.Double) {
+                return SqlDbType.Float;
+            }
+            if(pDbType == DbType.Single) {
+                return SqlDbType.Real;
+            }
+            return 0;
+        }
 
-		private static SqlDbType ConvertToSqlDbType(System.Data.DbType pDbType) {
+        public static string GetReturnType(DbType pDbType, bool pIsNullable, IColumn pColumn, ITableDetails pTable, bool pGenerateKeyTypes) {
 
-			if(pDbType == DbType.Int16)
-				return SqlDbType.SmallInt;
-			if(pDbType == DbType.Int32)
-				return SqlDbType.Int;
-			if(pDbType == DbType.Int64)
-				return SqlDbType.BigInt;
-			if(pDbType == DbType.String)
-				return SqlDbType.VarChar;
-			if(pDbType == DbType.Decimal)
-				return SqlDbType.Decimal;
-			if(pDbType == DbType.DateTime)
-				return SqlDbType.DateTime;
-			if(pDbType == DbType.DateTime2)
-				return SqlDbType.DateTime2;
-			if(pDbType == DbType.DateTimeOffset)
-				return SqlDbType.DateTimeOffset;
-			if(pDbType == DbType.Byte)
-				return SqlDbType.TinyInt;
-			if(pDbType == DbType.Double)
-				return SqlDbType.Float;
-			if(pDbType == DbType.Single)
-				return SqlDbType.Real;
+            string value;
 
-			return 0;
-		}
+            List<KeyColumn> matchingKeyColumns = new List<KeyColumn>();
 
-		public static string GetReturnType(System.Data.DbType pDbType, bool pIsNullable, IColumn pColumn, ITableDetails pTable, bool pGenerateKeyTypes) {
+            if(pColumn != null && pTable != null) {
 
-			string value;
+                foreach(IForeignKey foreignKey in pTable.ForeignKeys) {
 
-			List<KeyColumn> matchingKeyColumns = new List<KeyColumn>();
+                    foreach(KeyColumn keyColumn in foreignKey.KeyColumns) {
 
-			if(pColumn != null && pTable != null) {
+                        if(keyColumn.ForeignKeyColumn == pColumn) {
+                            matchingKeyColumns.Add(keyColumn);
+                        }
+                    }
+                }
+            }
 
-				foreach(IForeignKey foreignKey in pTable.ForeignKeys) {
+            if(pDbType == DbType.Boolean) {
+                value = !pIsNullable ? "bool" : "bool?";
+            }
+            else if(pDbType == DbType.DateTime) {
+                value = !pIsNullable ? "DateTime" : "DateTime?";
+            }
+            else if(pDbType == DbType.DateTime2) {
+                value = !pIsNullable ? "DateTime" : "DateTime?";
+            }
+            else if(pDbType == DbType.DateTimeOffset) {
+                value = !pIsNullable ? "DateTimeOffset" : "DateTimeOffset?";
+            }
+            else if(pDbType == DbType.Decimal) {
+                value = !pIsNullable ? "decimal" : "decimal?";
+            }
+            else if(pDbType == DbType.Guid) {
 
-					foreach(KeyColumn keyColumn in foreignKey.KeyColumns) {
-						if(keyColumn.ForeignKeyColumn == pColumn)
-							matchingKeyColumns.Add(keyColumn);
-					}
-				}
-			}
+                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
+                    value = $"GuidKey<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
+                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
-			if(pDbType == System.Data.DbType.Boolean) {
-				value = !pIsNullable ? "bool" : "bool?";
-			}
-			else if(pDbType == System.Data.DbType.DateTime) {
-				value = !pIsNullable ? "DateTime" : "DateTime?";
-			}
-			else if(pDbType == System.Data.DbType.DateTime2) {
-				value = !pIsNullable ? "DateTime" : "DateTime?";
-			}
-			else if(pDbType == System.Data.DbType.DateTimeOffset) {
-				value = !pIsNullable ? "DateTimeOffset" : "DateTimeOffset?";
-			}
-			else if(pDbType == System.Data.DbType.Decimal) {
-				value = !pIsNullable ? "decimal" : "decimal?";
-			}
-			else if(pDbType == System.Data.DbType.Guid) {
+                    if(matchingKeyColumns.Count == 1) {
+                        value = $"GuidKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                    else {
+                        value = $"GuidKey<{matchingKeyColumns[0].PrimaryKeyTableName}<??? Column Belongs to multipule foreign keys ???>.Table>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                }
+                else {
+                    value = !pIsNullable ? "Guid" : "Guid?";
+                }
+            }
+            else if(pDbType == DbType.Int16) {
 
-				if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-					value = $"GuidKey<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-				}
-				else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
+                    value = $"Int16Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
+                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
-					if(matchingKeyColumns.Count == 1) {
-						value = $"GuidKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-					}
-					else {
-						value = $"GuidKey<{matchingKeyColumns[0].PrimaryKeyTableName}<??? Column Belongs to multipule foreign keys ???>.Table>" + (pIsNullable ? "?" : string.Empty);						
-					}
-				}
-				else {
-					value = !pIsNullable ? "Guid" : "Guid?";
-				}
-			}
-			else if(pDbType == System.Data.DbType.Int16) {
+                    if(matchingKeyColumns.Count == 1) {
+                        value = $"Int16Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                    else {
+                        value = $"Int16Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                }
+                else {
+                    value = !pIsNullable ? "short" : "short?";
+                }
+            }
+            else if(pDbType == DbType.Int32) {
 
-				if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-					value = $"Int16Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-				}
-				else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
+                    value = $"Int32Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
+                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
-					if(matchingKeyColumns.Count == 1) {
-						value = $"Int16Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-					}
-					else {
-						value = $"Int16Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
-					}
-				}
-				else {
-					value = !pIsNullable ? "short" : "short?";
-				}
-			}
-			else if(pDbType == System.Data.DbType.Int32) {
+                    if(matchingKeyColumns.Count == 1) {
+                        value = $"Int32Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                    else {
+                        value = $"Int32Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                }
+                else {
+                    value = !pIsNullable ? "int" : "int?";
+                }
+            }
+            else if(pDbType == DbType.Int64) {
 
-				if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-					value = $"Int32Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-				}
-				else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
+                    value = $"Int64Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
+                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
-					if(matchingKeyColumns.Count == 1) {
-						value = $"Int32Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-					}
-					else {
-						value = $"Int32Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
-					}
-				}
-				else {
-					value = !pIsNullable ? "int" : "int?";
-				}
-			}
-			else if(pDbType == System.Data.DbType.Int64) {
+                    if(matchingKeyColumns.Count == 1) {
+                        value = $"Int64Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                    else {
+                        value = $"Int64Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                }
+                else {
+                    value = !pIsNullable ? "long" : "long?";
+                }
+            }
+            else if(pDbType == DbType.String) {
 
-				if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-					value = $"Int64Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-				}
-				else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
+                    value = $"StringKey<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
+                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
-					if(matchingKeyColumns.Count == 1) {
-						value = $"Int64Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-					}
-					else {
-						value = $"Int64Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
-					}
-				}
-				else {
-					value = !pIsNullable ? "long" : "long?";
-				}
-			}
-			else if(pDbType == System.Data.DbType.String) {
-
-				if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-					value = $"StringKey<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-				}
-				else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
-
-					if(matchingKeyColumns.Count == 1) {
-						value = $"StringKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
-					}
-					else {
-						value = $"StringKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
-					}
-				}
-				else {
-					value = "string";
-				}
-			}
-			else if(pDbType == System.Data.DbType.Binary) {
-				value = !pIsNullable ? "byte[]" : "byte[]";
-			}
-			else if(pDbType == System.Data.DbType.Byte) {
-				value = !pIsNullable ? "byte" : "byte?";
-			}
-			else if(pDbType == System.Data.DbType.Single) {
-				value = !pIsNullable ? "float" : "float?";
-			}
-			else if(pDbType == System.Data.DbType.Double) {
-				value = !pIsNullable ? "double" : "double?";
-			}
-			else {
-				value = "UNKNOWN_COLUMN_TYPE";
-			}
-			return value;
-		}
-	}
+                    if(matchingKeyColumns.Count == 1) {
+                        value = $"StringKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                    else {
+                        value = $"StringKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
+                    }
+                }
+                else {
+                    value = "string";
+                }
+            }
+            else if(pDbType == DbType.Binary) {
+                value = !pIsNullable ? "byte[]" : "byte[]";
+            }
+            else if(pDbType == DbType.Byte) {
+                value = !pIsNullable ? "byte" : "byte?";
+            }
+            else if(pDbType == DbType.Single) {
+                value = !pIsNullable ? "float" : "float?";
+            }
+            else if(pDbType == DbType.Double) {
+                value = !pIsNullable ? "double" : "double?";
+            }
+            else {
+                value = "UNKNOWN_COLUMN_TYPE";
+            }
+            return value;
+        }
+    }
 }

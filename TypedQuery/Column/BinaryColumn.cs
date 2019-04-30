@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,94 +15,94 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Sql.Column {
 
-	/// <summary>
-	/// Binary column
-	/// This column maps to binary fields like binary and bytea
-	/// </summary>
-	public class BinaryColumn : AColumn {
+    /// <summary>
+    /// Binary column
+    /// This column maps to binary fields like binary and bytea
+    /// </summary>
+    public class BinaryColumn : AColumn {
 
-		public BinaryColumn(ATable pTable, string pColumnName)
-			: base(pTable, pColumnName, false, false) {
-		}
-		public BinaryColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey)
-			: base(pTable, pColumnName, pIsPrimaryKey, false) {
-		}
+        public BinaryColumn(ATable pTable, string pColumnName)
+            : base(pTable, pColumnName, false, false) {
+        }
+        public BinaryColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey)
+            : base(pTable, pColumnName, pIsPrimaryKey, false) {
+        }
 
-		public static Condition operator ==(BinaryColumn pColumnA, BinaryColumn pColumnB) {
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
-		}
-		public static Condition operator ==(BinaryColumn pColumnA, NBinaryColumn pColumnB) {
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
-		}
-		public static Condition operator ==(BinaryColumn pColumnA, byte[] pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
-		}
+        public static Condition operator ==(BinaryColumn pColumnA, BinaryColumn pColumnB) {
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
+        }
+        public static Condition operator ==(BinaryColumn pColumnA, NBinaryColumn pColumnB) {
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
+        }
+        public static Condition operator ==(BinaryColumn pColumnA, byte[] pValue) {
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
+        }
 
-		public static Condition operator !=(BinaryColumn pColumnA, BinaryColumn pColumnB) {
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
-		}
-		public static Condition operator !=(BinaryColumn pColumnA, NBinaryColumn pColumnB) {
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
-		}
-		public static Condition operator !=(BinaryColumn pColumnA, byte[] pValue) {
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
-		}
+        public static Condition operator !=(BinaryColumn pColumnA, BinaryColumn pColumnB) {
+            return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
+        }
+        public static Condition operator !=(BinaryColumn pColumnA, NBinaryColumn pColumnB) {
+            return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
+        }
+        public static Condition operator !=(BinaryColumn pColumnA, byte[] pValue) {
+            return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue);
+        }
 
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			
-			object value = pReader.GetValue(pColumnIndex);
-			
-			Type dataType = pReader.GetFieldType(pColumnIndex);
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			if(dataType != typeof(byte[])) {
-				throw new Exception($"Row column data is not of the correct type. Expected byte[] value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
-			}
-				
-			return (byte[])value;
-		}		
-		public byte[] ValueOf(ARow pRow) {
-			object value = pRow.GetValue(this);
-			return (byte[]) value;
-		}		
-		public void SetValue(ARow pRow, byte[] pValue) {
-			pRow.SetValue(this, pValue);
-		}
-		
-		internal override void TestSetValue(ARow pRow, object pValue) {
-			SetValue(pRow, (byte[]) pValue);
-		}
-		internal override object TestGetValue(ARow pRow) {
-			return ValueOf(pRow);
-		}
-		
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override int GetHashCode() {
-			return base.GetHashCode();
-		}
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override bool Equals(object obj) {
-			return base.Equals(obj);
-		}
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override string ToString() {
-			return base.ToString();
-		}
-		
-		public override System.Data.DbType DbType {
-			get { return System.Data.DbType.Binary; }
-		}
-		
-		public override object GetDefaultType(){
-			byte[] value = new byte[]{};
-			return value;			
-		}
-	}
+            object value = pReader.GetValue(pColumnIndex);
+
+            Type dataType = pReader.GetFieldType(pColumnIndex);
+
+            if(dataType != typeof(byte[])) {
+                throw new Exception($"Row column data is not of the correct type. Expected byte[] value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+            }
+
+            return (byte[])value;
+        }
+        public byte[] ValueOf(ARow pRow) {
+            object value = pRow.GetValue(this);
+            return (byte[])value;
+        }
+        public void SetValue(ARow pRow, byte[] pValue) {
+            pRow.SetValue(this, pValue);
+        }
+
+        internal override void TestSetValue(ARow pRow, object pValue) {
+            SetValue(pRow, (byte[])pValue);
+        }
+        internal override object TestGetValue(ARow pRow) {
+            return ValueOf(pRow);
+        }
+
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override int GetHashCode() {
+            return base.GetHashCode();
+        }
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override bool Equals(object obj) {
+            return base.Equals(obj);
+        }
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override string ToString() {
+            return base.ToString();
+        }
+
+        public override System.Data.DbType DbType {
+            get { return System.Data.DbType.Binary; }
+        }
+
+        public override object GetDefaultType() {
+            byte[] value = new byte[] { };
+            return value;
+        }
+    }
 }

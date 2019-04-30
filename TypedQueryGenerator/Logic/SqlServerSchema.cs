@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,343 +18,342 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TypedQuery.Logic {
 
-	public class SqlServerSchema {
+    public class SqlServerSchema {
 
-		public SqlServerSchema() {
+        public SqlServerSchema() {
 
-		}
+        }
 
-		public void TestConnection(Sql.ADatabase pDatabase) {
+        public void TestConnection(Sql.ADatabase pDatabase) {
 
-			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
+            SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
 
-			Sql.IResult result = Sql.Query
-				.Select(tablesTable).Top(1)
-				.From(tablesTable)
-				.Execute(pDatabase);
-		}
-		public IList<ITable> GetTableList(Sql.ADatabase pDatabase) {
+            Sql.IResult result = Sql.Query
+                .Select(tablesTable).Top(1)
+                .From(tablesTable)
+                .Execute(pDatabase);
+        }
+        public IList<ITable> GetTableList(Sql.ADatabase pDatabase) {
 
-			SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
+            SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
 
-			Sql.IResult result = Sql.Query
-				.Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_Type)
-				.From(tablesTable)
+            Sql.IResult result = Sql.Query
+                .Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_Type)
+                .From(tablesTable)
                 .OrderBy(tablesTable.Table_schema, tablesTable.Table_name)
-				.Execute(pDatabase);
+                .Execute(pDatabase);
 
-			List<ITable> tableList = new List<ITable>(result.Count);
+            List<ITable> tableList = new List<ITable>(result.Count);
 
-			for(int index = 0; index < result.Count; index++) {
+            for(int index = 0; index < result.Count; index++) {
 
-				SqlServer.Tables.Row tablesRow = tablesTable[index, result];
+                SqlServer.Tables.Row tablesRow = tablesTable[index, result];
 
-				bool isView = string.Compare(tablesRow.Table_Type, "view", true) == 0;
+                bool isView = string.Compare(tablesRow.Table_Type, "view", true) == 0;
 
-				tableList.Add(new Table(Sql.DatabaseType.Mssql, tablesRow.Table_name, tablesRow.Table_schema, isView));
-			}
-			
-			return tableList;
-		}
+                tableList.Add(new Table(Sql.DatabaseType.Mssql, tablesRow.Table_name, tablesRow.Table_schema, isView));
+            }
+            return tableList;
+        }
 
-		public bool GetTableDetails(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, out ITableDetails pTableDetails, out string pErrorText) {
+        public bool GetTableDetails(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, out ITableDetails pTableDetails, out string pErrorText) {
 
-			if(string.IsNullOrEmpty(pTableName))
-				throw new ArgumentException("pTableName cannot be null or empty");
+            if(string.IsNullOrEmpty(pTableName)) {
+                throw new ArgumentException("pTableName cannot be null or empty");
+            }
 
-			if(string.IsNullOrEmpty(pSchemaName))
-				throw new ArgumentException("pSchemaName cannot be null or empty");
+            if(string.IsNullOrEmpty(pSchemaName)) {
+                throw new ArgumentException("pSchemaName cannot be null or empty");
+            }
 
-			pTableDetails = null;
-			pErrorText = string.Empty;
+            pTableDetails = null;
+            pErrorText = string.Empty;
 
-			TableDetails tableDetails;
+            TableDetails tableDetails;
 
-			if(true) {
+            if(true) {
 
-				SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
+                SqlServer.Tables.Table tablesTable = new SqlServer.Tables.Table();
 
-				Sql.IResult result = Sql.Query
-					.Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_Type)
-					.From(tablesTable)
-					.Where(tablesTable.Table_name == pTableName & tablesTable.Table_schema == pSchemaName)
-					.Execute(pDatabase);
+                Sql.IResult result = Sql.Query
+                    .Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_Type)
+                    .From(tablesTable)
+                    .Where(tablesTable.Table_name == pTableName & tablesTable.Table_schema == pSchemaName)
+                    .Execute(pDatabase);
 
-				if(result.Count == 0) {
-					pErrorText = "Cannot find table '" + pTableName + "' in database for the schema '" + pSchemaName + "'";
-					return false;
-				}
+                if(result.Count == 0) {
+                    pErrorText = "Cannot find table '" + pTableName + "' in database for the schema '" + pSchemaName + "'";
+                    return false;
+                }
 
-				if(result.Count > 1) {
-					pErrorText = "Found table '" + pTableName + " more than once in database for the schema '" + pSchemaName + "'";
-					return false;
-				}
+                if(result.Count > 1) {
+                    pErrorText = "Found table '" + pTableName + " more than once in database for the schema '" + pSchemaName + "'";
+                    return false;
+                }
 
-				SqlServer.Tables.Row tablesRow = tablesTable[0, result];
+                SqlServer.Tables.Row tablesRow = tablesTable[0, result];
 
-				bool isView = string.Compare(tablesRow.Table_Type, "view", true) == 0;
+                bool isView = string.Compare(tablesRow.Table_Type, "view", true) == 0;
 
-				tableDetails = new TableDetails(tablesRow.Table_name, tablesRow.Table_schema, isView);
-			}
+                tableDetails = new TableDetails(tablesRow.Table_name, tablesRow.Table_schema, isView);
+            }
 
-			foreach(IColumn column in GetColumns(pDatabase, pTableName, pSchemaName))
-				tableDetails.Columns.Add(column);
+            foreach(IColumn column in GetColumns(pDatabase, pTableName, pSchemaName)) {
+                tableDetails.Columns.Add(column);
+            }
 
-			tableDetails.PrimaryKey = GetPrimaryKey(pDatabase, pTableName, pSchemaName, tableDetails.Columns);
+            tableDetails.PrimaryKey = GetPrimaryKey(pDatabase, pTableName, pSchemaName, tableDetails.Columns);
 
-			foreach(IForeignKey foreignKey in GetForeignKeys(pDatabase, pTableName, pSchemaName, tableDetails.Columns))
-				tableDetails.ForeignKeys.Add(foreignKey);
+            foreach(IForeignKey foreignKey in GetForeignKeys(pDatabase, pTableName, pSchemaName, tableDetails.Columns)) {
+                tableDetails.ForeignKeys.Add(foreignKey);
+            }
+            GetComments(tableDetails, pTableName, pSchemaName);
+            pTableDetails = tableDetails;
+            return true;
+        }
 
-			GetComments(tableDetails, pTableName, pSchemaName);
+        private IList<IColumn> GetColumns(Sql.ADatabase pDatabase, string pTableName, string pSchemaName) {
 
-			pTableDetails = tableDetails;
+            SqlServer.Columns.Table columnsTable = new SqlServer.Columns.Table();
+            SqlServerSchema.IsIdentity isIdentity = new SqlServerSchema.IsIdentity(columnsTable);
 
-			return true;
-		}
+            Sql.IResult result = Sql.Query
+                .Select(columnsTable.Column_Name, columnsTable.Data_Type, columnsTable.Is_Nullable, isIdentity, columnsTable.Character_Maximum_Length)
+                .From(columnsTable)
+                .Where(columnsTable.Table_Schema == pSchemaName & columnsTable.Table_Name == pTableName)
+                .OrderBy(columnsTable.Ordinal_Position)
+                .Execute(pDatabase);
 
-		private IList<IColumn> GetColumns(Sql.ADatabase pDatabase, string pTableName, string pSchemaName) {
+            List<IColumn> columnList = new List<IColumn>(result.Count);
 
-			SqlServer.Columns.Table columnsTable = new SqlServer.Columns.Table();
-			SqlServerSchema.IsIdentity isIdentity = new SqlServerSchema.IsIdentity(columnsTable);
+            for(int index = 0; index < result.Count; index++) {
 
-			Sql.IResult result = Sql.Query
-				.Select(columnsTable.Column_Name, columnsTable.Data_Type, columnsTable.Is_Nullable, isIdentity, columnsTable.Character_Maximum_Length)
-				.From(columnsTable)
-				.Where(columnsTable.Table_Schema == pSchemaName & columnsTable.Table_Name == pTableName)
-				.OrderBy(columnsTable.Ordinal_Position)
-				.Execute(pDatabase);
+                SqlServer.Columns.Row columnsRow = columnsTable[index, result];
 
-			List<IColumn> columnList = new List<IColumn>(result.Count);
+                System.Data.DbType dataType = GetDataType(columnsRow.Data_Type);
+                bool isNullable = string.Compare(columnsRow.Is_Nullable, "yes", true) == 0;
+                bool isAutoGenerated = isIdentity[index, result].Value == 1;
+                int? maxLength = columnsRow.Character_Maximum_Length;
 
-			for(int index = 0; index < result.Count; index++) {
+                columnList.Add(new Column(columnsRow.Column_Name, dataType, isNullable, isAutoGenerated, maxLength));
+            }
+            return columnList;
+        }
 
-				SqlServer.Columns.Row columnsRow = columnsTable[index, result];
+        private IPrimaryKey GetPrimaryKey(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
 
-				System.Data.DbType dataType = GetDataType(columnsRow.Data_Type);
-				bool isNullable = string.Compare(columnsRow.Is_Nullable, "yes", true) == 0;
-				bool isAutoGenerated = isIdentity[index, result].Value == 1;
-				int? maxLength = columnsRow.Character_Maximum_Length;
+            SqlServer.Table_Constraints.Table tableConstaintsTable = new SqlServer.Table_Constraints.Table();
+            SqlServer.Key_Column_Usage.Table keyColumnUsageTable = new SqlServer.Key_Column_Usage.Table();
 
-				columnList.Add(new Column(columnsRow.Column_Name, dataType, isNullable, isAutoGenerated, maxLength));
-			}
-			return columnList;
-		}
+            Sql.IResult result = Sql.Query
+                .Select(tableConstaintsTable.Constraint_Name, keyColumnUsageTable.Column_Name)
+                .From(tableConstaintsTable)
+                .Join(keyColumnUsageTable, tableConstaintsTable.Constraint_Name == keyColumnUsageTable.Constraint_Name & keyColumnUsageTable.Table_Name == tableConstaintsTable.Table_Name & keyColumnUsageTable.Table_Schema == tableConstaintsTable.Table_Schema)
+                .Where(tableConstaintsTable.Table_Name == pTableName & tableConstaintsTable.Table_Schema == pSchemaName & tableConstaintsTable.Constraint_Type == "PRIMARY KEY")
+                .OrderBy(keyColumnUsageTable.Ordinal_Position)
+                .Execute(pDatabase);
 
-		private IPrimaryKey GetPrimaryKey(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
+            PrimaryKey primaryKey = null;
 
-			SqlServer.Table_Constraints.Table tableConstaintsTable = new SqlServer.Table_Constraints.Table();
-			SqlServer.Key_Column_Usage.Table keyColumnUsageTable = new SqlServer.Key_Column_Usage.Table();
+            if(result.Count > 0) {
 
-			Sql.IResult result = Sql.Query
-				.Select(tableConstaintsTable.Constraint_Name, keyColumnUsageTable.Column_Name)
-				.From(tableConstaintsTable)
-				.Join(keyColumnUsageTable, tableConstaintsTable.Constraint_Name == keyColumnUsageTable.Constraint_Name & keyColumnUsageTable.Table_Name == tableConstaintsTable.Table_Name & keyColumnUsageTable.Table_Schema == tableConstaintsTable.Table_Schema)
-				.Where(tableConstaintsTable.Table_Name == pTableName & tableConstaintsTable.Table_Schema == pSchemaName & tableConstaintsTable.Constraint_Type == "PRIMARY KEY")
-				.OrderBy(keyColumnUsageTable.Ordinal_Position)
-				.Execute(pDatabase);
+                primaryKey = new PrimaryKey(tableConstaintsTable[0, result].Constraint_Name);
 
-			PrimaryKey primaryKey = null;
+                for(int index = 0; index < result.Count; index++) {
 
-			if(result.Count > 0) {
+                    string columnName = keyColumnUsageTable[index, result].Column_Name;
 
-				primaryKey = new PrimaryKey(tableConstaintsTable[0, result].Constraint_Name);
+                    foreach(IColumn column in pColumns) {
 
-				for(int index = 0; index < result.Count; index++) {
+                        if(string.Compare(column.ColumnName, columnName, true) == 0) {
+                            primaryKey.Columms.Add(column);
+                            ((Column)column).IsPrimaryKey = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return primaryKey;
+        }
 
-					string columnName = keyColumnUsageTable[index, result].Column_Name;
+        private IList<IForeignKey> GetForeignKeys(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
 
-					foreach(IColumn column in pColumns) {
+            SqlServer.Referential_Constraints.Table rcTable = new SqlServer.Referential_Constraints.Table();
+            SqlServer.Key_Column_Usage.Table kcu1Table = new SqlServer.Key_Column_Usage.Table();
+            SqlServer.Key_Column_Usage.Table kcu2Table = new SqlServer.Key_Column_Usage.Table();
 
-						if(string.Compare(column.ColumnName, columnName, true) == 0) {
-							primaryKey.Columms.Add(column);
-							((Column)column).IsPrimaryKey = true;
-							break;
-						}
-					}
-				}				
-			}
-			return primaryKey;
-		}
+            Sql.IResult result = Sql.Query
+                .Select(kcu1Table.Constraint_Name, kcu1Table.Column_Name, kcu2Table.Table_Name, kcu2Table.Column_Name)
+                .From(rcTable)
+                .Join(kcu1Table, kcu1Table.Constraint_Catalog == rcTable.Constraint_Catalog & kcu1Table.Constraint_Schema == rcTable.Constraint_Schema & kcu1Table.Constraint_Name == rcTable.Constraint_Name)
+                .Join(kcu2Table, kcu2Table.Constraint_Catalog == rcTable.Unique_Constraint_Catalog & kcu2Table.Constraint_Schema == rcTable.Unique_Constraint_Schema & kcu2Table.Constraint_Name == rcTable.Unique_Constraint_Name & kcu2Table.Ordinal_Position == kcu1Table.Ordinal_Position)
+                .Where(kcu1Table.Table_Name == pTableName & kcu1Table.Table_Schema == pSchemaName)
+                .Execute(pDatabase);
 
-		private IList<IForeignKey> GetForeignKeys(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
+            Dictionary<string, IForeignKey> keysLookup = new Dictionary<string, IForeignKey>();
+            List<IForeignKey> foreignKeyList = new List<IForeignKey>();
 
-			SqlServer.Referential_Constraints.Table rcTable = new SqlServer.Referential_Constraints.Table();
-			SqlServer.Key_Column_Usage.Table kcu1Table = new SqlServer.Key_Column_Usage.Table();
-			SqlServer.Key_Column_Usage.Table kcu2Table = new SqlServer.Key_Column_Usage.Table();
+            for(int index = 0; index < result.Count; index++) {
 
-			Sql.IResult result = Sql.Query
-				.Select(kcu1Table.Constraint_Name, kcu1Table.Column_Name, kcu2Table.Table_Name, kcu2Table.Column_Name)
-				.From(rcTable)
-				.Join(kcu1Table, kcu1Table.Constraint_Catalog == rcTable.Constraint_Catalog & kcu1Table.Constraint_Schema == rcTable.Constraint_Schema & kcu1Table.Constraint_Name == rcTable.Constraint_Name)
-				.Join(kcu2Table, kcu2Table.Constraint_Catalog == rcTable.Unique_Constraint_Catalog & kcu2Table.Constraint_Schema == rcTable.Unique_Constraint_Schema & kcu2Table.Constraint_Name == rcTable.Unique_Constraint_Name & kcu2Table.Ordinal_Position == kcu1Table.Ordinal_Position)
-				.Where(kcu1Table.Table_Name == pTableName & kcu1Table.Table_Schema == pSchemaName)
-				.Execute(pDatabase);
+                string constraintName = kcu1Table[index, result].Constraint_Name;
+                string foreignColumnName = kcu1Table[index, result].Column_Name;
+                string primaryTableName = kcu2Table[index, result].Table_Name;
+                string primaryColumnName = kcu2Table[index, result].Column_Name;
 
-			Dictionary<string, IForeignKey> keysLookup = new Dictionary<string, IForeignKey>();
-			List<IForeignKey> foreignKeyList = new List<IForeignKey>();
+                string key = constraintName.ToLower();
 
-			for(int index = 0; index < result.Count; index++) {
+                IForeignKey foreignKey;
 
-				string constraintName = kcu1Table[index, result].Constraint_Name;
-				string foreignColumnName = kcu1Table[index, result].Column_Name;
-				string primaryTableName = kcu2Table[index, result].Table_Name;
-				string primaryColumnName = kcu2Table[index, result].Column_Name;
+                if(!keysLookup.TryGetValue(key, out foreignKey)) {
+                    foreignKey = new ForeignKey(constraintName);
+                    keysLookup.Add(key, foreignKey);
+                    foreignKeyList.Add(foreignKey);
+                }
 
-				string key = constraintName.ToLower();
+                IColumn foreignKeyColumn = null;
 
-				IForeignKey foreignKey;
+                foreach(IColumn column in pColumns) {
 
-				if(!keysLookup.TryGetValue(key, out foreignKey)) {
-					foreignKey = new ForeignKey(constraintName);
-					keysLookup.Add(key, foreignKey);
-					foreignKeyList.Add(foreignKey);
-				}
+                    if(string.Compare(column.ColumnName, foreignColumnName, true) == 0) {
+                        foreignKeyColumn = column;
+                        break;
+                    }
+                }
 
-				IColumn foreignKeyColumn = null;
+                if(foreignKeyColumn == null) {
+                    throw new Exception("Could not find column '" + foreignColumnName + "' in the constraint '" + constraintName + "'. This is an unexpected state.");
+                }
+                foreignKey.KeyColumns.Add(new KeyColumn(foreignKeyColumn, primaryTableName, primaryColumnName));
+            }
+            return foreignKeyList;
+        }
 
-				foreach(IColumn column in pColumns) {
+        private void GetComments(TableDetails pTableDetails, string pTableName, string pSchemaName) {
 
-					if(string.Compare(column.ColumnName, foreignColumnName, true) == 0) {
-						foreignKeyColumn = column;
-						break;
-					}
-				}
+            //TODO:
+            //SELECT objname as table_name, value as description FROM fn_listextendedproperty ('MS_DESCRIPTION','schema', 'dbo', 'table', 'sec_user', null, null)
+            //EXEC sp_addextendedproperty @name = N'MS_Description', @value = 'description goes here', @level0type = N'Schema', @level0name = 'dbo', @level1type = N'Table',  @level1name = 'sec_user';
+        }
 
-				if(foreignKeyColumn == null)
-					throw new Exception("Could not find column '" + foreignColumnName + "' in the constraint '" + constraintName + "'. This is an unexpected state.");
+        public static List<IStoredProcedureDetail> GetStoredProcedures(System.Data.Common.DbConnection pConnection) {
 
-				foreignKey.KeyColumns.Add(new KeyColumn(foreignKeyColumn, primaryTableName, primaryColumnName));
-			}
-			return foreignKeyList;
-		}
+            List<IStoredProcedureDetail> spList = new List<IStoredProcedureDetail>();
 
-		private void GetComments(TableDetails pTableDetails, string pTableName, string pSchemaName) {
+            using(System.Data.Common.DbCommand command = pConnection.CreateCommand()) {
 
-			//TODO:
-			//SELECT objname as table_name, value as description FROM fn_listextendedproperty ('MS_DESCRIPTION','schema', 'dbo', 'table', 'sec_user', null, null)
-			//EXEC sp_addextendedproperty @name = N'MS_Description', @value = 'description goes here', @level0type = N'Schema', @level0name = 'dbo', @level1type = N'Table',  @level1name = 'sec_user';
-		}
+                command.CommandText = "SELECT SCHEMA_NAME(schema_id) AS schema_name, o.name AS object_name, p.parameter_id, p.name AS parameter_name" +
+                                        ",TYPE_NAME(p.user_type_id) AS parameter_type, p.is_output as is_output " +
+                                        "FROM sys.objects AS o " +
+                                        "LEFT JOIN sys.parameters AS p ON o.object_id = p.object_id " +
+                                        "WHERE type_desc = 'SQL_STORED_PROCEDURE' " +
+                                        "ORDER BY schema_name, object_name, p.parameter_id;";
 
-		public static List<IStoredProcedureDetail> GetStoredProcedures(System.Data.Common.DbConnection pConnection) {
+                command.Connection = pConnection;
 
-			List<IStoredProcedureDetail> spList = new List<IStoredProcedureDetail>();
+                using(System.Data.Common.DbDataReader reader = command.ExecuteReader()) {
 
-			using(System.Data.Common.DbCommand command = pConnection.CreateCommand()) {
+                    Dictionary<string, StoredProcedureDetail> lookup = new Dictionary<string, StoredProcedureDetail>();
 
-				command.CommandText = "SELECT SCHEMA_NAME(schema_id) AS schema_name, o.name AS object_name, p.parameter_id, p.name AS parameter_name" +
-										",TYPE_NAME(p.user_type_id) AS parameter_type, p.is_output as is_output " +
-										"FROM sys.objects AS o " +
-										"LEFT JOIN sys.parameters AS p ON o.object_id = p.object_id " +
-										"WHERE type_desc = 'SQL_STORED_PROCEDURE' " +
-										"ORDER BY schema_name, object_name, p.parameter_id;";
+                    while(reader.Read()) {
 
-				command.Connection = pConnection;
+                        string schema = reader.GetString(0);
+                        string name = reader.GetString(1);
 
-				using(System.Data.Common.DbDataReader reader = command.ExecuteReader()) {
+                        string key = schema + "*" + name;
 
-					Dictionary<string, StoredProcedureDetail> lookup = new Dictionary<string, StoredProcedureDetail>();
+                        StoredProcedureDetail sp;
 
-					while(reader.Read()) {
+                        if(!lookup.ContainsKey(key)) {
+                            sp = new StoredProcedureDetail(schema, name);
+                            lookup.Add(key, sp);
+                            spList.Add(sp);
+                        }
+                        else
+                            sp = lookup[key];
 
-						string schema = reader.GetString(0);
-						string name = reader.GetString(1);
+                        if(!reader.IsDBNull(2)) {
 
-						string key = schema + "*" + name;
+                            int paramId = reader.GetInt32(2);
+                            string paramName = reader.GetString(3);
+                            string paramType = reader.GetString(4);
+                            bool isOutput = reader.GetBoolean(5);
 
-						StoredProcedureDetail sp;
+                            System.Data.ParameterDirection direction = System.Data.ParameterDirection.Input;
 
-						if(!lookup.ContainsKey(key)) {
-							sp = new StoredProcedureDetail(schema, name);
-							lookup.Add(key, sp);
-							spList.Add(sp);
-						}
-						else
-							sp = lookup[key];
+                            if(isOutput) {
+                                direction = System.Data.ParameterDirection.InputOutput;
+                            }
+                            sp.AddParameter(new SpParameter(paramId, paramName, GetDataType(paramType), direction));
+                        }
+                    }
+                }
+            }
+            return spList;
+        }
 
-						if(!reader.IsDBNull(2)) {
+        private static Dictionary<string, System.Data.DbType> sTypeLookup;
 
-							int paramId = reader.GetInt32(2);
-							string paramName = reader.GetString(3);
-							string paramType = reader.GetString(4);
-							bool isOutput = reader.GetBoolean(5);
+        private static System.Data.DbType GetDataType(string pDataType) {
 
-							System.Data.ParameterDirection direction = System.Data.ParameterDirection.Input;
+            if(sTypeLookup == null) {
 
-							if(isOutput)
-								direction = System.Data.ParameterDirection.InputOutput;
+                sTypeLookup = new Dictionary<string, System.Data.DbType>();
 
-							sp.AddParameter(new SpParameter(paramId, paramName, GetDataType(paramType), direction));
-						}
-					}
-				}
-			}
-			return spList;
-		}
-
-		private static Dictionary<string, System.Data.DbType> sTypeLookup;
-
-		private static System.Data.DbType GetDataType(string pDataType) {
-
-			if(sTypeLookup == null) {
-				sTypeLookup = new Dictionary<string, System.Data.DbType>();
-
-				sTypeLookup.Add("bigint", System.Data.DbType.Int64);
-				sTypeLookup.Add("bit", System.Data.DbType.Boolean);
-				sTypeLookup.Add("char", System.Data.DbType.String);
+                sTypeLookup.Add("bigint", System.Data.DbType.Int64);
+                sTypeLookup.Add("bit", System.Data.DbType.Boolean);
+                sTypeLookup.Add("char", System.Data.DbType.String);
                 sTypeLookup.Add("nchar", System.Data.DbType.String);
                 sTypeLookup.Add("date", System.Data.DbType.Date);
-				sTypeLookup.Add("time", System.Data.DbType.Time);
-				sTypeLookup.Add("datetime", System.Data.DbType.DateTime);
-				sTypeLookup.Add("datetime2", System.Data.DbType.DateTime2);
-				sTypeLookup.Add("datetimeoffset", System.Data.DbType.DateTimeOffset);
-				sTypeLookup.Add("float", System.Data.DbType.Double);
-				sTypeLookup.Add("real", System.Data.DbType.Single);
-				sTypeLookup.Add("image", System.Data.DbType.Byte);
-				sTypeLookup.Add("int", System.Data.DbType.Int32);
-				sTypeLookup.Add("ntext", System.Data.DbType.String);
-				sTypeLookup.Add("numeric", System.Data.DbType.Decimal);
-				sTypeLookup.Add("decimal", System.Data.DbType.Decimal);
+                sTypeLookup.Add("time", System.Data.DbType.Time);
+                sTypeLookup.Add("datetime", System.Data.DbType.DateTime);
+                sTypeLookup.Add("datetime2", System.Data.DbType.DateTime2);
+                sTypeLookup.Add("datetimeoffset", System.Data.DbType.DateTimeOffset);
+                sTypeLookup.Add("float", System.Data.DbType.Double);
+                sTypeLookup.Add("real", System.Data.DbType.Single);
+                sTypeLookup.Add("image", System.Data.DbType.Byte);
+                sTypeLookup.Add("int", System.Data.DbType.Int32);
+                sTypeLookup.Add("ntext", System.Data.DbType.String);
+                sTypeLookup.Add("numeric", System.Data.DbType.Decimal);
+                sTypeLookup.Add("decimal", System.Data.DbType.Decimal);
                 sTypeLookup.Add("money", System.Data.DbType.Decimal);
                 sTypeLookup.Add("nvarchar", System.Data.DbType.String);
-				sTypeLookup.Add("smallint", System.Data.DbType.Int16);
-				sTypeLookup.Add("tinyint", System.Data.DbType.Byte);
-				sTypeLookup.Add("uniqueidentifier", System.Data.DbType.Guid);
-				sTypeLookup.Add("varbinary", System.Data.DbType.Binary);
-				sTypeLookup.Add("varchar", System.Data.DbType.String);
-			}
-			string key = pDataType.ToLower();
+                sTypeLookup.Add("smallint", System.Data.DbType.Int16);
+                sTypeLookup.Add("tinyint", System.Data.DbType.Byte);
+                sTypeLookup.Add("uniqueidentifier", System.Data.DbType.Guid);
+                sTypeLookup.Add("varbinary", System.Data.DbType.Binary);
+                sTypeLookup.Add("varchar", System.Data.DbType.String);
+            }
+            string key = pDataType.ToLower();
 
-			return sTypeLookup.ContainsKey(key) ? sTypeLookup[key] : System.Data.DbType.Object;
-		}
+            return sTypeLookup.ContainsKey(key) ? sTypeLookup[key] : System.Data.DbType.Object;
+        }
 
-		private class IsIdentity : Sql.Function.ANumericFunction {
+        private class IsIdentity : Sql.Function.ANumericFunction {
 
-			private readonly SqlServer.Columns.Table mColumnTable;
+            private readonly SqlServer.Columns.Table mColumnTable;
 
-			public IsIdentity(SqlServer.Columns.Table pColumnTable) {
+            public IsIdentity(SqlServer.Columns.Table pColumnTable) {
 
-				if(pColumnTable == null)
-					throw new NullReferenceException("ColumnTable cannot be null");
+                if(pColumnTable == null) {
+                    throw new NullReferenceException("ColumnTable cannot be null");
+                }
+                mColumnTable = pColumnTable;
+            }
 
-				mColumnTable = pColumnTable;
-			}
-
-			public int? this[int pIndex, Sql.IResult pResult] {
-				get {
-					return (int?)pResult.GetValue(this, pIndex);
-				}
-			}
-			public override string GetFunctionSql(Sql.ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-				return "columnproperty(object_id(quotename(" + mColumnTable.Table_Schema.ColumnName + ") + '.' + quotename(" + mColumnTable.Table_Name.ColumnName + ")), " + mColumnTable.Column_Name.ColumnName + ", 'IsIdentity')";
-			}
-			public override object GetValue(Sql.ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-				return pReader.GetInt32(pColumnIndex);
-			}
-		}
-	}
+            public int? this[int pIndex, Sql.IResult pResult] {
+                get {
+                    return (int?)pResult.GetValue(this, pIndex);
+                }
+            }
+            public override string GetFunctionSql(Sql.ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+                return "columnproperty(object_id(quotename(" + mColumnTable.Table_Schema.ColumnName + ") + '.' + quotename(" + mColumnTable.Table_Name.ColumnName + ")), " + mColumnTable.Column_Name.ColumnName + ", 'IsIdentity')";
+            }
+            public override object GetValue(Sql.ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+                return pReader.GetInt32(pColumnIndex);
+            }
+        }
+    }
 }

@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,46 +23,46 @@ using System.Text;
 
 namespace Sql.Column {
 
-	public class StringKeyColumn<TABLE> : AColumn, Sql.IColumnLength {
+    public class StringKeyColumn<TABLE> : AColumn, Sql.IColumnLength {
 
-		public int MaxLength { get; private set; }
+        public int MaxLength { get; private set; }
 
-		public StringKeyColumn(ATable pTable, string pColumnName, int pMaxLength)
-			: base(pTable, pColumnName, false, false) {
+        public StringKeyColumn(ATable pTable, string pColumnName, int pMaxLength)
+            : base(pTable, pColumnName, false, false) {
 
-			if(pMaxLength <= 0) {
-				throw new Exception($"{nameof(pMaxLength)} must be >= 1");
-			}
+            if(pMaxLength <= 0) {
+                throw new Exception($"{nameof(pMaxLength)} must be >= 1");
+            }
 
-			MaxLength = pMaxLength;
-		}
-		public StringKeyColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength)
-			: base(pTable, pColumnName, pIsPrimaryKey, false) {
+            MaxLength = pMaxLength;
+        }
+        public StringKeyColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength)
+            : base(pTable, pColumnName, pIsPrimaryKey, false) {
 
-			if(pMaxLength <= 0) {
-				throw new Exception($"{nameof(pMaxLength)} must be >= 1");
-			}
+            if(pMaxLength <= 0) {
+                throw new Exception($"{nameof(pMaxLength)} must be >= 1");
+            }
 
-			MaxLength = pMaxLength;
-		}
+            MaxLength = pMaxLength;
+        }
 
-		public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, StringKeyColumn<TABLE> pColumnB) {
+        public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, StringKeyColumn<TABLE> pColumnB) {
 
-			if(((object)pColumnB) == null) {
-				throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
-			}
+            if(((object)pColumnB) == null) {
+                throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+            }
 
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
-		}
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
+        }
 
-		public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, StringKeyColumn<TABLE> pColumnB) {
+        public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, StringKeyColumn<TABLE> pColumnB) {
 
-			if(((object)pColumnB) == null) {
-				throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
-			}
+            if(((object)pColumnB) == null) {
+                throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+            }
 
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
-		}
+            return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
+        }
 
         public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, NStringKeyColumn<TABLE> pColumnB) {
 
@@ -84,156 +84,156 @@ namespace Sql.Column {
 
         public static Condition operator ==(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
 
-			if(pValue == null) {
-				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn = null' is an undefined condition in sql so this library disallows it.");
-			}
+            if(pValue == null) {
+                throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn = null' is an undefined condition in sql so this library disallows it.");
+            }
 
-			return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue.Value);
-		}
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue.Value);
+        }
 
-		public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
+        public static Condition operator !=(StringKeyColumn<TABLE> pColumnA, StringKey<TABLE> pValue) {
 
-			if(pValue == null) {
-				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the != operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn != null' is an undefined condition in sql so this library disallows it.");
-			}
+            if(pValue == null) {
+                throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the != operator. Use .IsNull() method if a null condition is required. 'StringKeyColumn != null' is an undefined condition in sql so this library disallows it.");
+            }
 
-			return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue.Value);
-		}
+            return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pValue.Value);
+        }
 
-		public Condition Like(StringKey<TABLE> pValue) {
+        public Condition Like(StringKey<TABLE> pValue) {
 
-			if(pValue == null) {
-				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'like' operator. 'StringKeyColumn like null' is an undefined condition in sql so this library disallows it.");
-			}
+            if(pValue == null) {
+                throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'like' operator. 'StringKeyColumn like null' is an undefined condition in sql so this library disallows it.");
+            }
 
-			return new ColumnCondition(this, Operator.LIKE, pValue.Value);
-		}
+            return new ColumnCondition(this, Operator.LIKE, pValue.Value);
+        }
 
-		public Condition NotLike(StringKey<TABLE> pValue) {
+        public Condition NotLike(StringKey<TABLE> pValue) {
 
-			if(pValue == null) {
-				throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'not like' operator. 'StringKeyColumn not like null' is an undefined condition in sql so this library disallows it.");
-			}
+            if(pValue == null) {
+                throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the 'not like' operator. 'StringKeyColumn not like null' is an undefined condition in sql so this library disallows it.");
+            }
 
-			return new ColumnCondition(this, Operator.NOT_LIKE, pValue.Value);
-		}
+            return new ColumnCondition(this, Operator.NOT_LIKE, pValue.Value);
+        }
 
-		public Condition In(List<StringKey<TABLE>> pList) {
-
-            List<string> list = new List<string>(pList.Count);
-
-			foreach(StringKey<TABLE> value in pList) {
-
-				if(value == null) {
-					throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
-				}
-                list.Add(value.Value);
-			}
-			return new InCondition<string>(this, list);
-		}
-		public Condition NotIn(List<StringKey<TABLE>> pList) {
+        public Condition In(List<StringKey<TABLE>> pList) {
 
             List<string> list = new List<string>(pList.Count);
 
             foreach(StringKey<TABLE> value in pList) {
 
-				if(value == null) {
-					throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
-				}
+                if(value == null) {
+                    throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
+                }
                 list.Add(value.Value);
-			}
-			return new NotInCondition<string>(this, list);
-		}
+            }
+            return new InCondition<string>(this, list);
+        }
+        public Condition NotIn(List<StringKey<TABLE>> pList) {
 
-		public Condition In(Interfaces.IExecute pNestedQuery) {
-			return new NestedQueryCondition(this, Sql.Operator.IN, pNestedQuery);
-		}
-		public Condition NotIn(Interfaces.IExecute pNestedQuery) {
-			return new NestedQueryCondition(this, Sql.Operator.NOT_IN, pNestedQuery);
-		}
+            List<string> list = new List<string>(pList.Count);
 
-		public Condition In(params StringKey<TABLE>[] pValues) {
+            foreach(StringKey<TABLE> value in pList) {
 
-			if(pValues == null) {
-				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
-			}
+                if(value == null) {
+                    throw new NullReferenceException($"A value in {nameof(pList)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
+                }
+                list.Add(value.Value);
+            }
+            return new NotInCondition<string>(this, list);
+        }
+
+        public Condition In(Interfaces.IExecute pNestedQuery) {
+            return new NestedQueryCondition(this, Sql.Operator.IN, pNestedQuery);
+        }
+        public Condition NotIn(Interfaces.IExecute pNestedQuery) {
+            return new NestedQueryCondition(this, Sql.Operator.NOT_IN, pNestedQuery);
+        }
+
+        public Condition In(params StringKey<TABLE>[] pValues) {
+
+            if(pValues == null) {
+                throw new NullReferenceException($"{nameof(pValues)} cannot be null");
+            }
 
             List<string> list = new List<string>(pValues.Length);
 
             foreach(StringKey<TABLE> value in pValues) {
 
-				if(value == null) {
-					throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
-				}
+                if(value == null) {
+                    throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn IN (null)' is an undefined condition in sql so this library disallows it.");
+                }
                 list.Add(value.Value);
-			}
+            }
 
-			return new InCondition<string>(this, list);
-		}
-		public Condition NotIn(params StringKey<TABLE>[] pValues) {
+            return new InCondition<string>(this, list);
+        }
+        public Condition NotIn(params StringKey<TABLE>[] pValues) {
 
-			if(pValues == null) {
-				throw new NullReferenceException($"{nameof(pValues)} cannot be null");
-			}
+            if(pValues == null) {
+                throw new NullReferenceException($"{nameof(pValues)} cannot be null");
+            }
 
             List<string> list = new List<string>(pValues.Length);
 
             foreach(StringKey<TABLE> value in pValues) {
 
-				if(value == null) {
-					throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
-				}
+                if(value == null) {
+                    throw new NullReferenceException($"A value in {nameof(pValues)} is null. 'StringKeyColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
+                }
                 list.Add(value.Value);
-			}
-			return new NotInCondition<string>(this, list);
-		}
+            }
+            return new NotInCondition<string>(this, list);
+        }
 
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			Type dataType = pReader.GetFieldType(pColumnIndex);
+            Type dataType = pReader.GetFieldType(pColumnIndex);
 
-			if(dataType != typeof(string)) {
-				throw new Exception($"Row column data is not of the correct type. Expected string value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
-			}
+            if(dataType != typeof(string)) {
+                throw new Exception($"Row column data is not of the correct type. Expected string value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
+            }
 
-			return pReader.GetString(pColumnIndex);
-		}
-		public StringKey<TABLE> ValueOf(ARow pRow) {
-			return new StringKey<TABLE>((string)pRow.GetValue(this));
-		}
-		public void SetValue(ARow pRow, StringKey<TABLE> pValue) {
+            return pReader.GetString(pColumnIndex);
+        }
+        public StringKey<TABLE> ValueOf(ARow pRow) {
+            return new StringKey<TABLE>((string)pRow.GetValue(this));
+        }
+        public void SetValue(ARow pRow, StringKey<TABLE> pValue) {
 
             if(pValue.Value.Length > MaxLength) {
-				throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
-			}
-			pRow.SetValue(this, pValue.Value);
-		}
+                throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
+            }
+            pRow.SetValue(this, pValue.Value);
+        }
 
-		internal override void TestSetValue(ARow pRow, object pValue) {
-			SetValue(pRow, (StringKey<TABLE>)pValue);
-		}
-		internal override object TestGetValue(ARow pRow) {
-			return ValueOf(pRow);
-		}
+        internal override void TestSetValue(ARow pRow, object pValue) {
+            SetValue(pRow, (StringKey<TABLE>)pValue);
+        }
+        internal override object TestGetValue(ARow pRow) {
+            return ValueOf(pRow);
+        }
 
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override int GetHashCode() {
-			return base.GetHashCode();
-		}
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override bool Equals(object obj) {
-			return base.Equals(obj);
-		}
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override string ToString() {
-			return base.ToString();
-		}
-		public override System.Data.DbType DbType {
-			get { return System.Data.DbType.String; }
-		}
-		public override object GetDefaultType() {
-			return new StringKey<TABLE>(string.Empty);
-		}
-	}
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override int GetHashCode() {
+            return base.GetHashCode();
+        }
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override bool Equals(object obj) {
+            return base.Equals(obj);
+        }
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override string ToString() {
+            return base.ToString();
+        }
+        public override System.Data.DbType DbType {
+            get { return System.Data.DbType.String; }
+        }
+        public override object GetDefaultType() {
+            return new StringKey<TABLE>(string.Empty);
+        }
+    }
 }

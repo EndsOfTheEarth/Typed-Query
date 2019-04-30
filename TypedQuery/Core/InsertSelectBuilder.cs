@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,113 +24,113 @@ using System.Diagnostics;
 
 namespace Sql.Core {
 
-	internal class InsertSelectBuilder : IInsertSelect, IInsertSelectQuery, IInsertSelectExecute {
-		
-		private readonly ATable mTable;
-		private AColumn[] mColumns;
-		private IExecute mSelectQuery;
-		
-		internal ATable Table {
-			get { return mTable; }
-		}
-		internal AColumn[] InsertColumns {
-			get { return mColumns; }
-		}
-		internal IExecute SelectQuery {
-			get { return mSelectQuery; }
-		}
-		
-		public InsertSelectBuilder(ATable pTable) {
+    internal class InsertSelectBuilder : IInsertSelect, IInsertSelectQuery, IInsertSelectExecute {
 
-			if(pTable == null) {
-				throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
-			}
-			
-			mTable = pTable;
-		}
-		
-		public IInsertSelectQuery Columns(params AColumn[] pColumns) {
+        private readonly ATable mTable;
+        private AColumn[] mColumns;
+        private IExecute mSelectQuery;
 
-			if(pColumns == null) {
-				throw new NullReferenceException($"{ nameof(pColumns) } cannot be null");
-			}
+        internal ATable Table {
+            get { return mTable; }
+        }
+        internal AColumn[] InsertColumns {
+            get { return mColumns; }
+        }
+        internal IExecute SelectQuery {
+            get { return mSelectQuery; }
+        }
 
-			if(pColumns.Length == 0) {
-				throw new Exception($"{ nameof(pColumns) } cannot be empty");
-			}
-			
-			mColumns = pColumns;
-			return this;
-		}
-		
-		public IInsertSelectExecute Query(IExecute pSelectQuery) {
+        public InsertSelectBuilder(ATable pTable) {
 
-			if(pSelectQuery == null) {
-				throw new NullReferenceException($"{ nameof(pSelectQuery) } cannot be null");
-			}
-			
-			mSelectQuery = pSelectQuery;
-			return this;
-		}
-		
-		public string GetSql(ADatabase pDatabase) {
-			return Database.GenertateSql.GetInsertSelectQuery(pDatabase, this, null);
-		}
-		
-		private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {			
-			return Database.GenertateSql.GetInsertSelectQuery(pDatabase, this, pParameters);
-		}
-		
-		public int Execute(Transaction pTransaction) {
+            if(pTable == null) {
+                throw new NullReferenceException($"{ nameof(pTable) } cannot be null");
+            }
+            mTable = pTable;
+        }
 
-			if(pTransaction == null) {
-				throw new NullReferenceException($"{ nameof(pTransaction) } cannot be null");
-			}
+        public IInsertSelectQuery Columns(params AColumn[] pColumns) {
 
-			if(Sql.Settings.BreakOnInsertSelectQuery) {
-				if(Debugger.IsAttached) {
-					Debugger.Break();
-				}
-			}
-			
-			System.Data.Common.DbConnection connection = null;
+            if(pColumns == null) {
+                throw new NullReferenceException($"{ nameof(pColumns) } cannot be null");
+            }
 
-			string sql = string.Empty;
-			DateTime? start = null;
-			DateTime? end = null;
-			
-			try {
-				
-				connection = pTransaction.GetOrSetConnection(pTransaction.Database);
+            if(pColumns.Length == 0) {
+                throw new Exception($"{ nameof(pColumns) } cannot be empty");
+            }
+            mColumns = pColumns;
+            return this;
+        }
 
-				using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)){
+        public IInsertSelectExecute Query(IExecute pSelectQuery) {
 
-					Parameters parameters = Settings.UseParameters ? new Parameters(command) : null;
-	
-					sql = GetSql(pTransaction.Database, parameters);
-					
-					command.CommandText = sql;
-					command.CommandType = System.Data.CommandType.Text;
-					command.CommandTimeout = Settings.DefaultTimeout;
-					command.Transaction = pTransaction.GetOrSetDbTransaction(pTransaction.Database);
-					
-					start = DateTime.Now;
-					Settings.FireQueryExecutingEvent(pTransaction.Database, sql, QueryType.Insert, start, pTransaction.IsolationLevel, pTransaction.Id);
-					int returnValue = command.ExecuteNonQuery();
-	
-					end = DateTime.Now;
-	
-					Settings.FireQueryPerformedEvent(pTransaction.Database, sql, returnValue, QueryType.Insert, start, end, null, pTransaction.IsolationLevel, null, pTransaction.Id);
-	
-					return returnValue;
-				}
-			}
-			catch (Exception e) {
-				if (connection != null && connection.State != System.Data.ConnectionState.Closed)
-					connection.Close();
-				Settings.FireQueryPerformedEvent(pTransaction.Database, sql, 0, QueryType.Insert, start, end, e, pTransaction.IsolationLevel, null, pTransaction.Id);
-				throw;
-			}
-		}
-	}
+            if(pSelectQuery == null) {
+                throw new NullReferenceException($"{ nameof(pSelectQuery) } cannot be null");
+            }
+            mSelectQuery = pSelectQuery;
+            return this;
+        }
+
+        public string GetSql(ADatabase pDatabase) {
+            return Database.GenertateSql.GetInsertSelectQuery(pDatabase, this, null);
+        }
+
+        private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
+            return Database.GenertateSql.GetInsertSelectQuery(pDatabase, this, pParameters);
+        }
+
+        public int Execute(Transaction pTransaction) {
+
+            if(pTransaction == null) {
+                throw new NullReferenceException($"{ nameof(pTransaction) } cannot be null");
+            }
+
+            if(Sql.Settings.BreakOnInsertSelectQuery) {
+
+                if(Debugger.IsAttached) {
+                    Debugger.Break();
+                }
+            }
+
+            System.Data.Common.DbConnection connection = null;
+
+            string sql = string.Empty;
+            DateTime? start = null;
+            DateTime? end = null;
+
+            try {
+
+                connection = pTransaction.GetOrSetConnection(pTransaction.Database);
+
+                using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)) {
+
+                    Parameters parameters = Settings.UseParameters ? new Parameters(command) : null;
+
+                    sql = GetSql(pTransaction.Database, parameters);
+
+                    command.CommandText = sql;
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.CommandTimeout = Settings.DefaultTimeout;
+                    command.Transaction = pTransaction.GetOrSetDbTransaction(pTransaction.Database);
+
+                    start = DateTime.Now;
+                    Settings.FireQueryExecutingEvent(pTransaction.Database, sql, QueryType.Insert, start, pTransaction.IsolationLevel, pTransaction.Id);
+                    int returnValue = command.ExecuteNonQuery();
+
+                    end = DateTime.Now;
+
+                    Settings.FireQueryPerformedEvent(pTransaction.Database, sql, returnValue, QueryType.Insert, start, end, null, pTransaction.IsolationLevel, null, pTransaction.Id);
+
+                    return returnValue;
+                }
+            }
+            catch(Exception e) {
+
+                if(connection != null && connection.State != System.Data.ConnectionState.Closed) {
+                    connection.Close();
+                }
+                Settings.FireQueryPerformedEvent(pTransaction.Database, sql, 0, QueryType.Insert, start, end, e, pTransaction.IsolationLevel, null, pTransaction.Id);
+                throw;
+            }
+        }
+    }
 }

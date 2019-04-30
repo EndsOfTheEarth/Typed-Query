@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,56 +17,55 @@
  **/
 
 using System;
-using System.Text;
 
 namespace SqlServer.Views {
 
-	public sealed class Table : Sql.ATable {
+    public sealed class Table : Sql.ATable {
 
-		public readonly static Table Instance = new Table();
+        public readonly static Table Instance = new Table();
 
-		public Sql.Column.StringColumn Table_Name { get; private set; }
-		public Sql.Column.StringColumn Table_Schema { get; private set; }
-		public Sql.Column.StringColumn Table_Catalog { get; private set; }
+        public Sql.Column.StringColumn Table_Name { get; private set; }
+        public Sql.Column.StringColumn Table_Schema { get; private set; }
+        public Sql.Column.StringColumn Table_Catalog { get; private set; }
 
-		public Table()
-			: base("Views", "information_schema", true, typeof(Row)) {
+        public Table()
+            : base("Views", "information_schema", true, typeof(Row)) {
 
-				Table_Name = new Sql.Column.StringColumn(this, "table_name", false, int.MaxValue);
-				Table_Schema = new Sql.Column.StringColumn(this, "table_schema", false, int.MaxValue);
-				Table_Catalog = new Sql.Column.StringColumn(this, "table_catalog", false, int.MaxValue);
+            Table_Name = new Sql.Column.StringColumn(this, "table_name", false, int.MaxValue);
+            Table_Schema = new Sql.Column.StringColumn(this, "table_schema", false, int.MaxValue);
+            Table_Catalog = new Sql.Column.StringColumn(this, "table_catalog", false, int.MaxValue);
 
-				AddColumns(Table_Name, Table_Schema, Table_Catalog);
-		}
+            AddColumns(Table_Name, Table_Schema, Table_Catalog);
+        }
 
-		public Row this[int pIndex, Sql.IResult pResult] {
-			get { return (Row)pResult.GetRow(this, pIndex); }
-		}
-	}
+        public Row this[int pIndex, Sql.IResult pResult] {
+            get { return (Row)pResult.GetRow(this, pIndex); }
+        }
+    }
 
-	public sealed class Row : Sql.ARow {
+    public sealed class Row : Sql.ARow {
 
-		private new Table Tbl {
-			get { return (Table)base.Tbl; }
-		}
+        private new Table Tbl {
+            get { return (Table)base.Tbl; }
+        }
 
-		public Row()
-			: base(Table.Instance) {
-		}
+        public Row()
+            : base(Table.Instance) {
+        }
 
-		public string Table_Name {
-			get { return Tbl.Table_Name.ValueOf(this); }
-			set { Tbl.Table_Name.SetValue(this, value); }
-		}
+        public string Table_Name {
+            get { return Tbl.Table_Name.ValueOf(this); }
+            set { Tbl.Table_Name.SetValue(this, value); }
+        }
 
-		public string Table_Schema {
-			get { return Tbl.Table_Schema.ValueOf(this); }
-			set { Tbl.Table_Schema.SetValue(this, value); }
-		}
+        public string Table_Schema {
+            get { return Tbl.Table_Schema.ValueOf(this); }
+            set { Tbl.Table_Schema.SetValue(this, value); }
+        }
 
-		public string Table_Catalog {
-			get { return Tbl.Table_Catalog.ValueOf(this); }
-			set { Tbl.Table_Catalog.SetValue(this, value); }
-		}
-	}
+        public string Table_Catalog {
+            get { return Tbl.Table_Catalog.ValueOf(this); }
+            set { Tbl.Table_Catalog.SetValue(this, value); }
+        }
+    }
 }

@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,99 +18,93 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TypedQuery.Connection {
 
-	public partial class ConnectionsForm : Form {
+    public partial class ConnectionsForm : Form {
 
-		private List<Connection> mConnections;
+        private List<Connection> mConnections;
 
-		public ConnectionsForm() {
+        public ConnectionsForm() {
 
-			InitializeComponent();
+            InitializeComponent();
 
-			ConnectionsFile connectionsFile = new ConnectionsFile();
+            ConnectionsFile connectionsFile = new ConnectionsFile();
 
-			mConnections = connectionsFile.Load();
+            mConnections = connectionsFile.Load();
 
-			LoadListView();
-		}
+            LoadListView();
+        }
 
-		private void LoadListView() {
+        private void LoadListView() {
 
-			lvwConnections.Items.Clear();
+            lvwConnections.Items.Clear();
 
-			foreach(Connection connection in mConnections) {
-				ListViewItem item = new ListViewItem(connection.DatabaseType.ToString() + " -> " + connection.ConnectionString);
-				item.Tag = connection;
-				lvwConnections.Items.Add(item);
-			}
+            foreach(Connection connection in mConnections) {
+                ListViewItem item = new ListViewItem(connection.DatabaseType.ToString() + " -> " + connection.ConnectionString);
+                item.Tag = connection;
+                lvwConnections.Items.Add(item);
+            }
+            btnEdit.Enabled = false;
+            btnDelete.Enabled = false;
+        }
 
-			btnEdit.Enabled = false;
-			btnDelete.Enabled = false;
-		}
+        private void btnClose_Click(object sender, EventArgs e) {
+            Close();
+        }
 
-		private void btnClose_Click(object sender, EventArgs e) {
-			Close();
-		}
+        private void btnAdd_Click(object sender, EventArgs e) {
 
-		private void btnAdd_Click(object sender, EventArgs e) {
+            Cursor.Current = Cursors.WaitCursor;
 
-			Cursor.Current = Cursors.WaitCursor;
+            AddEditConnectionForm form = new AddEditConnectionForm();
 
-			AddEditConnectionForm form = new AddEditConnectionForm();
+            if(form.AddConnection() == DialogResult.OK) {
 
-			if(form.AddConnection() == System.Windows.Forms.DialogResult.OK) {
+                mConnections.Add(form.Connection);
+                new ConnectionsFile().Save(mConnections);
+                LoadListView();
+            }
+        }
 
-				mConnections.Add(form.Connection);
-				new ConnectionsFile().Save(mConnections);
-				LoadListView();
-			}
-		}
+        private void lvwConnections_SelectedIndexChanged(object sender, EventArgs e) {
 
-		private void lvwConnections_SelectedIndexChanged(object sender, EventArgs e) {
+            btnEdit.Enabled = lvwConnections.SelectedItems.Count > 0;
+            btnDelete.Enabled = lvwConnections.SelectedItems.Count > 0;
+        }
 
-			btnEdit.Enabled = lvwConnections.SelectedItems.Count > 0;
-			btnDelete.Enabled = lvwConnections.SelectedItems.Count > 0;
-		}
+        private void btnEdit_Click(object sender, EventArgs e) {
 
-		private void btnEdit_Click(object sender, EventArgs e) {
+            Cursor.Current = Cursors.WaitCursor;
 
-			Cursor.Current = Cursors.WaitCursor;
+            Connection connection = (Connection)lvwConnections.SelectedItems[0].Tag;
 
-			Connection connection = (Connection)lvwConnections.SelectedItems[0].Tag;
+            Connection connectionCopy = new Connection(connection);
 
-			Connection connectionCopy = new Connection(connection);
+            AddEditConnectionForm form = new AddEditConnectionForm();
 
-			AddEditConnectionForm form = new AddEditConnectionForm();
+            if(form.EditConnection(connectionCopy) == DialogResult.OK) {
 
-			if(form.EditConnection(connectionCopy) == System.Windows.Forms.DialogResult.OK) {
+                connection.DatabaseType = form.Connection.DatabaseType;
+                connection.ConnectionString = form.Connection.ConnectionString;
 
-				connection.DatabaseType = form.Connection.DatabaseType;
-				connection.ConnectionString = form.Connection.ConnectionString;
+                new ConnectionsFile().Save(mConnections);
+                LoadListView();
+            }
+        }
 
-				new ConnectionsFile().Save(mConnections);
-				LoadListView();
-			}
-		}
+        private void btnDelete_Click(object sender, EventArgs e) {
 
-		private void btnDelete_Click(object sender, EventArgs e) {
+            Cursor.Current = Cursors.WaitCursor;
 
-			Cursor.Current = Cursors.WaitCursor;
+            Connection connection = (Connection)lvwConnections.SelectedItems[0].Tag;
 
-			Connection connection = (Connection)lvwConnections.SelectedItems[0].Tag;
-
-			if(MessageBox.Show("Are you sure you want to delete this connection?", "Delete Connection?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes) {
-				mConnections.Remove(connection);
-				new ConnectionsFile().Save(mConnections);
-				LoadListView();
-			}
-		}
-	}
+            if(MessageBox.Show("Are you sure you want to delete this connection?", "Delete Connection?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+                mConnections.Remove(connection);
+                new ConnectionsFile().Save(mConnections);
+                LoadListView();
+            }
+        }
+    }
 }

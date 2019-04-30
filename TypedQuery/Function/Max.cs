@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,258 +15,273 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Sql.Function {
 
-	public sealed class MaxInt : ANumericFunction {
+    public sealed class MaxInt : ANumericFunction {
 
-		private readonly AColumn mColumn;
+        private readonly AColumn mColumn;
 
-		public MaxInt(Column.IntegerColumn pColumn) {
+        public MaxInt(Column.IntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public MaxInt(Column.NIntegerColumn pColumn) {
 
-		public MaxInt(Column.NIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public int? this[int pIndex, IResult pResult] {
+            get {
+                return (int?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			mColumn = pColumn;
-		}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
 
-		public int? this[int pIndex, IResult pResult] {
-			get {
-				return (int?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+            if(pReader.GetFieldType(pColumnIndex) == typeof(Int64)) {
+                return (int?)Convert.ToInt32(pReader.GetInt64(pColumnIndex));
+            }
+            return (int?)pReader.GetInt32(pColumnIndex);
+        }
+    }
 
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			if (pReader.GetFieldType(pColumnIndex) == typeof(Int64))
-				return (int?)Convert.ToInt32(pReader.GetInt64(pColumnIndex));
-			return (int?)pReader.GetInt32(pColumnIndex);
-		}
-	}
-	
-	public sealed class MaxBigInteger : ANumericFunction {
+    public sealed class MaxBigInteger : ANumericFunction {
 
-		private readonly AColumn mColumn;
+        private readonly AColumn mColumn;
 
-		public MaxBigInteger(Column.BigIntegerColumn pColumn) {
+        public MaxBigInteger(Column.BigIntegerColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public MaxBigInteger(Column.NBigIntegerColumn pColumn) {
 
-		public MaxBigInteger(Column.NBigIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public Int64? this[int pIndex, IResult pResult] {
+            get {
+                return (Int64?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			mColumn = pColumn;
-		}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (Int64?)pReader.GetInt64(pColumnIndex);
+        }
+    }
 
-		public Int64? this[int pIndex, IResult pResult] {
-			get {
-				return (Int64?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (Int64?)pReader.GetInt64(pColumnIndex);
-		}
-	}
+    public sealed class MaxDecimal : ANumericFunction {
 
-	public sealed class MaxDecimal : ANumericFunction {
+        private readonly AColumn mColumn;
 
-		private readonly AColumn mColumn;
+        public MaxDecimal(Column.DecimalColumn pColumn) {
 
-		public MaxDecimal(Column.DecimalColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public MaxDecimal(Column.NDecimalColumn pColumn) {
 
-			mColumn = pColumn;
-		}
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MaxDecimal(Column.NDecimalColumn pColumn) {
+        public decimal? this[int pIndex, IResult pResult] {
+            get {
+                return (decimal?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (decimal?)pReader.GetDecimal(pColumnIndex);
+        }
+    }
 
-			mColumn = pColumn;
-		}
+    public sealed class MaxSmallInt : ANumericFunction {
 
-		public decimal? this[int pIndex, IResult pResult] {
-			get {
-				return (decimal?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (decimal?)pReader.GetDecimal(pColumnIndex);
-		}
-	}
-	
-	public sealed class MaxSmallInt : ANumericFunction {
+        private readonly AColumn mColumn;
 
-		private readonly AColumn mColumn;
+        public MaxSmallInt(Column.SmallIntegerColumn pColumn) {
 
-		public MaxSmallInt(Column.SmallIntegerColumn pColumn) {
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+        public MaxSmallInt(Column.NSmallIntegerColumn pColumn) {
 
-			mColumn = pColumn;
-		}
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MaxSmallInt(Column.NSmallIntegerColumn pColumn) {
+        public Int16? this[int pIndex, IResult pResult] {
+            get {
+                return (Int16?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (Int16?)pReader.GetInt16(pColumnIndex);
+        }
+    }
 
-			mColumn = pColumn;
-		}
+    public sealed class MaxDateTime : ADateTimeFunction {
 
-		public Int16? this[int pIndex, IResult pResult] {
-			get {
-				return (Int16?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (Int16?)pReader.GetInt16(pColumnIndex);
-		}
-	}
+        private readonly AColumn mColumn;
 
-	public sealed class MaxDateTime : ADateTimeFunction {
+        public MaxDateTime(Column.DateTimeColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MaxDateTime(Column.DateTimeColumn pColumn) {
+        public MaxDateTime(Column.NDateTimeColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public DateTime? this[int pIndex, IResult pResult] {
+            get {
+                return (DateTime?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public MaxDateTime(Column.NDateTimeColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (DateTime?)pReader.GetDateTime(pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class MaxFloat : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public DateTime? this[int pIndex, IResult pResult] {
-			get {
-				return (DateTime?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")";
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (DateTime?)pReader.GetDateTime(pColumnIndex);
-		}
-	}
-	
-	public sealed class MaxFloat : ANumericFunction {
+        public MaxFloat(Column.FloatColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MaxFloat(Column.FloatColumn pColumn) {
+        public MaxFloat(Column.NFloatColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public float? this[int pIndex, IResult pResult] {
+            get {
+                return (float?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public MaxFloat(Column.NFloatColumn pColumn) {
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (float?)pReader.GetFloat(pColumnIndex);
+        }
+    }
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+    public sealed class MaxDouble : ANumericFunction {
 
-			mColumn = pColumn;
-		}
+        private readonly AColumn mColumn;
 
-		public float? this[int pIndex, IResult pResult] {
-			get {
-				return (float?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (float?)pReader.GetFloat(pColumnIndex);
-		}
-	}
-	
-	public sealed class MaxDouble : ANumericFunction {
+        public MaxDouble(Column.DoubleColumn pColumn) {
 
-		private readonly AColumn mColumn;
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-		public MaxDouble(Column.DoubleColumn pColumn) {
+        public MaxDouble(Column.NDoubleColumn pColumn) {
 
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
+            if(((object)pColumn) == null) {
+                throw new NullReferenceException("pColumn cannot be null");
+            }
+            mColumn = pColumn;
+        }
 
-			mColumn = pColumn;
-		}
+        public double? this[int pIndex, IResult pResult] {
+            get {
+                return (double?)pResult.GetValue(this, pIndex);
+            }
+        }
+        public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
+            return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
+        }
+        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
-		public MaxDouble(Column.NDoubleColumn pColumn) {
-
-			if (((object)pColumn) == null)
-				throw new NullReferenceException("pColumn cannot be null");
-
-			mColumn = pColumn;
-		}
-
-		public double? this[int pIndex, IResult pResult] {
-			get {
-				return (double?)pResult.GetValue(this, pIndex);
-			}
-		}
-		public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
-			return "MAX(" + (pUseAlias ? pAliasManager.GetAlias(mColumn.Table) + "." : string.Empty) + mColumn.ColumnName + ")" + GetWindowFunctionSql(pUseAlias, pAliasManager);
-		}
-		public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
-			if (pReader.IsDBNull(pColumnIndex))
-				return null;
-			return (double?)pReader.GetDouble(pColumnIndex);
-		}
-	}
+            if(pReader.IsDBNull(pColumnIndex)) {
+                return null;
+            }
+            return (double?)pReader.GetDouble(pColumnIndex);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,43 +18,42 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Web.Script.Serialization;
 using System.IO;
 
 namespace TypedQuery.Connection {
 
-	public class Connection {
+    public class Connection {
 
-		public Sql.DatabaseType DatabaseType { get; set; }
-		public string ConnectionString { get; set; }
+        public Sql.DatabaseType DatabaseType { get; set; }
+        public string ConnectionString { get; set; }
 
-		public Connection() { }
+        public Connection() { }
 
-		public Connection(Connection pConnection) {
-			DatabaseType = pConnection.DatabaseType;
-			ConnectionString = pConnection.ConnectionString;
-		}
+        public Connection(Connection pConnection) {
+            DatabaseType = pConnection.DatabaseType;
+            ConnectionString = pConnection.ConnectionString;
+        }
 
-		public override string ToString() {
-			return DatabaseType.ToString() + " -> " + ConnectionString;
-		}
-	}
+        public override string ToString() {
+            return DatabaseType.ToString() + " -> " + ConnectionString;
+        }
+    }
 
-	public class ConnectionsFile {
+    public class ConnectionsFile {
 
-		private readonly static string sFileName = "settings.json";
+        private readonly static string sFileName = "settings.json";
 
-		public void Save(List<Connection> pConnections) {
-			File.WriteAllText(sFileName, new JavaScriptSerializer().Serialize(pConnections));
-		}
+        public void Save(List<Connection> pConnections) {
+            File.WriteAllText(sFileName, new JavaScriptSerializer().Serialize(pConnections));
+        }
 
-		public List<Connection> Load() {
-			
-			if(!File.Exists(sFileName))
-				return new List<Connection>();
+        public List<Connection> Load() {
 
-			return new JavaScriptSerializer().Deserialize<List<Connection>>(File.ReadAllText(sFileName));
-		}
-	}
+            if(!File.Exists(sFileName)) {
+                return new List<Connection>();
+            }
+            return new JavaScriptSerializer().Deserialize<List<Connection>>(File.ReadAllText(sFileName));
+        }
+    }
 }

@@ -1,7 +1,7 @@
 ﻿
 /*
  * 
- * Copyright (C) 2009-2016 JFo.nz
+ * Copyright (C) 2009-2019 JFo.nz
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,20 +21,21 @@ using System.Windows.Forms;
 
 namespace TypedQuery {
 
-	static class Program {
-		
-		[STAThread]
-		private static void Main() {
-			Application.ThreadException += Application_ThreadException;
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new TableGeneratorForm());
+    static class Program {
 
-			Npgsql.NpgsqlConnection.ClearAllPools();	//Fixes issue with NpgSql throwing an exception
-		}
+        [STAThread]
+        private static void Main() {
 
-		private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e) {
-			MessageBox.Show(e.Exception.Message, "Exception Occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
-		}
-	}
+            Application.ThreadException += Application_ThreadException;
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new TableGeneratorForm());
+
+            Npgsql.NpgsqlConnection.ClearAllPools();    //Fixes issue with NpgSql throwing an exception
+        }
+
+        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e) {
+            MessageBox.Show(e.Exception.Message, "Exception Occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 }
