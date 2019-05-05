@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.Int64KeyTestTable {
 
         public BigIntegerKeyColumn<Int64KeyTestTable.Table> Id { get; private set; }
 
-        public Table() : base("int64keytesttable", "public", false, typeof(Row)) {
+        public Table() : base("int64keytesttable", "", false, typeof(Row)) {
 
             Id = new BigIntegerKeyColumn<Int64KeyTestTable.Table>(this, "id", true);
 

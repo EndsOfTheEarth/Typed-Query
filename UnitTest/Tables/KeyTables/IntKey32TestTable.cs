@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.Int32KeyTestTable {
 
         public IntegerKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("int32keytesttable", "public", false, typeof(Row)) {
+        public Table() : base("int32keytesttable", "", false, typeof(Row)) {
 
             Id = new IntegerKeyColumn<Table>(this, "id", true);
 

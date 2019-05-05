@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.Int16KeyTestTable {
 
         public SmallIntegerKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("int16keytesttable", "public", false, typeof(Row)) {
+        public Table() : base("int16keytesttable", "", false, typeof(Row)) {
 
             Id = new SmallIntegerKeyColumn<Table>(this, "id", true);
 

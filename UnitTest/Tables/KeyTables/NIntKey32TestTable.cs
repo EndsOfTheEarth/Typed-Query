@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.NInt32KeyTestTable {
 
         public NIntegerKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("nint32keytesttable", "public", false, typeof(Row)) {
+        public Table() : base("nint32keytesttable", "", false, typeof(Row)) {
 
             Id = new NIntegerKeyColumn<Table>(this, "id", true);
 

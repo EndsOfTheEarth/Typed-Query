@@ -95,9 +95,10 @@ namespace Sql.Tests {
 					
 					Sql.Query.Select(table).From(table).Execute(DB.TestDB);	//Query against a locked row
 				}
-				catch(System.Data.SqlClient.SqlException e) {					
-					if(!e.Message.Contains("Timeout expired"))
-						throw e;
+				catch(System.Data.SqlClient.SqlException e) {
+                    if(!e.Message.ToLower().Contains("timeout expired")) {
+                        throw e;
+                    }
 				}
 				finally {
 					Settings.DefaultTimeout = 30;
@@ -122,7 +123,7 @@ namespace Sql.Tests {
 					Sql.Query.Select(table).From(table).Timeout(1).Execute(DB.TestDB);	//Query against a locked row
 				}
 				catch(System.Data.SqlClient.SqlException e) {					
-					if(!e.Message.Contains("Timeout expired"))
+					if(!e.Message.ToLower().Contains("timeout expired"))
 						throw e;
 				}
 				finally {

@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.NInt64KeyTestTable {
 
         public NBigIntegerKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("nint64keytesttable", "public", false, typeof(Row)) {
+        public Table() : base("nint64keytesttable", "", false, typeof(Row)) {
 
             Id = new NBigIntegerKeyColumn<Table>(this, "id", true);
 

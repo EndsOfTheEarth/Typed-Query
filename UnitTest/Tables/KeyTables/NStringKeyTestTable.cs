@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.NStringKeyTestTable {
 
         public NStringKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("nstringkeytesttable", "public", false, typeof(Row)) {
+        public Table() : base("nstringkeytesttable", "", false, typeof(Row)) {
 
             Id = new NStringKeyColumn<Table>(this, "id", true, 100);
 

@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.NInt16KeyTestTable {
 
         public NSmallIntegerKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("nint16keytesttable", "public", false, typeof(Row)) {
+        public Table() : base("nint16keytesttable", "", false, typeof(Row)) {
 
             Id = new NSmallIntegerKeyColumn<Table>(this, "id", true);
 

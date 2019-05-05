@@ -11,7 +11,7 @@ namespace Sql.Tables.KeyTables.NGuidKeyTestTable {
 
         public NGuidKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("nguidkeytesttable", "public", false, typeof(Row)) {
+        public Table() : base("nguidkeytesttable", "", false, typeof(Row)) {
 
             Id = new NGuidKeyColumn<Table>(this, "id", true);
 

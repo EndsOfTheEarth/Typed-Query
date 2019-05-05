@@ -11,7 +11,7 @@ namespace Sql.Tables.KeyTables.GuidKeyTestTable {
 
         public GuidKeyColumn<GuidKeyTestTable.Table> Id { get; private set; }
 
-        public Table() : base("guidkeytesttable", "public", false, typeof(Row)) {
+        public Table() : base("guidkeytesttable", "", false, typeof(Row)) {
 
             Id = new GuidKeyColumn<GuidKeyTestTable.Table>(this, "id", true);
 

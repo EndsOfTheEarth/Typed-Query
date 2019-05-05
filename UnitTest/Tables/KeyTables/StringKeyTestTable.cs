@@ -10,7 +10,7 @@ namespace Sql.Tables.KeyTables.StringKeyTestTable {
 
         public StringKeyColumn<Table> Id { get; private set; }
 
-        public Table() : base("stringkeytesttable", "public", false, typeof(Row)) {
+        public Table() : base("stringkeytesttable", "", false, typeof(Row)) {
 
             Id = new StringKeyColumn<Table>(this, "id", true, 100);
 
