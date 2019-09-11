@@ -17,6 +17,7 @@
 - [Joins](#joins)
 - [Group By And Having](#group-by-and-having)
 - [Order By](#order-by)
+- [Sql Server Table Hints](#sql-server-table-hints)
 - [Query Hints (Append)](#query-hints-append)
 - [Aggregate Functions](#aggregate-functions)
 - [Date Functions](#date-functions)
@@ -533,6 +534,20 @@ Sql.IResult result = Sql.Query
     .From(userTable)
     .OrderBy(userTable.FirstName, userTable.LastName.ASC, userTable.Code.DESC)
     .Execute(MainDatabase.INSTANCE);
+```
+## Sql Server Table Hints
+Sql server table hints can be included in the From(...) method. Note: This is only supported by sql server.
+
+```C#
+Sql.IResult result = Sql.Query
+    .Select(table)
+    .From(table, "UPDLOCK, READPAST")
+    .Execute(MainDatabase.INSTANCE);
+    
+Sql.IResult result = Sql.Query
+    .Select(table)
+    .From(table, "TABLOCK, INDEX(ix_MyIndex)")
+    .Execute(MainDatabase.INSTANCE);    
 ```
 
 ## Query Hints (Append)
