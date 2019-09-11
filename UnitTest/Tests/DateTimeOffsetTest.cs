@@ -289,7 +289,7 @@ namespace Sql.Tests {
 					.Set(table.Dt, new Sql.Function.CustomSql("@dt"))
 					.GetSql(DB.TestDB);
 
-				Sql.Query.ExecuteNonQuery(sql, DB.TestDB, transaction);
+				Sql.Query.ExecuteNonQuery(sql, transaction);
 				transaction.Commit();
 			}
 

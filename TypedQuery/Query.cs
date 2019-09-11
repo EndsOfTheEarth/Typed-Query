@@ -197,59 +197,52 @@ namespace Sql {
         /// Executes non query in pSql
         /// </summary>
         /// <param name="pSql">Plain text sql query to be executed</param>
-        /// <param name="pDatabase">Database to execute query on</param>
         /// <param name="pTransaction">Transaction to execute query in</param>
         /// <returns></returns>
-        public static int ExecuteNonQuery(string pSql, ADatabase pDatabase, Transaction pTransaction) {
+        public static int ExecuteNonQuery(string pSql, Transaction pTransaction) {
 
             if(string.IsNullOrWhiteSpace(pSql)) {
                 throw new Exception($"{nameof(pSql)} cannot be null or empty");
-            }
-
-            if(pDatabase == null) {
-                throw new NullReferenceException($"{nameof(pDatabase)} cannot be null");
             }
 
             if(pTransaction == null) {
                 throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
             }
 
-            System.Data.Common.DbConnection connection = null;
+            if(pTransaction.Database == null) {
+                throw new NullReferenceException($"{nameof(pTransaction.Database)} cannot be null");
+            }
 
             DateTime? start = null;
             DateTime? end = null;
 
             try {
 
-                connection = pTransaction.GetOrSetConnection(pDatabase);
+                System.Data.Common.DbConnection connection = pTransaction.GetOrSetConnection(pTransaction.Database);
 
                 using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)) {
 
                     command.CommandText = pSql;
-                    command.CommandType = System.Data.CommandType.Text;
+                    command.CommandType = CommandType.Text;
 
                     if(pTransaction != null) {
-                        command.Transaction = pTransaction.GetOrSetDbTransaction(pDatabase);
+                        command.Transaction = pTransaction.GetOrSetDbTransaction(pTransaction.Database);
                     }
 
                     start = DateTime.Now;
-                    Settings.FireQueryExecutingEvent(pDatabase, pSql, QueryType.PlainText, start, pTransaction.IsolationLevel, pTransaction.Id);
+                    Settings.FireQueryExecutingEvent(pTransaction.Database, pSql, QueryType.PlainText, start, pTransaction.IsolationLevel, pTransaction.Id);
 
                     int rowsEffected = command.ExecuteNonQuery();
 
                     end = DateTime.Now;
 
-                    Settings.FireQueryPerformedEvent(pDatabase, pSql, rowsEffected, QueryType.PlainText, start, end, null, pTransaction.IsolationLevel, null, pTransaction.Id);
+                    Settings.FireQueryPerformedEvent(pTransaction.Database, pSql, rowsEffected, QueryType.PlainText, start, end, null, pTransaction.IsolationLevel, null, pTransaction.Id);
 
                     return rowsEffected;
                 }
             }
             catch(Exception e) {
-
-                if(connection != null && connection.State != ConnectionState.Closed) {
-                    connection.Close();
-                }
-                Settings.FireQueryPerformedEvent(pDatabase, pSql, 0, QueryType.PlainText, start, end, e, pTransaction.IsolationLevel, null, pTransaction.Id);
+                Settings.FireQueryPerformedEvent(pTransaction.Database, pSql, 0, QueryType.PlainText, start, end, e, pTransaction.IsolationLevel, null, pTransaction.Id);
                 throw;
             }
         }

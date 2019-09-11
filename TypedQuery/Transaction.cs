@@ -350,6 +350,11 @@ namespace Sql {
             }
         }
 
+        public System.Data.ConnectionState ConnectionState {
+            get {
+                return mConnection != null ? mConnection.State : System.Data.ConnectionState.Closed;
+            }
+        }
         /// <summary>
         /// Rolls back transaction if not committed
         /// </summary>

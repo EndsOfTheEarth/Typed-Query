@@ -37,10 +37,10 @@ namespace Sql.Tests {
 
 				if(!mRunOnce) {
 					if(DB.TestDB.DatabaseType == DatabaseType.Mssql) {
-						Query.ExecuteNonQuery("DBCC CHECKIDENT (" + table.TableName + ", RESEED, 1)", DB.TestDB, transaction);
+						Query.ExecuteNonQuery("DBCC CHECKIDENT (" + table.TableName + ", RESEED, 1)", transaction);
 					}
 					else if(DB.TestDB.DatabaseType == DatabaseType.PostgreSql) {
-						Sql.Query.ExecuteNonQuery("ALTER SEQUENCE auto_id_seq RESTART WITH 1;", DB.TestDB, transaction);
+						Query.ExecuteNonQuery("ALTER SEQUENCE auto_id_seq RESTART WITH 1;", transaction);
 					}
 					mRunOnce = true;
 				}

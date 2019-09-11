@@ -248,5 +248,21 @@ namespace Sql.Tests {
 				}
 			}
 		}
-	}
+
+        [TestMethod]
+        public void Test_04() {
+
+            Transaction transaction = new Transaction(DB.TestDB);
+
+            try {
+                using(transaction) {
+                    Query.ExecuteNonQuery("lakjdhflakjsdfha", transaction);
+                    Assert.Fail("Exception was not thrown as expected");
+                }
+            }
+            catch { }
+
+            Assert.IsTrue(transaction.ConnectionState == System.Data.ConnectionState.Closed);
+        }
+    }
 }

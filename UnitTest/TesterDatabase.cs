@@ -27,10 +27,10 @@ namespace Sql {
 
 		public readonly static Sql.ADatabase TestDB = new DB();
 
-		//private DB() : base("Application", Sql.DatabaseType.Mssql) {
-		private DB()
-			: base("Application", Sql.DatabaseType.PostgreSql) {
-		}
+        private DB() : base("Application", Sql.DatabaseType.Mssql) { }
+		//private DB()
+		//	: base("Application", Sql.DatabaseType.PostgreSql) {
+		//}
 		
 		static DB() {
 			Sql.Settings.QueryExecuting += new Sql.Settings.QueryExecutingDelegate(Sql_Settings_QueryExecutingDelegate);
