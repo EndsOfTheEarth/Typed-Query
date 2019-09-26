@@ -95,10 +95,10 @@ namespace TypedQuery.Connection {
 
                 chkIntegratedSecurity.Checked = builder.IntegratedSecurity;
 
-                txtUserName.Text = builder.UserName;
+                txtUserName.Text = builder.Username;
                 txtPassword.Text = builder.Password;
 
-                chkEncrypt.Checked = builder.SSL;
+                chkEncrypt.Checked = builder.SslMode == SslMode.Require || builder.SslMode == SslMode.Prefer;
                 //chkTrustCertificate.Checked - Not supportted it seems;
             }
             else {
@@ -195,12 +195,10 @@ namespace TypedQuery.Connection {
                     builder.IntegratedSecurity = chkIntegratedSecurity.Checked;
                 }
                 else {
-                    builder.UserName = txtUserName.Text;
+                    builder.Username = txtUserName.Text;
                     builder.Password = txtPassword.Text;
                 }
-
-                builder.SSL = chkEncrypt.Checked;
-                builder.SslMode = chkEncrypt.Checked ? SslMode.Require : SslMode.Allow;
+                builder.SslMode = chkEncrypt.Checked ? SslMode.Require : SslMode.Disable;
                 //chkTrustCertificate.Checked - Not supportted it seems;
 
                 connString = builder.ConnectionString;

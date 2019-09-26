@@ -18,8 +18,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web.Script.Serialization;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace TypedQuery.Connection {
 
@@ -45,7 +45,7 @@ namespace TypedQuery.Connection {
         private readonly static string sFileName = "settings.json";
 
         public void Save(List<Connection> pConnections) {
-            File.WriteAllText(sFileName, new JavaScriptSerializer().Serialize(pConnections));
+            File.WriteAllText(sFileName, JsonConvert.SerializeObject(pConnections));
         }
 
         public List<Connection> Load() {
@@ -53,7 +53,7 @@ namespace TypedQuery.Connection {
             if(!File.Exists(sFileName)) {
                 return new List<Connection>();
             }
-            return new JavaScriptSerializer().Deserialize<List<Connection>>(File.ReadAllText(sFileName));
+            return JsonConvert.DeserializeObject<List<Connection>>(File.ReadAllText(sFileName));
         }
     }
 }
