@@ -264,5 +264,48 @@ namespace Sql.Tests {
 
             Assert.IsTrue(transaction.ConnectionState == System.Data.ConnectionState.Closed);
         }
+
+        [TestMethod]
+        public void Test_05() {
+
+            Tables.StringTable.Table stringTable = Tables.StringTable.Table.INSTANCE;
+
+            using(Transaction transaction = new Transaction(DB.TestDB)) {
+
+                for(int index = 0; index < 100; index++) {
+
+                    Tables.StringTable.Row row = new Tables.StringTable.Row();
+
+                    row.Str = index.ToString();
+                    row.Update(transaction);
+                }
+                transaction.Commit();
+            }
+
+            using(var connection = DB.TestDB.GetConnection(false)) {
+
+                using(var transaction = connection.BeginTransaction()) {
+
+                    using(var command = connection.CreateCommand()) {
+
+                        command.CommandText = Query
+                            .Select(stringTable.Str)
+                            .From(stringTable, "UPDLOCK, READPAST")
+                            .GetSql(DB.TestDB);
+
+                        command.Transaction = transaction;
+
+                        using(var reader = command.ExecuteReader()) {
+
+                            while(reader.Read()) {
+
+                                string value = reader.GetString(reader.GetOrdinal(stringTable.Str.ColumnName));
+                            }
+                        }
+                    }
+                    transaction.Commit();
+                }
+            }
+        }
     }
 }
