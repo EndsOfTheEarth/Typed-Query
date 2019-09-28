@@ -21,30 +21,28 @@ using System.Collections.Generic;
 
 namespace Sql.Column {
 
-    public class StringColumn : AColumn, IColumnLength {
+    public class NStringColumn : AColumn, IColumnLength {
 
         public int MaxLength { get; private set; }
 
-        public StringColumn(ATable pTable, string pColumnName, int pMaxLength)
-            : base(pTable, pColumnName, false, false) {
+        public NStringColumn(ATable pTable, string pColumnName, int pMaxLength)
+            : base(pTable, pColumnName, false, true) {
 
             if(pMaxLength <= 0) {
                 throw new Exception($"{nameof(pMaxLength)} must be >= 1");
             }
-
             MaxLength = pMaxLength;
         }
-        public StringColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength)
-            : base(pTable, pColumnName, pIsPrimaryKey, false) {
+        public NStringColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength)
+            : base(pTable, pColumnName, pIsPrimaryKey, true) {
 
             if(pMaxLength <= 0) {
                 throw new Exception($"{nameof(pMaxLength)} must be >= 1");
             }
-
             MaxLength = pMaxLength;
         }
 
-        public static Condition operator ==(StringColumn pColumnA, StringColumn pColumnB) {
+        public static Condition operator ==(NStringColumn pColumnA, NStringColumn pColumnB) {
 
             if(((object)pColumnB) == null) {
                 throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
@@ -53,7 +51,7 @@ namespace Sql.Column {
             return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
         }
 
-        public static Condition operator !=(StringColumn pColumnA, StringColumn pColumnB) {
+        public static Condition operator !=(NStringColumn pColumnA, NStringColumn pColumnB) {
 
             if(((object)pColumnB) == null) {
                 throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
@@ -62,7 +60,25 @@ namespace Sql.Column {
             return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
         }
 
-        public static Condition operator ==(StringColumn pColumnA, string pValue) {
+        public static Condition operator ==(NStringColumn pColumnA, StringColumn pColumnB) {
+
+            if(((object)pColumnB) == null) {
+                throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+            }
+
+            return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pColumnB);
+        }
+
+        public static Condition operator !=(NStringColumn pColumnA, StringColumn pColumnB) {
+
+            if(((object)pColumnB) == null) {
+                throw new NullReferenceException($"{nameof(pColumnB)} cannot be null");
+            }
+
+            return new ColumnCondition(pColumnA, Sql.Operator.NOT_EQUALS, pColumnB);
+        }
+
+        public static Condition operator ==(NStringColumn pColumnA, string pValue) {
 
             if(pValue == null) {
                 throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the == operator. Use .IsNull() method if a null condition is required. 'stringColumn = null' is an undefined condition in sql so this library disallows it.");
@@ -71,7 +87,7 @@ namespace Sql.Column {
             return new ColumnCondition(pColumnA, Sql.Operator.EQUALS, pValue);
         }
 
-        public static Condition operator !=(StringColumn pColumnA, string pValue) {
+        public static Condition operator !=(NStringColumn pColumnA, string pValue) {
 
             if(pValue == null) {
                 throw new NullReferenceException($"{nameof(pValue)} cannot be null when using the != operator. Use .IsNull() method if a null condition is required. 'stringColumn != null' is an undefined condition in sql so this library disallows it.");
@@ -150,21 +166,23 @@ namespace Sql.Column {
                     throw new NullReferenceException($"A value in { nameof(pValues) } is null. 'stringColumn NOT IN (null)' is an undefined condition in sql so this library disallows it.");
                 }
             }
+
             return new NotInCondition<string>(this, pValues);
         }
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+        public override object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
             Type dataType = pReader.GetFieldType(pColumnIndex);
 
             if(dataType != typeof(string)) {
                 throw new Exception($"Row column data is not of the correct type. Expected string value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
             }
+
             return pReader.GetString(pColumnIndex);
         }
-        public string ValueOf(ARow pRow) {
-            return (string?)pRow.GetValue(this)!;
+        public string? ValueOf(ARow pRow) {
+            return (string?)pRow.GetValue(this);
         }
         public void SetValue(ARow pRow, string? pValue) {
 
@@ -197,7 +215,7 @@ namespace Sql.Column {
             get { return System.Data.DbType.String; }
         }
         public override object? GetDefaultType() {
-            return string.Empty;
+            return null;
         }
     }
 }
