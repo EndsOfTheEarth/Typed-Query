@@ -205,8 +205,16 @@ namespace TypedQuery.Logic {
                     }
                     else if(dbColumn.DbType == System.Data.DbType.String) {
 
-                        if(!columnType.IsGenericType || columnType.GetGenericTypeDefinition() != typeof(Sql.Column.StringKeyColumn<>)) {
-                            issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "A string foreign key table column must use the column type: Sql.Column.StringKeyColumn<>."));
+                        if(dbColumn.IsNullable) {
+
+                            if(!columnType.IsGenericType || columnType.GetGenericTypeDefinition() != typeof(Sql.Column.NStringKeyColumn<>)) {
+                                issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "A string foreign key table column must use the column type: Sql.Column.NStringKeyColumn<>."));
+                            }
+                        }
+                        else {
+                            if(!columnType.IsGenericType || columnType.GetGenericTypeDefinition() != typeof(Sql.Column.StringKeyColumn<>)) {
+                                issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "A string foreign key table column must use the column type: Sql.Column.StringKeyColumn<>."));
+                            }
                         }
                     }
                     else if(columnType.IsGenericType) {
@@ -217,15 +225,12 @@ namespace TypedQuery.Logic {
                     }
                 }
 
-                if(!(column is Sql.Column.StringColumn) && (!columnType.IsGenericType || columnType.GetGenericTypeDefinition() != typeof(Sql.Column.StringKeyColumn<>))) {
+                if(dbColumn.IsNullable && !column.AllowsNulls) {
+                    issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Database column allows nulls but code column does not."));
+                }
 
-                    if(dbColumn.IsNullable && !column.AllowsNulls) {
-                        issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Database column allows nulls but code column does not."));
-                    }
-
-                    if(!dbColumn.IsNullable && column.AllowsNulls) {
-                        issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Database column does not allows nulls but code column does."));
-                    }
+                if(!dbColumn.IsNullable && column.AllowsNulls) {
+                    issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Database column does not allows nulls but code column does."));
                 }
 
                 if(typeof(Sql.IColumnLength).IsAssignableFrom(columnType)) {

@@ -80,7 +80,7 @@ namespace TypedQuery.Logic {
             }
 
             string endl = Environment.NewLine;
-            string tab = "\t";
+            string tab = "    ";
 
             StringBuilder code = new StringBuilder();
 
@@ -494,8 +494,8 @@ namespace TypedQuery.Logic {
                 else if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
                     value = (!pColumn.IsNullable ? "StringKeyColumn" : "NStringKeyColumn") + "<" + pTable.TableName + ".Table>";
                 }
-                else {
-                    value = typeof(Sql.Column.StringColumn).Name;
+                else {                    
+                    value = !pColumn.IsNullable ? typeof(Sql.Column.StringColumn).Name : typeof(Sql.Column.NStringColumn).Name;
                 }
             }
             else if(pColumn.DbType == DbType.Binary) {
@@ -782,11 +782,11 @@ namespace TypedQuery.Logic {
                     }
                 }
                 else {
-                    value = "string";
+                    value = !pIsNullable ? "string" : "string?";
                 }
             }
             else if(pDbType == DbType.Binary) {
-                value = !pIsNullable ? "byte[]" : "byte[]";
+                value = !pIsNullable ? "byte[]" : "byte[]?";
             }
             else if(pDbType == DbType.Byte) {
                 value = !pIsNullable ? "byte" : "byte?";
