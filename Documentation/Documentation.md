@@ -727,8 +727,9 @@ NfloatColumn | Float? Null
 NGuidColumn | Guid? Null
 NIntegerColumn | Int? Null
 NSmallIntColumn | Int16 Null
+NStringColumn | String Null
 SmallIntColumn | Int16 Not Null
-StringColumn | String Null and Null
+StringColumn | String Not Null
 
 ## Key Columns
 'Key Columns' are columns that are used to map the primary and foreign key relationship between tables. These columns should be used for fields that are either a primary key field or a forgein key field. Key columns allow the compiler to check that join conditions on those fields are only between the primary and foreign key columns. Joins to non key columns of the same type are disallowed by the compiler.
