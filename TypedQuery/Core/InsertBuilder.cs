@@ -44,7 +44,7 @@ namespace Sql.Core {
             get { return mSetValueList; }
         }
 
-        public AColumn[] ReturnColumns { get; private set; }
+        public AColumn[]? ReturnColumns { get; private set; }
 
         public InsertBuilder(ATable pTable) {
 
@@ -54,7 +54,7 @@ namespace Sql.Core {
             mTable = pTable;
         }
 
-        internal IInsertSet SetInternal(Sql.AColumn pColumn, object pValue) {
+        internal IInsertSet SetInternal(Sql.AColumn pColumn, object? pValue) {
             mSetValueList.Add(new SetValue(pColumn, pValue, true));
             return this;
         }
@@ -194,12 +194,12 @@ namespace Sql.Core {
             return this;
         }
 
-        public IInsertSet Set(Sql.Column.NBinaryColumn pColumn, byte[] pValue) {
+        public IInsertSet Set(Sql.Column.NBinaryColumn pColumn, byte[]? pValue) {
             mSetValueList.Add(new SetValue(pColumn, pValue));
             return this;
         }
 
-        public IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue) {
+        public IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue) where ENUM : notnull {
             mSetValueList.Add(new SetValue(pColumn, (int)(object)pValue));
             return this;
         }
@@ -322,7 +322,7 @@ namespace Sql.Core {
             return Database.GenertateSql.GetInsertQuery(pDatabase, this, null);
         }
 
-        private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
+        private string GetSql(ADatabase pDatabase, Core.Parameters? pParameters) {
 
             if(pDatabase == null) {
                 throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
@@ -343,7 +343,7 @@ namespace Sql.Core {
                 }
             }
 
-            System.Data.Common.DbConnection connection = null;
+            System.Data.Common.DbConnection? connection = null;
 
             string sql = string.Empty;
             DateTime? start = null;
@@ -355,7 +355,7 @@ namespace Sql.Core {
 
                 using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)) {
 
-                    Parameters parameters;
+                    Parameters? parameters;
 
                     if(mUseParameters != null) {
                         parameters = mUseParameters.Value ? new Parameters(command) : null;
@@ -409,88 +409,101 @@ namespace Sql.Core {
     public class SetValue {
 
         private AColumn mColumn;
-        private object mValue;
+        private object? mValue;
 
-        public SetValue(AColumn pColumn, object pValue, bool pIsInternal) {
-            SetObjectValue(pColumn, pValue);
+        public SetValue(AColumn pColumn, object? pValue, bool pIsInternal) {
+            mColumn = pColumn;
+            mValue = pValue;
         }
         //Using particular types to help filter out types that are not allowed
         public SetValue(AColumn pColumn, short pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, short? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, int pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, int? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, long pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, long? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, decimal pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, decimal? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
-        public SetValue(AColumn pColumn, string pValue) {
-            SetObjectValue(pColumn, pValue);
+        public SetValue(AColumn pColumn, string? pValue) {
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, DateTime pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, DateTime? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, Function.CurrentDateTime pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, DateTimeOffset pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, DateTimeOffset? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, Function.CurrentDateTimeOffset pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, bool pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, bool? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, Guid pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, Guid? pValue) {
-            SetObjectValue(pColumn, pValue);
+            mColumn = pColumn;
+            mValue = pValue;
         }
-        public SetValue(AColumn pColumn, byte[] pValue) {
-            SetObjectValue(pColumn, pValue);
+        public SetValue(AColumn pColumn, byte[]? pValue) {
+            mColumn = pColumn;
+            mValue = pValue;
         }
         public SetValue(AColumn pColumn, Sql.Function.CustomSql pValue) {
-            SetObjectValue(pColumn, pValue);
-        }
-
-        private void SetObjectValue(AColumn pColumn, object pValue) {
-
-            if(pColumn == null) {
-                throw new NullReferenceException($"{ nameof(pColumn) } cannot be null");
-            }
             mColumn = pColumn;
             mValue = pValue;
         }
         public AColumn Column {
             get { return mColumn; }
         }
-        public object Value {
+        public object? Value {
             get { return mValue; }
         }
     }

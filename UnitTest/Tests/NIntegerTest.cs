@@ -356,7 +356,7 @@ namespace Sql.Tests {
 				.Execute(DB.TestDB);
 
 			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual(2, count[0, result].Value);
+			Assert.AreEqual(2, count[0, result]!.Value);
 
 			count = new Sql.Function.Count(table.Id, true);
 
@@ -366,7 +366,7 @@ namespace Sql.Tests {
 				.Execute(DB.TestDB);
 
 			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual(3, count[0, result].Value);
+			Assert.AreEqual(3, count[0, result]!.Value);
 
 			count = new Sql.Function.Count(table.IntValue, false);
 
@@ -376,7 +376,7 @@ namespace Sql.Tests {
 				.Execute(DB.TestDB);
 
 			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual(3, count[0, result].Value);
+			Assert.AreEqual(3, count[0, result]!.Value);
 		}
 
 		[TestMethod]

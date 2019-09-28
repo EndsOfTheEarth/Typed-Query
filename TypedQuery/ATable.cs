@@ -158,11 +158,11 @@ namespace Sql {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

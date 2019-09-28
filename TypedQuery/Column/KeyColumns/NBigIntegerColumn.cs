@@ -192,7 +192,7 @@ namespace Sql.Column {
         }
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+        public override object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
             if(pReader.IsDBNull(pColumnIndex)) {
                 return null;
@@ -206,17 +206,17 @@ namespace Sql.Column {
             return pReader.GetInt64(pColumnIndex);
         }
         public Int64Key<TABLE>? ValueOf(ARow pRow) {
-            object value = pRow.GetValue(this);
+            object? value = pRow.GetValue(this);
             return value != null ? new Int64Key<TABLE>((long)value) : (Int64Key<TABLE>?)null;
         }
         public void SetValue(ARow pRow, Int64Key<TABLE>? pValue) {
             pRow.SetValue(this, pValue != null ? pValue.Value.Value : (long?)null);
         }
 
-        internal override void TestSetValue(ARow pRow, object pValue) {
+        internal override void TestSetValue(ARow pRow, object? pValue) {
             SetValue(pRow, (Int64Key<TABLE>?)pValue);
         }
-        internal override object TestGetValue(ARow pRow) {
+        internal override object? TestGetValue(ARow pRow) {
             return ValueOf(pRow);
         }
 
@@ -225,17 +225,17 @@ namespace Sql.Column {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         public override System.Data.DbType DbType {
             get { return System.Data.DbType.Int64; }
         }
-        public override object GetDefaultType() {
+        public override object? GetDefaultType() {
             return null;
         }
     }

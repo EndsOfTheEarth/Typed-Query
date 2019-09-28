@@ -73,7 +73,7 @@ namespace Sql.Core {
             DateTime? start = null;
             DateTime? end = null;
 
-            System.Data.Common.DbConnection connection = null;
+            System.Data.Common.DbConnection? connection = null;
 
             try {
 

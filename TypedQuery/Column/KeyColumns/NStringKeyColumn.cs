@@ -199,7 +199,7 @@ namespace Sql.Column {
             return pReader.GetString(pColumnIndex);
         }
         public StringKey<TABLE>? ValueOf(ARow pRow) {
-            object value = pRow.GetValue(this);
+            object? value = pRow.GetValue(this);
             return value != null ? new StringKey<TABLE>((string)value) : (StringKey<TABLE>?)null;
         }
         public void SetValue(ARow pRow, StringKey<TABLE>? pValue) {
@@ -210,10 +210,10 @@ namespace Sql.Column {
             pRow.SetValue(this, pValue != null ? pValue.Value.Value : null);
         }
 
-        internal override void TestSetValue(ARow pRow, object pValue) {
+        internal override void TestSetValue(ARow pRow, object? pValue) {
             SetValue(pRow, (StringKey<TABLE>?)pValue);
         }
-        internal override object TestGetValue(ARow pRow) {
+        internal override object? TestGetValue(ARow pRow) {
             return ValueOf(pRow);
         }
 
@@ -222,17 +222,17 @@ namespace Sql.Column {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         public override System.Data.DbType DbType {
             get { return System.Data.DbType.String; }
         }
-        public override object GetDefaultType() {
+        public override object? GetDefaultType() {
             return new StringKey<TABLE>(string.Empty);
         }
     }

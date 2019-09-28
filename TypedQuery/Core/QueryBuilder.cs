@@ -27,26 +27,26 @@ namespace Sql.Core {
 
     internal class QueryBuilder : IDistinct, ITop, IFromInto, IFrom, IJoin, IWhere, IGroupBy, IHaving, IOrderBy, IAppend, IUseParams, ITimeout, IExecute {
 
-        private QueryBuilder mUnionQuery;
+        private QueryBuilder? mUnionQuery;
         private UnionType mUnionType;
         private readonly ISelectable[] mColumns;
         private bool mDistinct;
         private int? mTopRows = null;
-        private ATable mIntoTable;
-        private ATable mFromTable;
-        private string[] mFromHints;
+        private ATable? mIntoTable;
+        private ATable? mFromTable;
+        private string[]? mFromHints;
         private List<Join> mJoinList = new List<Join>();
-        private Condition mWhereCondition;
-        private ISelectable[] mGroupByColumns;
-        private IOrderByColumn[] mOrderByColumns;
-        private Condition mHavingCondition;
-        private string mCustomSql;
+        private Condition? mWhereCondition;
+        private ISelectable[]? mGroupByColumns;
+        private IOrderByColumn[]? mOrderByColumns;
+        private Condition? mHavingCondition;
+        private string? mCustomSql;
         private bool? mUseParameters = null;
         private int? mTimeout = null;
 
         #region Properties
 
-        public QueryBuilder UnionQuery {
+        public QueryBuilder? UnionQuery {
             get { return mUnionQuery; }
             private set { mUnionQuery = value; }
         }
@@ -63,31 +63,31 @@ namespace Sql.Core {
         public int? TopRows {
             get { return mTopRows; }
         }
-        public ATable IntoTable {
+        public ATable? IntoTable {
             get { return mIntoTable; }
         }
-        public ATable FromTable {
+        public ATable? FromTable {
             get { return mFromTable; }
         }
-        public string[] FromHints {
+        public string[]? FromHints {
             get { return mFromHints; }
         }
         public List<Join> JoinList {
             get { return mJoinList; }
         }
-        public Condition WhereCondition {
+        public Condition? WhereCondition {
             get { return mWhereCondition; }
         }
-        public ISelectable[] GroupByColumns {
+        public ISelectable[]? GroupByColumns {
             get { return mGroupByColumns; }
         }
-        public IOrderByColumn[] OrderByColumns {
+        public IOrderByColumn[]? OrderByColumns {
             get { return mOrderByColumns; }
         }
-        public Condition HavingCondition {
+        public Condition? HavingCondition {
             get { return mHavingCondition; }
         }
-        public string CustomSql {
+        public string? CustomSql {
             get { return mCustomSql; }
         }
         #endregion
@@ -104,6 +104,9 @@ namespace Sql.Core {
 
             List<ATable> tables = new List<ATable>();
 
+            if(mFromTable == null) {
+                throw new NullReferenceException($"{ nameof(mFromTable) } is null. A table has not been added to this query.");
+            }
             tables.Add(mFromTable);
 
             foreach(Join join in mJoinList) {
@@ -252,7 +255,7 @@ namespace Sql.Core {
             return Database.GenertateSql.GetSelectQuery(pDatabase, this, null);
         }
 
-        private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
+        private string GetSql(ADatabase pDatabase, Core.Parameters? pParameters) {
 
             if(pDatabase == null) {
                 throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
@@ -308,7 +311,7 @@ namespace Sql.Core {
             return ExecuteQuery(pTransaction.Database, pTransaction);
         }
 
-        private IResult ExecuteQuery(ADatabase pDatabase, Transaction pTransaction) {
+        private IResult ExecuteQuery(ADatabase pDatabase, Transaction? pTransaction) {
 
             if(pDatabase == null) {
                 throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
@@ -325,7 +328,7 @@ namespace Sql.Core {
                 }
             }
 
-            System.Data.Common.DbConnection connection = null;
+            System.Data.Common.DbConnection? connection = null;
 
             string sql = string.Empty;
             DateTime? start = null;
@@ -339,7 +342,7 @@ namespace Sql.Core {
 
                 using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)) {
 
-                    Parameters parameters;
+                    Parameters? parameters;
 
                     if(mUseParameters != null) {
                         parameters = mUseParameters.Value ? new Parameters(command) : null;
@@ -486,7 +489,7 @@ namespace Sql.Core {
         private readonly Condition mCondition;
         private readonly string[] mHints;
 
-        internal Join(JoinType pJoinType, ATable pTable, Condition pCondition, string[] pHints) {
+        internal Join(JoinType pJoinType, ATable pTable, Condition pCondition, string[]? pHints) {
             mJoinType = pJoinType;
             mTable = pTable;
             mCondition = pCondition;

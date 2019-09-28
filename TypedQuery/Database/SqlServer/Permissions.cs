@@ -54,7 +54,7 @@ namespace Sql.Database.SqlServer {
 
             StringBuilder sql = new StringBuilder();
 
-            Dictionary<string, object> seenLookup = new Dictionary<string, object>();
+            Dictionary<string, object?> seenLookup = new Dictionary<string, object?>();
 
             foreach(PermSet permSet in mPermList) {
 

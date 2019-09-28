@@ -35,7 +35,7 @@ namespace Sql.Types {
             return !pA.Equals(pB);
         }
 
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
 
             if(obj is Int32Key<TABLE>) {
                 return Value.CompareTo(((Int32Key<TABLE>)obj).Value) == 0;

@@ -44,8 +44,8 @@ namespace Sql {
             get { return mDatabase; }
         }
 
-        private System.Data.Common.DbConnection mConnection;
-        private System.Data.Common.DbTransaction mDbTransaction;
+        private System.Data.Common.DbConnection? mConnection;
+        private System.Data.Common.DbTransaction? mDbTransaction;
 
         /// <summary>
         /// Isolation level of transaction
@@ -57,7 +57,7 @@ namespace Sql {
         /// <summary>
         /// Actual ado database transaction object. Only set once transaction has been used.
         /// </summary>
-        internal System.Data.Common.DbTransaction DbTransaction {
+        internal System.Data.Common.DbTransaction? DbTransaction {
             get { return mDbTransaction; }
         }
 
@@ -115,7 +115,7 @@ namespace Sql {
         }
 
         private static Dictionary<Thread, Transaction> mForceThreadDict = new Dictionary<Thread, Transaction>();
-        private Thread mForceThread;
+        private Thread? mForceThread;
 
         private static void RegisterForceThread(Transaction pTransaction) {
 
@@ -133,7 +133,7 @@ namespace Sql {
             }
         }
 
-        private static void CheckForceThread(Transaction pTransaction) {
+        private static void CheckForceThread(Transaction? pTransaction) {
 
             lock(mForceThreadDict) {
 
@@ -192,13 +192,13 @@ namespace Sql {
                 }
 
                 if(mDbTransaction == null) {
-                    mDbTransaction = mConnection.BeginTransaction(mIsolationLevel);
+                    mDbTransaction = mConnection!.BeginTransaction(mIsolationLevel);
                 }
                 return mDbTransaction;
             }
         }
 
-        internal static System.Data.Common.DbCommand CreateCommand(System.Data.Common.DbConnection pConnection, Transaction pTransaction) {
+        internal static System.Data.Common.DbCommand CreateCommand(System.Data.Common.DbConnection pConnection, Transaction? pTransaction) {
 
             if(pConnection == null) {
                 throw new NullReferenceException($"{nameof(pConnection)} cannot be null");
@@ -216,13 +216,13 @@ namespace Sql {
         /// <summary>
         /// Fired when commit is performed on the transaction
         /// </summary>
-        public event CommitPerformed CommitEvent = delegate { };
+        public event CommitPerformed? CommitEvent = delegate { };
 
         /// <summary>
         /// Called when rollback is performed on transaction
         /// </summary>
         public delegate void RollbackPerformed();
-        public event RollbackPerformed RollbackEvent = delegate { };
+        public event RollbackPerformed? RollbackEvent = delegate { };
 
         private bool mRollbackOnly;
 
@@ -281,13 +281,11 @@ namespace Sql {
                             }
                         }
                     }
+                    mDbTransaction = null;
                 }
                 catch {
                     System.Data.SqlClient.SqlConnection.ClearAllPools();
                     throw;
-                }
-                finally {
-                    mDbTransaction = null;
                 }
             }
         }

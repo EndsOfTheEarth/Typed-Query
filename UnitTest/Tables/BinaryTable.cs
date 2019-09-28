@@ -64,7 +64,7 @@ namespace Sql.Tables.BinaryTable {
 			set { Tbl.BinaryValue.SetValue(this, value); }
 		}
 
-		public byte[] NBinaryValue {
+		public byte[]? NBinaryValue {
 			get { return Tbl.NBinaryValue.ValueOf(this); }
 			set { Tbl.NBinaryValue.SetValue(this, value); }
 		}

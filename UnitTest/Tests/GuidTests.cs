@@ -644,7 +644,7 @@ namespace Sql.Tests {
 				.From(table)
 				.Execute(DB.TestDB);
 
-			Assert.AreEqual(rows, count[0, result].Value);
+			Assert.AreEqual(rows, count[0, result]!.Value);
 		}
 
 		[TestMethod]
@@ -703,7 +703,7 @@ namespace Sql.Tests {
 				.From(table)
 				.Execute(DB.TestDB);
 
-			int value = count[0, result].Value;
+			int value = count[0, result]!.Value;
 			Assert.AreEqual(10, value);
 		}
 

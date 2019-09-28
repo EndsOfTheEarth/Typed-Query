@@ -30,7 +30,7 @@ namespace Sql.Core {
         private readonly ATable mTable;
         private readonly IList<SetValue> mSetValueList = new List<SetValue>();
         private readonly List<Join> mJoinList = new List<Join>();
-        private Condition mWhereCondition;
+        private Condition? mWhereCondition;
         private bool? mUseParameters = null;
         private int? mTimeout = null;
 
@@ -44,10 +44,10 @@ namespace Sql.Core {
         public List<Join> JoinList {
             get { return mJoinList; }
         }
-        public Condition WhereCondition {
+        public Condition? WhereCondition {
             get { return mWhereCondition; }
         }
-        public AColumn[] ReturnColumns { get; private set; }
+        public AColumn[]? ReturnColumns { get; private set; }
 
         public UpdateBuilder(ATable pTable) {
 
@@ -57,7 +57,7 @@ namespace Sql.Core {
             mTable = pTable;
         }
 
-        internal IUpdateSet SetInternal(AColumn pColumn, object pValue) {
+        internal IUpdateSet SetInternal(AColumn pColumn, object? pValue) {
             mSetValueList.Add(new SetValue(pColumn, pValue, true));
             return this;
         }
@@ -346,7 +346,7 @@ namespace Sql.Core {
             }
             return Database.GenertateSql.GetUpdateQuery(pDatabase, this, null);
         }
-        private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
+        private string GetSql(ADatabase pDatabase, Core.Parameters? pParameters) {
 
             if(pDatabase == null) {
                 throw new NullReferenceException($"{ nameof(pDatabase) } cannot be null");
@@ -367,7 +367,7 @@ namespace Sql.Core {
                 }
             }
 
-            System.Data.Common.DbConnection connection = null;
+            System.Data.Common.DbConnection? connection = null;
 
             string sql = string.Empty;
             DateTime? start = null;
@@ -379,7 +379,7 @@ namespace Sql.Core {
 
                 using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)) {
 
-                    Parameters parameters;
+                    Parameters? parameters;
 
                     if(mUseParameters != null) {
                         parameters = mUseParameters.Value ? new Parameters(command) : null;

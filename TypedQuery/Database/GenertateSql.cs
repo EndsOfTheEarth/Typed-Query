@@ -23,7 +23,7 @@ namespace Sql.Database {
 
     internal static class GenertateSql {
 
-        internal static string GetSelectQuery(ADatabase pDatabase, Core.QueryBuilder pQueryBuilder, Core.Parameters pParameters) {
+        internal static string GetSelectQuery(ADatabase pDatabase, Core.QueryBuilder pQueryBuilder, Core.Parameters? pParameters) {
 
             IAliasManager aliasManager = new AliasManager();
 
@@ -37,7 +37,7 @@ namespace Sql.Database {
             }
         }
 
-        internal static string GetInsertQuery(ADatabase pDatabase, Core.InsertBuilder pInsertBuilder, Core.Parameters pParameters) {
+        internal static string GetInsertQuery(ADatabase pDatabase, Core.InsertBuilder pInsertBuilder, Core.Parameters? pParameters) {
 
             switch(pDatabase.DatabaseType) {
                 case DatabaseType.Mssql:
@@ -61,7 +61,7 @@ namespace Sql.Database {
             }
         }
 
-        internal static string GetInsertSelectQuery(ADatabase pDatabase, Core.InsertSelectBuilder pInsertBuilder, Core.Parameters pParameters) {
+        internal static string GetInsertSelectQuery(ADatabase pDatabase, Core.InsertSelectBuilder pInsertBuilder, Core.Parameters? pParameters) {
 
             switch(pDatabase.DatabaseType) {
                 case DatabaseType.Mssql:
@@ -73,7 +73,7 @@ namespace Sql.Database {
             }
         }
 
-        internal static string GetUpdateQuery(ADatabase pDatabase, Core.UpdateBuilder pUpdateBuilder, Core.Parameters pParameters) {
+        internal static string GetUpdateQuery(ADatabase pDatabase, Core.UpdateBuilder pUpdateBuilder, Core.Parameters? pParameters) {
 
             switch(pDatabase.DatabaseType) {
                 case DatabaseType.Mssql:
@@ -85,7 +85,7 @@ namespace Sql.Database {
             }
         }
 
-        internal static string GetDeleteQuery(ADatabase pDatabase, Core.DeleteBuilder pDeleteBuilder, Core.Parameters pParameters) {
+        internal static string GetDeleteQuery(ADatabase pDatabase, Core.DeleteBuilder pDeleteBuilder, Core.Parameters? pParameters) {
 
             switch(pDatabase.DatabaseType) {
                 case DatabaseType.Mssql:
@@ -109,7 +109,7 @@ namespace Sql.Database {
             }
         }
 
-        internal static string GetStoreProcedureQuery(ADatabase pDatabase, ATable pTable, Core.Parameters pParameters, object[] pParams) {
+        internal static string GetStoreProcedureQuery(ADatabase pDatabase, ATable pTable, Core.Parameters? pParameters, object[] pParams) {
 
             IAliasManager aliasManager = new AliasManager();
 

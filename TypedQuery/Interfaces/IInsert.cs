@@ -55,8 +55,8 @@ namespace Sql.Interfaces {
         IInsertSet Set(Column.GuidColumn pColumn, Guid pValue);
         IInsertSet Set(Column.NGuidColumn pColumn, Guid? pValue);
         IInsertSet Set(Column.BinaryColumn pColumn, byte[] pValue);
-        IInsertSet Set(Column.NBinaryColumn pColumn, byte[] pValue);
-        IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue);
+        IInsertSet Set(Column.NBinaryColumn pColumn, byte[]? pValue);
+        IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue) where ENUM : notnull;
         IInsertSet Set(AColumn pColumn, Sql.Function.CustomSql pValue);
 
         IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
@@ -82,7 +82,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        string ToString();
+        string? ToString();
         #endregion
     }
 
@@ -118,8 +118,8 @@ namespace Sql.Interfaces {
         IInsertSet Set(Column.GuidColumn pColumn, Guid pValue);
         IInsertSet Set(Column.NGuidColumn pColumn, Guid? pValue);
         IInsertSet Set(Column.BinaryColumn pColumn, byte[] pValue);
-        IInsertSet Set(Column.NBinaryColumn pColumn, byte[] pValue);
-        IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue);
+        IInsertSet Set(Column.NBinaryColumn pColumn, byte[]? pValue);
+        IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue) where ENUM : notnull;
         IInsertSet Set(AColumn pColumn, Sql.Function.CustomSql pValue);
 
         IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
@@ -155,7 +155,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         new Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        new string ToString();
+        new string? ToString();
         #endregion
     }
 
@@ -176,7 +176,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         new Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        new string ToString();
+        new string? ToString();
         #endregion
     }
 
@@ -192,7 +192,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         new Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        new string ToString();
+        new string? ToString();
         #endregion
     }
     public interface IInsertExecute {
@@ -208,7 +208,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        string ToString();
+        string? ToString();
         #endregion
     }
 }

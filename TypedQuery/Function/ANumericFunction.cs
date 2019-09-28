@@ -213,15 +213,15 @@ namespace Sql.Function {
             return new NotInCondition<double>(this, pList);
         }
         public abstract string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager);
-        public abstract object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex);
+        public abstract object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex);
 
         public override int GetHashCode() {
             return base.GetHashCode();
         }
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
 
@@ -305,7 +305,7 @@ namespace Sql.Function {
             return value;
         }
 
-        private WindowFunction mWindowFunction;
+        private WindowFunction? mWindowFunction;
 
         protected string GetWindowFunctionSql(bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {
             return mWindowFunction != null ? mWindowFunction.GetSql(pUseAlias, pAliasManager) : string.Empty;

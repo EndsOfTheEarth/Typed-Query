@@ -220,7 +220,7 @@ namespace Sql.Tests {
 
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDateTime1, table[0, result].Dt);
-			Assert.AreEqual(2, count[0, result].Value);
+			Assert.AreEqual(2, count[0, result]!.Value);
 
 			result = Query.Select(table.Dt, count)
 				.From(table)
@@ -230,7 +230,7 @@ namespace Sql.Tests {
 
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(mDateTime1, table[0, result].Dt);
-			Assert.AreEqual(2, count[0, result].Value);
+			Assert.AreEqual(2, count[0, result]!.Value);
 
 			result = Query.Select(table.Dt, count)
 				.From(table)

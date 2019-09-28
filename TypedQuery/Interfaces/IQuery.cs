@@ -58,7 +58,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        string ToString();
+        string? ToString();
         #endregion
     }
 
@@ -174,7 +174,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         new Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        new string ToString();
+        new string? ToString();
         #endregion
     }
 
@@ -195,7 +195,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         new Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        new string ToString();
+        new string? ToString();
         #endregion
     }
 
@@ -234,7 +234,7 @@ namespace Sql.Interfaces {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        string ToString();
+        string? ToString();
         #endregion
     }
 }

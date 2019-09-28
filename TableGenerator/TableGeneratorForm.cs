@@ -83,9 +83,7 @@ namespace TypedQuery {
 
                 string schemaKey = table.Schema.ToLower();
 
-                SchemaNode schemaNode;
-
-                if(!schemaNodeLookup.TryGetValue(schemaKey, out schemaNode)) {
+                if(!schemaNodeLookup.TryGetValue(schemaKey, out SchemaNode? schemaNode)) {
                     schemaNode = new SchemaNode(table.Schema);
                     schemaNodeLookup.Add(schemaKey, schemaNode);
                     schemaNodes.Add(schemaNode);
@@ -93,7 +91,7 @@ namespace TypedQuery {
                 schemaNode.Nodes.Add(new TableNode(table));
             }
 
-            List<Logic.IStoredProcedureDetail> storedProcedures = null;
+            List<Logic.IStoredProcedureDetail>? storedProcedures = null;
 
             if(connection.DatabaseType == Sql.DatabaseType.PostgreSql) {
                 //Do nothing
@@ -114,9 +112,7 @@ namespace TypedQuery {
 
                     string schemaKey = spDetail.Schema.ToLower();
 
-                    SchemaNode schemaNode;
-
-                    if(!schemaNodeLookup.TryGetValue(schemaKey, out schemaNode)) {
+                    if(!schemaNodeLookup.TryGetValue(schemaKey, out SchemaNode? schemaNode)) {
                         schemaNode = new SchemaNode(spDetail.Schema);
                         schemaNodeLookup.Add(schemaKey, schemaNode);
                         schemaNodes.Add(schemaNode);
@@ -185,23 +181,36 @@ namespace TypedQuery {
 
                 Logic.ITable table = ((TableNode)tvwSchema.SelectedNode).Table;
 
-                Logic.ITableDetails tableDetails;
+                Logic.ITableDetails? tableDetails;
                 string columnPrefix = pRegenerate ? txtColumnPrefix.Text : string.Empty;
 
                 bool guessPrefix = string.IsNullOrEmpty(txtColumnPrefix.Text);
 
                 if(table.DatabaseType == Sql.DatabaseType.PostgreSql) {
 
-                    string errorText;
-                    new Logic.PostgreSqlSchema().GetTableDetails(Postgresql.PgDatabase.Instance, table.TableName, table.Schema, out tableDetails, out errorText);   //TODO: Show any errors
+                    new Logic.PostgreSqlSchema().GetTableDetails(Postgresql.PgDatabase.Instance, table.TableName, table.Schema, out tableDetails, out string errorText);   //TODO: Show any errors
 
+                    if(!string.IsNullOrEmpty(errorText)) {
+                        MessageBox.Show(errorText);
+                        return;
+                    }
+                    if(tableDetails == null) {
+                        throw new Exception($"Table: { table.TableName }. Unable to find table details in database");
+                    }
                     txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
                     txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
                 }
                 else if(table.DatabaseType == Sql.DatabaseType.Mssql) {
 
-                    string errorText;
-                    new Logic.SqlServerSchema().GetTableDetails(SqlServer.SqlServerDatabase.Instance, table.TableName, table.Schema, out tableDetails, out errorText);  //TODO: Show any errors
+                    new Logic.SqlServerSchema().GetTableDetails(SqlServer.SqlServerDatabase.Instance, table.TableName, table.Schema, out tableDetails, out string errorText);  //TODO: Show any errors
+
+                    if(!string.IsNullOrEmpty(errorText)) {
+                        MessageBox.Show(errorText);
+                        return;
+                    }
+                    if(tableDetails == null) {
+                        throw new Exception($"Table: { table.TableName }. Unable to find table details in database");
+                    }
                     txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
                     txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
                 }

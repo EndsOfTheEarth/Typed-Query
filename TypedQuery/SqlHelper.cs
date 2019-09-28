@@ -28,7 +28,7 @@ namespace Sql {
             pColumn.TestSetValue(pRow, pValue);
         }
 
-        public static object TestGetValue(AColumn pColumn, ARow pRow) {
+        public static object? TestGetValue(AColumn pColumn, ARow pRow) {
             return pColumn.TestGetValue(pRow);
         }
 
@@ -44,7 +44,7 @@ namespace Sql {
 
             for(int index = 0; index < pResult.Count; index++) {
 
-                Guid value = (Guid)pResult.GetRow(pColumn.Table, index).GetValue(pColumn);
+                Guid value = (Guid)pResult.GetRow(pColumn.Table, index).GetValue(pColumn)!;
 
                 if(!list.Contains(value)) {
                     list.Add(value);
@@ -86,8 +86,8 @@ namespace Sql {
             Dictionary<Guid, string> dict = new Dictionary<Guid, string>();
 
             for(int index = 0; index < pResult.Count; index++) {
-                Guid key = (Guid)pResult.GetRow(pKeyColumn.Table, index).GetValue(pKeyColumn);
-                string value = (string)pResult.GetRow(pValueColumn.Table, index).GetValue(pValueColumn);
+                Guid key = (Guid)pResult.GetRow(pKeyColumn.Table, index).GetValue(pKeyColumn)!;
+                string value = (string)pResult.GetRow(pValueColumn.Table, index).GetValue(pValueColumn)!;
                 dict.Add(key, value);
             }
             return dict;
@@ -99,7 +99,7 @@ namespace Sql {
         /// </summary>
         /// <param name="pObject"></param>
         /// <returns></returns>
-        public static int GetAproxByteSizeOf(object pObject) {
+        public static int GetAproxByteSizeOf(object? pObject) {
 
             int value = 0;
 

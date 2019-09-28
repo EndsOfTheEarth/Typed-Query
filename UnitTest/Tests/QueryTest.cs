@@ -25,31 +25,7 @@ namespace Sql.Tests {
 	public class QueryTest {
 
 		[TestMethod]
-		[ExpectedException(typeof(NullReferenceException))]
 		public void Test_01() {
-
-			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-
-			using(Transaction transaction = new Transaction(DB.TestDB)) {
-
-				Query.Update(table).Set(table.Id, Guid.NewGuid()).Where(null).Execute(transaction); //Null in where clause
-			}
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void Test_02() {
-
-			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-
-			using(Transaction transaction = new Transaction(DB.TestDB)) {
-
-				Query.Delete(table).Where(null).Execute(transaction);   //Null in where clause
-			}
-		}
-
-		[TestMethod]
-		public void Test_03() {
 
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
 
@@ -84,7 +60,7 @@ namespace Sql.Tests {
 		}
 
 		[TestMethod]
-		public void Test_04() {
+		public void Test_02() {
 
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
 
@@ -114,7 +90,7 @@ namespace Sql.Tests {
 		}
 
 		[TestMethod]
-		public void Test_05() {
+		public void Test_03() {
 
 			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
 
@@ -145,27 +121,7 @@ namespace Sql.Tests {
 			Assert.AreEqual(rows, result.Count);
 
 			for(int index = 0; index < result.Count; index++)
-				Assert.AreEqual(1, count[index, result].Value);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void Test_06() {
-
-			Tables.GuidTable.Table table = Tables.GuidTable.Table.INSTANCE;
-
-			using(Transaction transaction = new Transaction(DB.TestDB)) {
-				Sql.Query.Select(null).From(table).Execute(DB.TestDB);
-			}
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void Test_07() {
-
-			Tables.StringTable.Table table = Tables.StringTable.Table.INSTANCE;
-
-			Sql.Query.Select(table).From(table).Where(table.Str.In(null, null)).Execute(DB.TestDB);
+				Assert.AreEqual(1, count[index, result]!.Value);
 		}
 	}
 }

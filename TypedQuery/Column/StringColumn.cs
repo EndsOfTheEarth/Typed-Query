@@ -138,7 +138,6 @@ namespace Sql.Column {
                     throw new NullReferenceException($"A value in { nameof(pValues) } is null. 'stringColumn IN (null)' is an undefined condition in sql so this library disallows it.");
                 }
             }
-
             return new InCondition<string>(this, pValues);
         }
         public Condition NotIn(params string[] pValues) {
@@ -168,9 +167,9 @@ namespace Sql.Column {
             return pReader.GetString(pColumnIndex);
         }
         public string ValueOf(ARow pRow) {
-            return (string)pRow.GetValue(this);
+            return (string?)pRow.GetValue(this) ?? string.Empty;
         }
-        public void SetValue(ARow pRow, string pValue) {
+        public void SetValue(ARow pRow, string? pValue) {
 
             if(pValue != null && pValue.Length > MaxLength) {
                 throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
@@ -179,10 +178,10 @@ namespace Sql.Column {
             pRow.SetValue(this, pValue);
         }
 
-        internal override void TestSetValue(ARow pRow, object pValue) {
-            SetValue(pRow, (string)pValue);
+        internal override void TestSetValue(ARow pRow, object? pValue) {
+            SetValue(pRow, (string?)pValue);
         }
-        internal override object TestGetValue(ARow pRow) {
+        internal override object? TestGetValue(ARow pRow) {
             return ValueOf(pRow);
         }
 
@@ -191,17 +190,17 @@ namespace Sql.Column {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         public override System.Data.DbType DbType {
             get { return System.Data.DbType.String; }
         }
-        public override object GetDefaultType() {
+        public override object? GetDefaultType() {
             return null;
         }
     }

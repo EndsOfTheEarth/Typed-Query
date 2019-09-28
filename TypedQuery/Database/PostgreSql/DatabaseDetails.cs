@@ -24,7 +24,7 @@ namespace Sql.Database.PostgreSql {
 
     public static class DatabaseDetails {
 
-        public static DbTable GetTable(ADatabase pDatabase, Sql.ATable pTable) {
+        public static DbTable? GetTable(ADatabase pDatabase, Sql.ATable pTable) {
             IList<DbTable> tables = GetTables(pTable.TableName, pDatabase.GetConnection(false));
             return tables.Count > 0 ? tables[0] : null;
         }
@@ -33,7 +33,7 @@ namespace Sql.Database.PostgreSql {
             return GetTables(null, pConnection);
         }
 
-        private static IList<DbTable> GetTables(string pTableName, System.Data.Common.DbConnection pConnection) {
+        private static IList<DbTable> GetTables(string? pTableName, System.Data.Common.DbConnection pConnection) {
 
             IList<DbTable> tableList;
 
@@ -97,7 +97,7 @@ namespace Sql.Database.PostgreSql {
             return tableList;
         }
 
-        private static Dictionary<string, System.Data.DbType> sTypeLookup;
+        private static Dictionary<string, System.Data.DbType>? sTypeLookup;
 
         private static System.Data.DbType GetDataType(string pDataType) {
 

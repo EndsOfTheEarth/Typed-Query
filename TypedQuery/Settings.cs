@@ -93,7 +93,7 @@ namespace Sql {
         /// <summary>
         /// Event fired when a query begins execution
         /// </summary>
-        public static event QueryExecutingDelegate QueryExecuting;
+        public static event QueryExecutingDelegate? QueryExecuting;
 
         internal static void FireQueryExecutingEvent(ADatabase pDatabase, string pSql, QueryType pQueryType, DateTime? pStart, System.Data.IsolationLevel pIsolationLevel, ulong? pTransactionId) {
             try {
@@ -106,14 +106,14 @@ namespace Sql {
         }
 
 
-        public delegate void QueryPerformedDelegate(ADatabase pDatabase, string pSql, int pRows, QueryType pQueryType, DateTime? pStart, DateTime? pEnd, Exception pException, System.Data.IsolationLevel pIsolationLevel, int? pResultSize, ulong? pTransactionId);
+        public delegate void QueryPerformedDelegate(ADatabase pDatabase, string pSql, int pRows, QueryType pQueryType, DateTime? pStart, DateTime? pEnd, Exception? pException, System.Data.IsolationLevel pIsolationLevel, int? pResultSize, ulong? pTransactionId);
 
         /// <summary>
         /// Event fired when a query completes execution or throws an exception
         /// </summary>
-        public static event QueryPerformedDelegate QueryPerformed;
+        public static event QueryPerformedDelegate? QueryPerformed;
 
-        internal static void FireQueryPerformedEvent(ADatabase pDatabase, string pSql, int pRows, QueryType pQueryType, DateTime? pStart, DateTime? pEnd, Exception pException, System.Data.IsolationLevel pIsolationLevel, IResult pResult, ulong? pTransactionId) {
+        internal static void FireQueryPerformedEvent(ADatabase pDatabase, string pSql, int pRows, QueryType pQueryType, DateTime? pStart, DateTime? pEnd, Exception? pException, System.Data.IsolationLevel pIsolationLevel, IResult? pResult, ulong? pTransactionId) {
             try {
 
                 if(QueryPerformed != null) {

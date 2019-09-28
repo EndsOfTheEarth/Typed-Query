@@ -24,7 +24,7 @@ namespace Sql.Function {
 
     public sealed class Count : ANumericFunction {
 
-        private readonly AColumn mColumn;
+        private readonly AColumn? mColumn;
         private readonly bool mDistinct;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Sql.Function {
             mColumn = pColumn;
             mDistinct = pDistinct;
         }
-        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+        public override object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
             if(pReader.IsDBNull(pColumnIndex)) {
                 return null;

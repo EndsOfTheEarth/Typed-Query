@@ -22,13 +22,14 @@ namespace Sql.Function {
 
     internal class WindowFunction {
 
-        private AColumn[] mColumns;
-        private IOrderByColumn[] mOrderByColumns;
+        private AColumn[]? mColumns;
+        private IOrderByColumn[]? mOrderByColumns;
 
         public WindowFunction() {
+
         }
 
-        public void SetOverPartitionBy(params AColumn[] pColumns) {
+        public void SetOverPartitionBy(params AColumn[]? pColumns) {
 
             if(mColumns != null) {
                 throw new Exception("Cannot call OverPartitionBy(...) more than once");

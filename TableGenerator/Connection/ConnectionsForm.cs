@@ -62,7 +62,7 @@ namespace TypedQuery.Connection {
 
             if(form.AddConnection() == DialogResult.OK) {
 
-                mConnections.Add(form.Connection);
+                mConnections.Add(form.Connection!);
                 new ConnectionsFile().Save(mConnections);
                 LoadListView();
             }
@@ -86,7 +86,7 @@ namespace TypedQuery.Connection {
 
             if(form.EditConnection(connectionCopy) == DialogResult.OK) {
 
-                connection.DatabaseType = form.Connection.DatabaseType;
+                connection.DatabaseType = form.Connection!.DatabaseType;
                 connection.ConnectionString = form.Connection.ConnectionString;
 
                 new ConnectionsFile().Save(mConnections);

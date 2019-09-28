@@ -225,16 +225,16 @@ namespace Sql.Column {
             return intValue;
         }
         public Int32Key<TABLE> ValueOf(ARow pRow) {
-            return new Int32Key<TABLE>((int)pRow.GetValue(this));
+            return new Int32Key<TABLE>((int)pRow.GetValue(this)!);
         }
         public void SetValue(ARow pRow, Int32Key<TABLE> pValue) {
             pRow.SetValue(this, pValue.Value);
         }
 
-        internal override void TestSetValue(ARow pRow, object pValue) {
-            SetValue(pRow, (Int32Key<TABLE>)pValue);
+        internal override void TestSetValue(ARow pRow, object? pValue) {
+            SetValue(pRow, (Int32Key<TABLE>)pValue!);
         }
-        internal override object TestGetValue(ARow pRow) {
+        internal override object? TestGetValue(ARow pRow) {
             return ValueOf(pRow);
         }
 
@@ -243,17 +243,17 @@ namespace Sql.Column {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         public override System.Data.DbType DbType {
             get { return System.Data.DbType.Int32; }
         }
-        public override object GetDefaultType() {
+        public override object? GetDefaultType() {
             return new Int32Key<TABLE>(0);
         }
     }

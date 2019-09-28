@@ -53,7 +53,7 @@ namespace Sql {
         /// <param name="pFunction"></param>
         /// <param name="pIndex"></param>
         /// <returns></returns>
-        object GetValue(ISelectable pFunction, int pIndex);
+        object? GetValue(ISelectable pFunction, int pIndex);
 
         /// <summary>
         /// Gets result size in bytes. This is an aprox value.
@@ -69,7 +69,7 @@ namespace Sql {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        string ToString();
+        string? ToString();
         #endregion
     }
 }

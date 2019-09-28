@@ -52,7 +52,7 @@ namespace Sql.Database {
 
                 if(typeof(AColumn).IsAssignableFrom(fieldInfo.FieldType)) {
 
-                    AColumn column = (AColumn)fieldInfo.GetValue(pTable);
+                    AColumn column = (AColumn)fieldInfo.GetValue(pTable)!;
 
                     object[] columnAttributes = fieldInfo.GetCustomAttributes(true);
 
@@ -80,7 +80,7 @@ namespace Sql.Database {
 
                 if(typeof(AColumn).IsAssignableFrom(propertyInfo.PropertyType)) {
 
-                    AColumn column = (AColumn)propertyInfo.GetValue(pTable, null);
+                    AColumn column = (AColumn)propertyInfo.GetValue(pTable, null)!;
 
                     object[] columnAttributes = propertyInfo.GetCustomAttributes(true);
 

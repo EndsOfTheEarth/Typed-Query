@@ -163,7 +163,7 @@ namespace Sql.Column {
         }
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+        public override object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
             if(pReader.IsDBNull(pColumnIndex)) {
                 return null;
@@ -184,10 +184,10 @@ namespace Sql.Column {
             pRow.SetValue(this, pValue);
         }
 
-        internal override void TestSetValue(ARow pRow, object pValue) {
+        internal override void TestSetValue(ARow pRow, object? pValue) {
             SetValue(pRow, (Int16?)pValue);
         }
-        internal override object TestGetValue(ARow pRow) {
+        internal override object? TestGetValue(ARow pRow) {
             return ValueOf(pRow);
         }
 
@@ -195,18 +195,17 @@ namespace Sql.Column {
         public override int GetHashCode() {
             return base.GetHashCode();
         }
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         public override System.Data.DbType DbType {
             get { return System.Data.DbType.Int16; }
         }
-        public override object GetDefaultType() {
+        public override object? GetDefaultType() {
             return null;
         }
     }

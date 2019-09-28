@@ -50,7 +50,24 @@ namespace Sql.Tests {
 			}
 			return true;
 		}
-		[TestMethod]
+        private bool AreByteArraysEqualWithNullableByteArray(byte[] pBytesA, byte[]? pBytesB) {
+
+            if(pBytesB == null) {
+                return false;
+            }
+
+            if(pBytesA.Length != pBytesB.Length) {
+                return false;
+            }
+
+            for(int index = 0; index < pBytesA.Length; index++) {
+                if(pBytesA[index] != pBytesB[index]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        [TestMethod]
 		public void Test_01() {
 			
 			Tables.BinaryTable.Table table = Tables.BinaryTable.Table.INSTANCE;
@@ -61,7 +78,7 @@ namespace Sql.Tests {
 				
 				Sql.Query.Insert(table)
 					.Set(table.BinaryValue, bytes)
-					.Set(table.NBinaryValue, (byte[]) null)
+					.Set(table.NBinaryValue, (byte[]?)null)
 					.Execute(transaction);
 				
 				transaction.Commit();
@@ -130,7 +147,7 @@ namespace Sql.Tests {
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.IsTrue(AreByteArraysEqual(bytes, table[0, result].BinaryValue));
-			Assert.IsTrue(AreByteArraysEqual(bytes, table[0, result].NBinaryValue));
+			Assert.IsTrue(AreByteArraysEqualWithNullableByteArray(bytes, table[0, result].NBinaryValue));
 			
 			result = Sql.Query
 				.Select(table.BinaryValue, table.NBinaryValue)
@@ -140,7 +157,7 @@ namespace Sql.Tests {
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.IsTrue(AreByteArraysEqual(bytes, table[0, result].BinaryValue));
-			Assert.IsTrue(AreByteArraysEqual(bytes, table[0, result].NBinaryValue));
+			Assert.IsTrue(AreByteArraysEqualWithNullableByteArray(bytes, table[0, result].NBinaryValue));
 			
 			result = Sql.Query
 				.Select(table.BinaryValue, table.NBinaryValue)
@@ -176,7 +193,7 @@ namespace Sql.Tests {
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.IsTrue(AreByteArraysEqual(bytes, table[0, result].BinaryValue));
-			Assert.IsTrue(AreByteArraysEqual(bytes, table[0, result].NBinaryValue));
+			Assert.IsTrue(AreByteArraysEqualWithNullableByteArray(bytes, table[0, result].NBinaryValue));
 		}
 		
 		[TestMethod]

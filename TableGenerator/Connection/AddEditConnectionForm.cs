@@ -25,9 +25,9 @@ namespace TypedQuery.Connection {
 
     public partial class AddEditConnectionForm : Form {
 
-        private Connection mConnection;
+        private Connection? mConnection;
 
-        public Connection Connection {
+        public Connection? Connection {
             get { return mConnection; }
         }
 
@@ -113,6 +113,9 @@ namespace TypedQuery.Connection {
 
         private void btnSave_Click(object sender, EventArgs e) {
 
+            if(mConnection == null) {
+                throw new NullReferenceException($"{ nameof(mConnection) } cannot be null");
+            }
             mConnection.DatabaseType = (Sql.DatabaseType)cboDatabaseType.SelectedItem;
             mConnection.ConnectionString = txtConnectionString.Text;
 

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace TypedQuery.Logic {
@@ -39,9 +40,14 @@ namespace TypedQuery.Logic {
 
     public static class DefinitionChecker {
 
-        public static List<ValidationError> CheckTable(Sql.ATable pTable, ITableDetails pTableDetails) {
+        public static List<ValidationError> CheckTable(Sql.ATable pTable, ITableDetails? pTableDetails) {
 
             List<ValidationError> issues = new List<ValidationError>();
+
+            if(pTableDetails == null) {
+                issues.Add(new ValidationError(pTable.Schema, pTable.TableName, string.Empty, $"Unable to check table as { nameof(pTableDetails) } does not exist"));
+                return issues;
+            }
 
             if(pTableDetails.IsView != pTable.IsView) {
                 issues.Add(new ValidationError(pTable.Schema, pTable.TableName, string.Empty, "IsView settings is different between code table and database view."));
@@ -69,7 +75,7 @@ namespace TypedQuery.Logic {
 
             foreach(Sql.AColumn column in pTable.Columns) {
 
-                IColumn dbColumn = GetMatchingDbColumn(column, pTableDetails);
+                IColumn? dbColumn = GetMatchingDbColumn(column, pTableDetails);
 
                 Type columnType = column.GetType();
                 Type tableType = pTable.GetType();
@@ -271,9 +277,9 @@ namespace TypedQuery.Logic {
 
                     if(typeof(Sql.AColumn).IsAssignableFrom(tableProperty.PropertyType)) {
 
-                        Sql.AColumn column = (Sql.AColumn)tableProperty.GetValue(pTable);
+                        Sql.AColumn column = (Sql.AColumn)tableProperty.GetValue(pTable)!;
 
-                        System.Reflection.PropertyInfo rowProperty;
+                        System.Reflection.PropertyInfo? rowProperty;
 
                         try {
                             rowProperty = rowType.GetProperty(tableProperty.Name);
@@ -301,7 +307,7 @@ namespace TypedQuery.Logic {
                             issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Row property can not be set and table is not a view and table column is not an AutoId. Something is wrong with the row column setter."));
                         }
 
-                        if(!GetValueForType(rowProperty.PropertyType, out object value, out object secondValue)) {
+                        if(!GetValueForType(rowProperty.PropertyType, out object? value, out object? secondValue)) {
                             issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Cannot test setting Row property as Type is not supported by tester. Type = " + rowProperty.PropertyType.ToString()));
                             continue;
                         }
@@ -318,22 +324,22 @@ namespace TypedQuery.Logic {
                                 continue;
                             }
 
-                            object defaultType = column.GetDefaultType();
+                            object? defaultType = column.GetDefaultType();
 
                             if(defaultType != null && defaultType.GetType() != value.GetType()) {
-                                issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Row set value test failed because row and column types do not match. " + column.GetDefaultType().GetType().ToString() + " != " + value.GetType().ToString()));
+                                issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Row set value test failed because row and column types do not match. " + defaultType.GetType().ToString() + " != " + value.GetType().ToString()));
                                 continue;
                             }
 
                             Sql.SqlHelper.TestSetValue(column, pRow, value);
 
-                            object returnValue;
+                            object? returnValue;
 
                             try {
                                 returnValue = rowProperty.GetValue(pRow);   //Get value from row column
                             }
                             catch(Exception e) {
-                                issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Exception Occurred. This probably relates to the table column not being added to the Table correctly using the AddColumns(...) method. Maybe it has not been added or added more than once to the table." + System.Environment.NewLine + e.Message + System.Environment.NewLine + e.StackTrace.ToString()));
+                                issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Exception Occurred. This probably relates to the table column not being added to the Table correctly using the AddColumns(...) method. Maybe it has not been added or added more than once to the table." + System.Environment.NewLine + e.Message + Environment.NewLine + e.StackTrace));
                                 continue;
                             }
 
@@ -446,7 +452,7 @@ namespace TypedQuery.Logic {
             return issues;
         }
 
-        private static bool GetValueForType(Type pType, out object pValue, out object pSecondValue) {
+        private static bool GetValueForType(Type pType, [MaybeNullWhen(false)] out object pValue, [MaybeNullWhen(false)] out object pSecondValue) {
 
             if(pType == typeof(string)) {
                 pValue = Guid.NewGuid().ToString();
@@ -564,11 +570,11 @@ namespace TypedQuery.Logic {
 
             //TODO: Implement the remaining types
 
-            pValue = null;
-            pSecondValue = null;
+            pValue = new object();
+            pSecondValue = new object();
             return false;
         }
-        private static IColumn GetMatchingDbColumn(Sql.AColumn pColumn, ITableDetails pTableDetails) {
+        private static IColumn? GetMatchingDbColumn(Sql.AColumn pColumn, ITableDetails pTableDetails) {
 
             foreach(IColumn dbColumn in pTableDetails.Columns) {
 
@@ -609,7 +615,7 @@ namespace TypedQuery.Logic {
                 }
             }
 
-            ITableDetails tableDetails;
+            ITableDetails? tableDetails;
 
             string errorText;
 

@@ -49,7 +49,7 @@ namespace Sql.Tests {
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
 
 				Assert.AreEqual(result.Count, 1);
-				Assert.AreEqual(count[0, result].Value, 0);
+				Assert.AreEqual(count[0, result]!.Value, 0);
 			}
 
 			using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
@@ -66,7 +66,7 @@ namespace Sql.Tests {
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(transaction);
 
 				Assert.AreEqual(result.Count, 1);
-				Assert.AreEqual(count[0, result].Value, 100);
+				Assert.AreEqual(count[0, result]!.Value, 100);
 
 				result = Sql.Query.Select(stringTable).From(stringTable).Execute(transaction);
 
@@ -87,7 +87,7 @@ namespace Sql.Tests {
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
 
 				Assert.AreEqual(result.Count, 1);
-				Assert.AreEqual(count[0, result].Value, 0);
+				Assert.AreEqual(count[0, result]!.Value, 0);
 			}
 		}
 
@@ -102,7 +102,7 @@ namespace Sql.Tests {
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
 
 				Assert.AreEqual(result.Count, 1);
-				Assert.AreEqual(count[0, result].Value, 0);
+				Assert.AreEqual(count[0, result]!.Value, 0);
 			}
 
 			using(Sql.Transaction transaction = new Transaction(DB.TestDB)) {
@@ -119,7 +119,7 @@ namespace Sql.Tests {
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(transaction);
 
 				Assert.AreEqual(result.Count, 1);
-				Assert.AreEqual(count[0, result].Value, 100);
+				Assert.AreEqual(count[0, result]!.Value, 100);
 
 				result = Sql.Query.Select(stringTable).From(stringTable).Execute(transaction);
 
@@ -140,7 +140,7 @@ namespace Sql.Tests {
 				Sql.IResult result = Sql.Query.Select(count).From(stringTable).Execute(DB.TestDB);
 
 				Assert.AreEqual(result.Count, 1);
-				Assert.AreEqual(count[0, result].Value, 0);
+				Assert.AreEqual(count[0, result]!.Value, 0);
 			}
 		}
 
@@ -267,6 +267,10 @@ namespace Sql.Tests {
 
         [TestMethod]
         public void Test_05() {
+
+            if(DB.TestDB.DatabaseType != DatabaseType.Mssql) {
+                return;
+            }
 
             Tables.StringTable.Table stringTable = Tables.StringTable.Table.INSTANCE;
 

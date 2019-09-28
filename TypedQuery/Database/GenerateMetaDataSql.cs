@@ -38,7 +38,7 @@ namespace Sql.Database {
 
             object[] tableAttributes = pTable.GetType().GetCustomAttributes(true);
 
-            string tableComment = null;
+            string? tableComment = null;
 
             foreach(object attribute in tableAttributes) {
 
@@ -58,11 +58,11 @@ namespace Sql.Database {
 
                 if(typeof(AColumn).IsAssignableFrom(fieldInfo.FieldType)) {
 
-                    AColumn column = (AColumn)fieldInfo.GetValue(pTable);
+                    AColumn column = (AColumn)fieldInfo.GetValue(pTable)!;
 
                     object[] columnAttributes = fieldInfo.GetCustomAttributes(true);
 
-                    string columnComment = null;
+                    string? columnComment = null;
 
                     string valuesText = string.Empty;
 
@@ -105,11 +105,11 @@ namespace Sql.Database {
 
                 if(typeof(AColumn).IsAssignableFrom(propertyInfo.PropertyType)) {
 
-                    AColumn column = (AColumn)propertyInfo.GetValue(pTable, null);
+                    AColumn column = (AColumn)propertyInfo.GetValue(pTable, null)!;
 
                     object[] columnAttributes = propertyInfo.GetCustomAttributes(true);
 
-                    string columnComment = null;
+                    string? columnComment = null;
 
                     string valuesText = string.Empty;
 
@@ -156,12 +156,12 @@ namespace Sql.Database {
 
             StringBuilder text = new StringBuilder();
 
-            foreach(object enumValue in enumValues) {
+            foreach(object? enumValue in enumValues) {
 
                 if(text.Length > 0) {
                     text.Append(", ");
                 }
-                text.Append(enumValue.ToString()).Append(" = ").Append(((int)enumValue).ToString());
+                text.Append(enumValue!.ToString()).Append(" = ").Append(((int)enumValue).ToString());
             }
             return text.ToString();
         }

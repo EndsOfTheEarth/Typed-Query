@@ -26,7 +26,7 @@ namespace Sql.Function {
 
         }
 
-        public override object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
+        public override object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex) {
 
             if(pReader.IsDBNull(pColumnIndex)) {
                 return null;

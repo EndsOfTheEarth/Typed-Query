@@ -25,7 +25,7 @@ namespace Sql.Core {
     internal class QueryResult : IResult {
 
         private readonly IDictionary<ATable, IList<ARow>> mTableRows = new Dictionary<ATable, IList<ARow>>();
-        private readonly IDictionary<ISelectable, IList<object>> mFunctionValues = new Dictionary<ISelectable, IList<object>>();
+        private readonly IDictionary<ISelectable, IList<object?>> mFunctionValues = new Dictionary<ISelectable, IList<object?>>();
 
         private readonly int mRows;
         public int RowsEffected { get; private set; }
@@ -86,7 +86,7 @@ namespace Sql.Core {
                     ARow row;
 
                     try {
-                        row = (ARow)table.RowType.GetConstructor(new Type[] { }).Invoke(null);
+                        row = (ARow)table.RowType.GetConstructor(new Type[] { })!.Invoke(null);
                     }
                     catch(Exception e) {
                         throw new Exception("Failed to create a new instance of Row. This might be because there is no constructor on the row that has no parameters. Also see inner exception.", e);
@@ -100,10 +100,10 @@ namespace Sql.Core {
 
                     ISelectable function = functions[functionIndex];
 
-                    IList<object> values;
+                    IList<object?> values;
 
                     if(!mFunctionValues.ContainsKey(function)) {
-                        values = new List<object>();
+                        values = new List<object?>();
                         mFunctionValues.Add(function, values);
                     }
                     else {
@@ -139,7 +139,7 @@ namespace Sql.Core {
             return mTableRows[pTable][pIndex];
         }
 
-        public object GetValue(ISelectable pFunction, int pIndex) {
+        public object? GetValue(ISelectable pFunction, int pIndex) {
 
             if(pFunction == null) {
                 throw new NullReferenceException($"{ nameof(pFunction) } cannot be null");
@@ -164,7 +164,7 @@ namespace Sql.Core {
 
             foreach(ISelectable function in mFunctionValues.Keys) {
 
-                foreach(object value in mFunctionValues[function]) {
+                foreach(object? value in mFunctionValues[function]) {
                     bytes += SqlHelper.GetAproxByteSizeOf(value);
                 }
             }

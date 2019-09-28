@@ -59,7 +59,7 @@ namespace TypedQuery.Logic {
                         if(index == 0) {
                             c = column.ColumnName[charIndex];
                         }
-                        else if(char.ToLower(c.Value) != char.ToLower(column.ColumnName[charIndex])) {
+                        else if(char.ToLower(c!.Value) != char.ToLower(column.ColumnName[charIndex])) {
                             stop = true;
                             break;
                         }
@@ -661,7 +661,7 @@ namespace TypedQuery.Logic {
             return 0;
         }
 
-        public static string GetReturnType(DbType pDbType, bool pIsNullable, IColumn pColumn, ITableDetails pTable, bool pGenerateKeyTypes) {
+        public static string GetReturnType(DbType pDbType, bool pIsNullable, IColumn? pColumn, ITableDetails? pTable, bool pGenerateKeyTypes) {
 
             string value;
 
@@ -697,8 +697,8 @@ namespace TypedQuery.Logic {
             }
             else if(pDbType == DbType.Guid) {
 
-                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-                    value = $"GuidKey<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"GuidKey<{ (pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
                 }
                 else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -715,8 +715,8 @@ namespace TypedQuery.Logic {
             }
             else if(pDbType == DbType.Int16) {
 
-                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-                    value = $"Int16Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"Int16Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
                 }
                 else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -733,8 +733,8 @@ namespace TypedQuery.Logic {
             }
             else if(pDbType == DbType.Int32) {
 
-                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-                    value = $"Int32Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"Int32Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
                 }
                 else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -751,8 +751,8 @@ namespace TypedQuery.Logic {
             }
             else if(pDbType == DbType.Int64) {
 
-                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-                    value = $"Int64Key<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"Int64Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
                 }
                 else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
@@ -769,8 +769,8 @@ namespace TypedQuery.Logic {
             }
             else if(pDbType == DbType.String) {
 
-                if(pGenerateKeyTypes && pColumn.IsPrimaryKey) {
-                    value = $"StringKey<{pTable.TableName}.Table>" + (pIsNullable ? "?" : string.Empty);
+                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"StringKey<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
                 }
                 else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 

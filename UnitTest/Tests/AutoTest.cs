@@ -176,8 +176,6 @@ namespace Sql.Tests {
 				Assert.IsTrue(id > 0);
 				Assert.AreEqual("Text", text);
 
-				result = null;
-
 				result = Sql.Query.Update(table)
 					.Set(table.Text, "Text_123")
 					.Where(table.Id == id)

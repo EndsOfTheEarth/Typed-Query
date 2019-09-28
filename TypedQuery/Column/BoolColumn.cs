@@ -65,16 +65,16 @@ namespace Sql.Column {
             return pReader.GetBoolean(pColumnIndex);
         }
         public bool ValueOf(ARow pRow) {
-            return (bool)pRow.GetValue(this);
+            return (bool)pRow.GetValue(this)!;
         }
         public void SetValue(ARow pRow, bool pValue) {
             pRow.SetValue(this, pValue);
         }
 
-        internal override void TestSetValue(ARow pRow, object pValue) {
-            SetValue(pRow, (bool)pValue);
+        internal override void TestSetValue(ARow pRow, object? pValue) {
+            SetValue(pRow, (bool)pValue!);
         }
-        internal override object TestGetValue(ARow pRow) {
+        internal override object? TestGetValue(ARow pRow) {
             return ValueOf(pRow);
         }
 
@@ -83,11 +83,11 @@ namespace Sql.Column {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
 
@@ -95,7 +95,7 @@ namespace Sql.Column {
             get { return System.Data.DbType.Boolean; }
         }
 
-        public override object GetDefaultType() {
+        public override object? GetDefaultType() {
             return false;
         }
     }

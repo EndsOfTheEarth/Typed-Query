@@ -135,7 +135,7 @@ namespace Sql {
                 throw new Exception($"Stored procedures are only implemented for DatabaseType.Mssql. Not {pTransaction.Database.DatabaseType.ToString()}");
             }
 
-            System.Data.Common.DbConnection connection = null;
+            System.Data.Common.DbConnection? connection = null;
 
             string sql = string.Empty;
             DateTime? start = null;
@@ -147,16 +147,14 @@ namespace Sql {
 
                 using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)) {
 
-                    Core.Parameters parameters = Settings.UseParameters ? new Core.Parameters(command) : null;
+                    Core.Parameters? parameters = Settings.UseParameters ? new Core.Parameters(command) : null;
 
                     sql = Database.GenertateSql.GetStoreProcedureQuery(pTransaction.Database, pSP, parameters, pParameters);
 
                     command.CommandText = sql;
                     command.CommandType = CommandType.Text;
-
-                    if(pTransaction != null) {
-                        command.Transaction = pTransaction.GetOrSetDbTransaction(pTransaction.Database);
-                    }
+                    
+                    command.Transaction = pTransaction.GetOrSetDbTransaction(pTransaction.Database);
 
                     start = DateTime.Now;
                     Settings.FireQueryExecutingEvent(pTransaction.Database, sql, QueryType.StoredProc, start, pTransaction.IsolationLevel, pTransaction.Id);
@@ -173,9 +171,7 @@ namespace Sql {
 
                         Core.QueryResult result = new Core.QueryResult(pTransaction.Database, selectList, reader, command.CommandText);
 
-                        if(pTransaction == null) {
-                            connection.Close();
-                        }
+                        connection.Close();
 
                         Settings.FireQueryPerformedEvent(pTransaction.Database, sql, result.Count, QueryType.StoredProc, start, end, null, pTransaction.IsolationLevel, result, pTransaction.Id);
 
@@ -225,9 +221,7 @@ namespace Sql {
                     command.CommandText = pSql;
                     command.CommandType = CommandType.Text;
 
-                    if(pTransaction != null) {
-                        command.Transaction = pTransaction.GetOrSetDbTransaction(pTransaction.Database);
-                    }
+                    command.Transaction = pTransaction.GetOrSetDbTransaction(pTransaction.Database);
 
                     start = DateTime.Now;
                     Settings.FireQueryExecutingEvent(pTransaction.Database, pSql, QueryType.PlainText, start, pTransaction.IsolationLevel, pTransaction.Id);

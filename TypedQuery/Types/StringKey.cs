@@ -44,7 +44,7 @@ namespace Sql.Types {
             return !pA.Equals(pB);
         }
 
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
 
             if(obj is StringKey<TABLE>) {
                 return Value.CompareTo(((StringKey<TABLE>)obj).Value) == 0;

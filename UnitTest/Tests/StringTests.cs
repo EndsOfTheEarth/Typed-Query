@@ -566,9 +566,9 @@ namespace Sql.Tests {
 				.Execute(DB.TestDB);
 			
 			Assert.AreEqual(3, result.Count);
-			Assert.AreEqual(1, count[0, result].Value);
-			Assert.AreEqual(1, count[1, result].Value);
-			Assert.AreEqual(1, count[2, result].Value);
+			Assert.AreEqual(1, count[0, result]!.Value);
+			Assert.AreEqual(1, count[1, result]!.Value);
+			Assert.AreEqual(1, count[2, result]!.Value);
 			
 			Assert.AreEqual("123", table[0, result].Str);
 			Assert.AreEqual("abc", table[1, result].Str);

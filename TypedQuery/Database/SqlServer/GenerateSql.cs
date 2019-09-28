@@ -25,7 +25,7 @@ namespace Sql.Database.SqlServer {
 
     internal static class GenerateSql {
 
-        internal static string GetSelectQuery(ADatabase pDatabase, Core.QueryBuilder pQueryBuilder, Core.Parameters pParameters, IAliasManager pAliasManager) {
+        internal static string GetSelectQuery(ADatabase pDatabase, Core.QueryBuilder pQueryBuilder, Core.Parameters? pParameters, IAliasManager pAliasManager) {
 
             if(pAliasManager == null) {
                 throw new NullReferenceException("pAliasManager cannot be null");
@@ -66,7 +66,7 @@ namespace Sql.Database.SqlServer {
                 sql.Append("TOP ").Append(pQueryBuilder.TopRows.Value.ToString());
             }
 
-            bool areAlisesRequired = pQueryBuilder.JoinList.Count > 0 && !pQueryBuilder.FromTable.IsTemporaryTable;
+            bool areAlisesRequired = pQueryBuilder.JoinList.Count > 0 && !pQueryBuilder.FromTable!.IsTemporaryTable;
 
             for(int index = 0; index < pQueryBuilder.SelectColumns.Length; index++) {
 
@@ -99,7 +99,7 @@ namespace Sql.Database.SqlServer {
 
             sql.Append(" FROM ");
 
-            if(!string.IsNullOrEmpty(pQueryBuilder.FromTable.Schema)) {
+            if(!string.IsNullOrEmpty(pQueryBuilder.FromTable!.Schema)) {
                 sql.Append(pQueryBuilder.FromTable.Schema).Append(".");
             }
 
@@ -257,7 +257,7 @@ namespace Sql.Database.SqlServer {
             return sql.ToString();
         }
 
-        internal static string GetInsertQuery(ADatabase pDatabase, Core.InsertBuilder pInsertBuilder, Core.Parameters pParameters) {
+        internal static string GetInsertQuery(ADatabase pDatabase, Core.InsertBuilder pInsertBuilder, Core.Parameters? pParameters) {
 
             StringBuilder sql = new StringBuilder("INSERT INTO ");
 
@@ -407,7 +407,11 @@ namespace Sql.Database.SqlServer {
             return sql.ToString();
         }
 
-        internal static string GetInsertSelectQuery(ADatabase pDatabase, Core.InsertSelectBuilder pInsertBuilder, Core.Parameters pParameters) {
+        internal static string GetInsertSelectQuery(ADatabase pDatabase, Core.InsertSelectBuilder pInsertBuilder, Core.Parameters? pParameters) {
+
+            if(pInsertBuilder.InsertColumns == null) {
+                throw new Exception("There are no insert columns in sql query");
+            }
 
             StringBuilder sql = new StringBuilder("INSERT INTO ");
 
@@ -430,11 +434,11 @@ namespace Sql.Database.SqlServer {
                 sql.Append(column.ColumnName);
             }
             sql.Append(")");
-            sql.Append(GetSelectQuery(pDatabase, (Core.QueryBuilder)pInsertBuilder.SelectQuery, pParameters, aliasManager));
+            sql.Append(GetSelectQuery(pDatabase, (Core.QueryBuilder)pInsertBuilder.SelectQuery!, pParameters, aliasManager));
             return sql.ToString();
         }
 
-        internal static string GetUpdateQuery(ADatabase pDatabase, Core.UpdateBuilder pUpdateBuilder, Core.Parameters pParameters) {
+        internal static string GetUpdateQuery(ADatabase pDatabase, Core.UpdateBuilder pUpdateBuilder, Core.Parameters? pParameters) {
 
             StringBuilder sql = new StringBuilder("UPDATE ");
 
@@ -497,7 +501,7 @@ namespace Sql.Database.SqlServer {
                 }
             }
 
-            Condition joinCondition = null;
+            Condition? joinCondition = null;
 
             if(pUpdateBuilder.JoinList.Count > 0) {
 
@@ -526,7 +530,7 @@ namespace Sql.Database.SqlServer {
                 }
             }
 
-            Condition whereCondition = null;
+            Condition? whereCondition = null;
 
             if(joinCondition != null && pUpdateBuilder.WhereCondition != null) {
                 whereCondition = joinCondition & pUpdateBuilder.WhereCondition;
@@ -544,7 +548,7 @@ namespace Sql.Database.SqlServer {
             return sql.ToString();
         }
 
-        internal static string GetDeleteQuery(ADatabase pDatabase, Core.DeleteBuilder pDeleteBuilder, Core.Parameters pParameters) {
+        internal static string GetDeleteQuery(ADatabase pDatabase, Core.DeleteBuilder pDeleteBuilder, Core.Parameters? pParameters) {
 
             StringBuilder sql = new StringBuilder("DELETE FROM ");
 
@@ -580,7 +584,7 @@ namespace Sql.Database.SqlServer {
             return "TRUNCATE TABLE " + schema + pTable.TableName;
         }
 
-        internal static string GetStoreProcedureQuery(ADatabase pDatabase, ATable pTable, Core.Parameters pParameters, object[] pParams, IAliasManager pAliasManager) {
+        internal static string GetStoreProcedureQuery(ADatabase pDatabase, ATable pTable, Core.Parameters? pParameters, object[] pParams, IAliasManager pAliasManager) {
 
             StringBuilder sql = new StringBuilder();
 
@@ -596,7 +600,7 @@ namespace Sql.Database.SqlServer {
             return sql.ToString();
         }
 
-        private static string GetConditionSql(ADatabase pDatabase, Condition pCondition, Core.Parameters pParameters, bool pUseAlias, IAliasManager pAliasManager) {
+        private static string GetConditionSql(ADatabase pDatabase, Condition pCondition, Core.Parameters? pParameters, bool pUseAlias, IAliasManager pAliasManager) {
 
             if(pCondition.Operator == Operator.IS_NULL) {
                 return "(" + GetSideSql(pDatabase, pCondition.Left, pParameters, pUseAlias, null, pAliasManager) + " IS NULL)";
@@ -604,11 +608,11 @@ namespace Sql.Database.SqlServer {
             else if(pCondition.Operator == Operator.IS_NOT_NULL) {
                 return "(" + GetSideSql(pDatabase, pCondition.Left, pParameters, pUseAlias, null, pAliasManager) + " IS NOT NULL)";
             }
-            string condSql = GetSideSql(pDatabase, pCondition.Left, pParameters, pUseAlias, null, pAliasManager) + GetOperator(pCondition.Operator) + GetSideSql(pDatabase, pCondition.Right, pParameters, pUseAlias, pCondition.RightDbType, pAliasManager);
+            string condSql = GetSideSql(pDatabase, pCondition.Left, pParameters, pUseAlias, null, pAliasManager) + GetOperator(pCondition.Operator) + GetSideSql(pDatabase, pCondition.Right!, pParameters, pUseAlias, pCondition.RightDbType, pAliasManager);
             return pCondition.Left is Condition || pCondition.Right is Condition ? "(" + condSql + ")" : condSql;
         }
 
-        private static string GetSideSql(ADatabase pDatabase, object pCond, Core.Parameters pParameters, bool pUseAlias, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
+        private static string GetSideSql(ADatabase pDatabase, object pCond, Core.Parameters? pParameters, bool pUseAlias, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
 
             if(pCond is Condition) {
                 return GetConditionSql(pDatabase, (Condition)pCond, pParameters, pUseAlias, pAliasManager);
@@ -644,7 +648,7 @@ namespace Sql.Database.SqlServer {
                     default:
                         throw new Exception("Unknown numeric operator : '" + numCond.Operator.ToString());
                 }
-                return "(" + GetSideSql(pDatabase, numCond.Left, pParameters, pUseAlias, null, pAliasManager) + opp + GetSideSql(pDatabase, numCond.Right, pParameters, pUseAlias, null, pAliasManager) + ")";
+                return "(" + GetSideSql(pDatabase, numCond.Left, pParameters, pUseAlias, null, pAliasManager) + opp + GetSideSql(pDatabase, numCond.Right!, pParameters, pUseAlias, null, pAliasManager) + ")";
             }
             else {
                 return GetValue(pDatabase, pCond, pParameters, pDbType, false, pAliasManager);
@@ -654,7 +658,7 @@ namespace Sql.Database.SqlServer {
         private static string GetValue(ADatabase pDatabase, object pValue, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
             return GetValue(pDatabase, pValue, null, pDbType, false, pAliasManager);
         }
-        private static string GetValue(ADatabase pDatabase, object pValue, Core.Parameters pParameters, System.Data.DbType? pDbType, bool pUseColumnAlias, IAliasManager pAliasManager) {
+        private static string GetValue(ADatabase pDatabase, object pValue, Core.Parameters? pParameters, System.Data.DbType? pDbType, bool pUseColumnAlias, IAliasManager pAliasManager) {
 
             if(pValue == null) {
                 throw new NullReferenceException("pValue cannot be null");
@@ -665,14 +669,14 @@ namespace Sql.Database.SqlServer {
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is int?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is string) {
 
@@ -686,42 +690,42 @@ namespace Sql.Database.SqlServer {
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is Int16?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is Int64) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is Int64?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is decimal) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is decimal?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is DateTime) {
 
@@ -854,7 +858,7 @@ namespace Sql.Database.SqlServer {
 
                 int index = 0;
 
-                foreach(object value in ((System.Collections.IEnumerable)pValue)) {
+                foreach(object? value in ((System.Collections.IEnumerable)pValue)) {
 
                     if(index > 0) {
                         sql.Append(',');

@@ -22,60 +22,60 @@ using System.Collections.Generic;
 
 namespace Sql.Core {
 
-    public class AlaisCounter {
+    //public class AlaisCounter {
 
-        private readonly static char[] CHARS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-        private int[] mCounter = null;
+    //    private readonly static char[] CHARS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+    //    private int[]? mCounter = null;
 
-        public AlaisCounter() {
+    //    public AlaisCounter() {
 
-        }
+    //    }
 
-        /// <summary>
-        /// Returns the next alias value.
-        /// </summary>
-        /// <returns></returns>
-        public string GetNextAlias() {
+    //    /// <summary>
+    //    /// Returns the next alias value.
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public string GetNextAlias() {
 
-            lock(this) {
+    //        lock(this) {
 
-                if(mCounter == null) {
-                    mCounter = new int[] { 0 };
-                }
-                else {
-                    //Increment alias counter
+    //            if(mCounter == null) {
+    //                mCounter = new int[] { 0 };
+    //            }
+    //            else {
+    //                //Increment alias counter
 
-                    bool increaseCounter = true;
+    //                bool increaseCounter = true;
 
-                    for(int index = mCounter.Length - 1; index >= 0; index--) {
+    //                for(int index = mCounter.Length - 1; index >= 0; index--) {
 
-                        int value = mCounter[index];
+    //                    int value = mCounter[index];
 
-                        if(value == (CHARS.Length - 1)) {
-                            mCounter[index] = 0;
-                        }
-                        else {
-                            mCounter[index]++;
-                            increaseCounter = false;
-                            break;
-                        }
-                    }
-                    if(increaseCounter) {
-                        mCounter = new int[mCounter.Length + 1];    //All zeros
-                    }
-                }
-                return GetCurrentAlias();
-            }
-        }
+    //                    if(value == (CHARS.Length - 1)) {
+    //                        mCounter[index] = 0;
+    //                    }
+    //                    else {
+    //                        mCounter[index]++;
+    //                        increaseCounter = false;
+    //                        break;
+    //                    }
+    //                }
+    //                if(increaseCounter) {
+    //                    mCounter = new int[mCounter.Length + 1];    //All zeros
+    //                }
+    //            }
+    //            return GetCurrentAlias();
+    //        }
+    //    }
 
-        private string GetCurrentAlias() {
+    //    private string GetCurrentAlias() {
 
-            StringBuilder alias = new StringBuilder();
+    //        StringBuilder alias = new StringBuilder();
 
-            for(int index = 0; index < mCounter.Length; index++) {
-                alias.Append(CHARS[mCounter[index]]);
-            }
-            return alias.ToString();
-        }
-    }
+    //        for(int index = 0; index < mCounter!.Length; index++) {
+    //            alias.Append(CHARS[mCounter[index]]);
+    //        }
+    //        return alias.ToString();
+    //    }
+    //}
 }

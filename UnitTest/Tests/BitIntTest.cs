@@ -58,7 +58,7 @@ namespace Sql.Tests {
 
 			a += 10;
 
-			string b = null;
+			string? b = null;
 			b += "abc";
 
 			int? c = null;
@@ -251,7 +251,7 @@ namespace Sql.Tests {
 				.ExecuteUncommitted(DB.TestDB);
 
 			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual(insertRows - 1, max[0, result].Value);
+			Assert.AreEqual(insertRows - 1, max[0, result]!.Value);
 			Assert.AreEqual(0, min[0, result]);
 			Assert.IsTrue(sumValue == sum[0, result]);
 

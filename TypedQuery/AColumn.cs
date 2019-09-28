@@ -94,7 +94,7 @@ namespace Sql {
         /// Returns the default type. For example an integer column would return 0. Or a boolean column would return false
         /// </summary>
         /// <returns></returns>
-        public abstract object GetDefaultType();
+        public abstract object? GetDefaultType();
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public ISelectable[] SelectableColumns {
@@ -107,7 +107,7 @@ namespace Sql {
         public abstract System.Data.DbType DbType { get; }
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public abstract object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex);
+        public abstract object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex);
 
         /// <summary>
         /// Order ascending
@@ -150,8 +150,8 @@ namespace Sql {
             return base.GetType();
         }
 
-        internal abstract void TestSetValue(ARow pRow, object pValue);
-        internal abstract object TestGetValue(ARow pRow);
+        internal abstract void TestSetValue(ARow pRow, object? pValue);
+        internal abstract object? TestGetValue(ARow pRow);
     }
 
     public interface IColumnLength {

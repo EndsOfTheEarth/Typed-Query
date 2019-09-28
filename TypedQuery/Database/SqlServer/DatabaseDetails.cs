@@ -24,7 +24,7 @@ namespace Sql.Database.SqlServer {
 
     public static class DatabaseDetails {
 
-        public static DbTable GetTable(ADatabase pDatabase, Sql.ATable pTable) {
+        public static DbTable? GetTable(ADatabase pDatabase, Sql.ATable pTable) {
             IList<DbTable> tables = GetTables(pTable.TableName, pDatabase.GetConnection(false));
             return tables.Count > 0 ? tables[0] : null;
         }
@@ -33,7 +33,7 @@ namespace Sql.Database.SqlServer {
             return GetTables(null, pConnection);
         }
 
-        private static IList<DbTable> GetTables(string pTableName, System.Data.Common.DbConnection pConnection) {
+        private static IList<DbTable> GetTables(string? pTableName, System.Data.Common.DbConnection pConnection) {
 
             Dictionary<string, DbTable> tables = new Dictionary<string, DbTable>();
             IList<DbTable> tableList = new List<DbTable>();
@@ -191,7 +191,7 @@ namespace Sql.Database.SqlServer {
             return spList;
         }
 
-        private static void LoadForeignKeys(string pTableName, ref IList<DbTable> pDbTables, System.Data.Common.DbConnection pConnection) {
+        private static void LoadForeignKeys(string? pTableName, ref IList<DbTable> pDbTables, System.Data.Common.DbConnection pConnection) {
 
             using(System.Data.Common.DbCommand command = Transaction.CreateCommand(pConnection, null)) {
 
@@ -233,7 +233,7 @@ namespace Sql.Database.SqlServer {
             }
         }
 
-        private static Dictionary<string, System.Data.DbType> sTypeLookup;
+        private static Dictionary<string, System.Data.DbType>? sTypeLookup;
 
         private static System.Data.DbType GetDataType(string pDataType) {
 

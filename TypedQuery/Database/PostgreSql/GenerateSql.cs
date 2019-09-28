@@ -25,8 +25,11 @@ namespace Sql.Database.PostgreSql {
 
     internal static class GenerateSql {
 
-        internal static string GetSelectQuery(ADatabase pDatabase, Core.QueryBuilder pQueryBuilder, Core.Parameters pParameters, IAliasManager pAliasManager) {
+        internal static string GetSelectQuery(ADatabase pDatabase, Core.QueryBuilder pQueryBuilder, Core.Parameters? pParameters, IAliasManager pAliasManager) {
 
+            if(pQueryBuilder.FromTable == null) {
+                throw new Exception("There is no FROM table in the query");
+            }
             StringBuilder sql = new StringBuilder();
 
             if(pQueryBuilder.UnionQuery != null) {
@@ -229,7 +232,7 @@ namespace Sql.Database.PostgreSql {
             return sql.ToString();
         }
 
-        internal static string GetInsertQuery(ADatabase pDatabase, Core.InsertBuilder pInsertBuilder, Core.Parameters pParameters) {
+        internal static string GetInsertQuery(ADatabase pDatabase, Core.InsertBuilder pInsertBuilder, Core.Parameters? pParameters) {
 
             StringBuilder sql = new StringBuilder("INSERT INTO ");
 
@@ -361,8 +364,11 @@ namespace Sql.Database.PostgreSql {
             return sql.ToString();
         }
 
-        internal static string GetInsertSelectQuery(ADatabase pDatabase, Core.InsertSelectBuilder pInsertBuilder, Core.Parameters pParameters) {
+        internal static string GetInsertSelectQuery(ADatabase pDatabase, Core.InsertSelectBuilder pInsertBuilder, Core.Parameters? pParameters) {
 
+            if(pInsertBuilder.InsertColumns == null) {
+                throw new Exception("There are no insert columns in query");
+            }
             StringBuilder sql = new StringBuilder("INSERT INTO ");
 
             IAliasManager aliasManager = new AliasManager();
@@ -384,11 +390,11 @@ namespace Sql.Database.PostgreSql {
                 sql.Append(column.ColumnName);
             }
             sql.Append(")");
-            sql.Append(GetSelectQuery(pDatabase, (Core.QueryBuilder)pInsertBuilder.SelectQuery, pParameters, aliasManager));
+            sql.Append(GetSelectQuery(pDatabase, (Core.QueryBuilder)pInsertBuilder.SelectQuery!, pParameters, aliasManager));
             return sql.ToString();
         }
 
-        internal static string GetUpdateQuery(ADatabase pDatabase, Core.UpdateBuilder pUpdateBuilder, Core.Parameters pParameters) {
+        internal static string GetUpdateQuery(ADatabase pDatabase, Core.UpdateBuilder pUpdateBuilder, Core.Parameters? pParameters) {
 
             StringBuilder sql = new StringBuilder("UPDATE ");
 
@@ -426,7 +432,7 @@ namespace Sql.Database.PostgreSql {
                 }
             }
 
-            Condition joinCondition = null;
+            Condition? joinCondition = null;
 
             if(pUpdateBuilder.JoinList.Count > 0) {
 
@@ -450,7 +456,7 @@ namespace Sql.Database.PostgreSql {
                 }
             }
 
-            Condition whereCondition = null;
+            Condition? whereCondition = null;
 
             if(joinCondition != null && pUpdateBuilder.WhereCondition != null) {
                 whereCondition = joinCondition & pUpdateBuilder.WhereCondition;
@@ -485,7 +491,7 @@ namespace Sql.Database.PostgreSql {
             return sql.ToString();
         }
 
-        internal static string GetDeleteQuery(ADatabase pDatabase, Core.DeleteBuilder pDeleteBuilder, Core.Parameters pParameters) {
+        internal static string GetDeleteQuery(ADatabase pDatabase, Core.DeleteBuilder pDeleteBuilder, Core.Parameters? pParameters) {
 
             StringBuilder sql = new StringBuilder("DELETE FROM ");
 
@@ -521,7 +527,7 @@ namespace Sql.Database.PostgreSql {
             return "TRUNCATE TABLE " + schema + pTable.TableName;
         }
 
-        private static string GetConditionSql(ADatabase pDatabase, Condition pCondition, Core.Parameters pParameters, IAliasManager pAliasManager) {
+        private static string GetConditionSql(ADatabase pDatabase, Condition pCondition, Core.Parameters? pParameters, IAliasManager pAliasManager) {
 
             if(pCondition.Operator == Operator.IS_NULL) {
                 return "(" + GetSideSql(pDatabase, pCondition.Left, pParameters, pAliasManager) + " IS NULL)";
@@ -535,13 +541,13 @@ namespace Sql.Database.PostgreSql {
             if(pCondition.Left is Sql.AColumn) {
                 dbType = ((Sql.AColumn)pCondition.Left).DbType;
             }
-            return "(" + GetSideSql(pDatabase, pCondition.Left, pParameters, pAliasManager) + GetOperator(pCondition.Operator) + GetSideSql(pDatabase, pCondition.Right, pParameters, dbType, pAliasManager) + ")";
+            return "(" + GetSideSql(pDatabase, pCondition.Left, pParameters, pAliasManager) + GetOperator(pCondition.Operator) + GetSideSql(pDatabase, pCondition.Right!, pParameters, dbType, pAliasManager) + ")";
         }
 
-        private static string GetSideSql(ADatabase pDatabase, object pCond, Core.Parameters pParameters, IAliasManager pAliasManager) {
+        private static string GetSideSql(ADatabase pDatabase, object pCond, Core.Parameters? pParameters, IAliasManager pAliasManager) {
             return GetSideSql(pDatabase, pCond, pParameters, null, pAliasManager);
         }
-        private static string GetSideSql(ADatabase pDatabase, object pCond, Core.Parameters pParameters, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
+        private static string GetSideSql(ADatabase pDatabase, object pCond, Core.Parameters? pParameters, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
 
             if(pCond is Condition) {
                 return GetConditionSql(pDatabase, (Condition)pCond, pParameters, pAliasManager);
@@ -577,7 +583,7 @@ namespace Sql.Database.PostgreSql {
                     default:
                         throw new Exception("Unknown numeric operator : '" + numCond.Operator.ToString());
                 }
-                return "(" + GetSideSql(pDatabase, numCond.Left, pParameters, pAliasManager) + opp + GetSideSql(pDatabase, numCond.Right, pParameters, pAliasManager) + ")";
+                return "(" + GetSideSql(pDatabase, numCond.Left, pParameters, pAliasManager) + opp + GetSideSql(pDatabase, numCond.Right!, pParameters, pAliasManager) + ")";
             }
             else {
                 return GetValue(pDatabase, pCond, pParameters, pDbType, pAliasManager);
@@ -587,21 +593,21 @@ namespace Sql.Database.PostgreSql {
         internal static string GetValue(ADatabase pDatabase, object pValue, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
             return GetValue(pDatabase, pValue, null, pDbType, pAliasManager);
         }
-        internal static string GetValue(ADatabase pDatabase, object pValue, Core.Parameters pParameters, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
+        internal static string GetValue(ADatabase pDatabase, object pValue, Core.Parameters? pParameters, System.Data.DbType? pDbType, IAliasManager pAliasManager) {
 
             if(pValue is int) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is int?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int32, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is string) {
 
@@ -615,42 +621,42 @@ namespace Sql.Database.PostgreSql {
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is Int16?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int16, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is Int64) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is Int64?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Int64, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is decimal) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
                 }
-                return pValue.ToString();
+                return pValue.ToString()!;
             }
             else if(pValue is decimal?) {
 
                 if(pParameters != null) {
                     return pParameters.AddParameter(System.Data.DbType.Decimal, pValue);
                 }
-                return pValue == null ? "NULL" : pValue.ToString();
+                return pValue == null ? "NULL" : pValue.ToString()!;
             }
             else if(pValue is DateTime) {
 
@@ -771,7 +777,7 @@ namespace Sql.Database.PostgreSql {
 
                 int index = 0;
 
-                foreach(object value in ((System.Collections.IEnumerable)pValue)) {
+                foreach(object? value in ((System.Collections.IEnumerable)pValue)) {
 
                     if(index > 0) {
                         sql.Append(',');

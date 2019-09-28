@@ -26,7 +26,7 @@ namespace TypedQuery.Connection {
     public class Connection {
 
         public Sql.DatabaseType DatabaseType { get; set; }
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = string.Empty;
 
         public Connection() { }
 
@@ -35,7 +35,7 @@ namespace TypedQuery.Connection {
             ConnectionString = pConnection.ConnectionString;
         }
 
-        public override string ToString() {
+        public override string? ToString() {
             return DatabaseType.ToString() + " -> " + ConnectionString;
         }
     }

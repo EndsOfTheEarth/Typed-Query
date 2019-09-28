@@ -53,7 +53,7 @@ namespace TypedQuery.Logic {
             return tableList;
         }
 
-        public bool GetTableDetails(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, out ITableDetails pTableDetails, out string pErrorText) {
+        public bool GetTableDetails(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, out ITableDetails? pTableDetails, out string pErrorText) {
 
             if(string.IsNullOrEmpty(pTableName)) {
                 throw new ArgumentException("pTableName cannot be null or empty");
@@ -136,7 +136,7 @@ namespace TypedQuery.Logic {
             return columnList;
         }
 
-        private IPrimaryKey GetPrimaryKey(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
+        private IPrimaryKey? GetPrimaryKey(Sql.ADatabase pDatabase, string pTableName, string pSchemaName, IList<IColumn> pColumns) {
 
             Postgresql.TableConstraints.Table tcTable = new Postgresql.TableConstraints.Table();
             Postgresql.ConstraintColumnUsage.Table ccuTable = new Postgresql.ConstraintColumnUsage.Table();
@@ -148,7 +148,7 @@ namespace TypedQuery.Logic {
                 .Where(tcTable.Table_name == pTableName & tcTable.Table_schema == pSchemaName & tcTable.Constraint_type == "PRIMARY KEY")
                 .Execute(pDatabase);
 
-            PrimaryKey primaryKey = null;
+            PrimaryKey? primaryKey = null;
 
             if(result.Count > 0) {
 
@@ -200,7 +200,7 @@ namespace TypedQuery.Logic {
 
                 string key = constraintName.ToLower();
 
-                IForeignKey foreignKey;
+                IForeignKey? foreignKey;
 
                 if(!keysLookup.TryGetValue(key, out foreignKey)) {
                     foreignKey = new ForeignKey(constraintName);
@@ -208,7 +208,7 @@ namespace TypedQuery.Logic {
                     foreignKeyList.Add(foreignKey);
                 }
 
-                IColumn foreignKeyColumn = null;
+                IColumn? foreignKeyColumn = null;
 
                 foreach(IColumn column in pColumns) {
 
@@ -280,7 +280,7 @@ namespace TypedQuery.Logic {
             }
         }
 
-        private static Dictionary<string, System.Data.DbType> sTypeLookup;
+        private static Dictionary<string, System.Data.DbType>? sTypeLookup;
 
         private static System.Data.DbType GetDataType(string pDataType) {
 

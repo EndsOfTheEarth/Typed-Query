@@ -25,7 +25,7 @@ namespace Sql {
     public interface ISelectable {
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        object GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex);
+        object? GetValue(ADatabase pDatabase, System.Data.Common.DbDataReader pReader, int pColumnIndex);
 
         #region Hide Members
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -35,7 +35,7 @@ namespace Sql {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        string ToString();
+        string? ToString();
         #endregion
     }
     public interface ISelectableColumns {
@@ -51,7 +51,7 @@ namespace Sql {
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         Type GetType();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        string ToString();
+        string? ToString();
         #endregion
     }
 }

@@ -27,16 +27,16 @@ namespace Sql.Core {
     internal class InsertSelectBuilder : IInsertSelect, IInsertSelectQuery, IInsertSelectExecute {
 
         private readonly ATable mTable;
-        private AColumn[] mColumns;
-        private IExecute mSelectQuery;
+        private AColumn[]? mColumns;
+        private IExecute? mSelectQuery;
 
         internal ATable Table {
             get { return mTable; }
         }
-        internal AColumn[] InsertColumns {
+        internal AColumn[]? InsertColumns {
             get { return mColumns; }
         }
-        internal IExecute SelectQuery {
+        internal IExecute? SelectQuery {
             get { return mSelectQuery; }
         }
 
@@ -74,7 +74,7 @@ namespace Sql.Core {
             return Database.GenertateSql.GetInsertSelectQuery(pDatabase, this, null);
         }
 
-        private string GetSql(ADatabase pDatabase, Core.Parameters pParameters) {
+        private string GetSql(ADatabase pDatabase, Core.Parameters? pParameters) {
             return Database.GenertateSql.GetInsertSelectQuery(pDatabase, this, pParameters);
         }
 
@@ -91,7 +91,7 @@ namespace Sql.Core {
                 }
             }
 
-            System.Data.Common.DbConnection connection = null;
+            System.Data.Common.DbConnection? connection = null;
 
             string sql = string.Empty;
             DateTime? start = null;
@@ -103,7 +103,7 @@ namespace Sql.Core {
 
                 using(System.Data.Common.DbCommand command = Transaction.CreateCommand(connection, pTransaction)) {
 
-                    Parameters parameters = Settings.UseParameters ? new Parameters(command) : null;
+                    Parameters? parameters = Settings.UseParameters ? new Parameters(command) : null;
 
                     sql = GetSql(pTransaction.Database, parameters);
 

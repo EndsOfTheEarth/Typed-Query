@@ -58,16 +58,15 @@ namespace Sql.Tests {
 
 			Sql.Function.AvgInteger avg = new Sql.Function.AvgInteger(table.IntValue);
 
-
-			IResult result = Query.Select(
-				avg.Over()
-			).From(table).Execute(DB.TestDB);
+			IResult result = Query.Select(avg.Over())
+                .From(table)
+                .Execute(DB.TestDB);
 
 			Assert.AreEqual(100, result.Count);
 
 			for(int index = 0; index < 100; index++) {
 
-				decimal avgValue = avg[index, result].Value;
+				decimal avgValue = avg[index, result]!.Value;
 
 				if(DB.TestDB.DatabaseType == DatabaseType.PostgreSql)
 					Assert.IsTrue(avgValue == 49.50m);
@@ -179,77 +178,76 @@ namespace Sql.Tests {
 			Assert.AreEqual(table[5, result].IntValue, 3);
 			Assert.AreEqual(table[6, result].IntValue, 3);
 
-			Assert.AreEqual(min[0, result].Value, 1);
-			Assert.AreEqual(min[1, result].Value, 1);
-			Assert.AreEqual(min[2, result].Value, 1);
+			Assert.AreEqual(min[0, result]!.Value, 1);
+			Assert.AreEqual(min[1, result]!.Value, 1);
+			Assert.AreEqual(min[2, result]!.Value, 1);
 
-			Assert.AreEqual(min[3, result].Value, 2);
-			Assert.AreEqual(min[4, result].Value, 2);
+			Assert.AreEqual(min[3, result]!.Value, 2);
+			Assert.AreEqual(min[4, result]!.Value, 2);
 
-			Assert.AreEqual(min[5, result].Value, 3);
-			Assert.AreEqual(min[6, result].Value, 3);
+			Assert.AreEqual(min[5, result]!.Value, 3);
+			Assert.AreEqual(min[6, result]!.Value, 3);
 
-			Assert.AreEqual(max[0, result].Value, 1);
-			Assert.AreEqual(max[1, result].Value, 1);
-			Assert.AreEqual(max[2, result].Value, 1);
+			Assert.AreEqual(max[0, result]!.Value, 1);
+			Assert.AreEqual(max[1, result]!.Value, 1);
+			Assert.AreEqual(max[2, result]!.Value, 1);
 
-			Assert.AreEqual(max[3, result].Value, 2);
-			Assert.AreEqual(max[4, result].Value, 2);
+			Assert.AreEqual(max[3, result]!.Value, 2);
+			Assert.AreEqual(max[4, result]!.Value, 2);
 
-			Assert.AreEqual(max[5, result].Value, 3);
-			Assert.AreEqual(max[6, result].Value, 3);
+			Assert.AreEqual(max[5, result]!.Value, 3);
+			Assert.AreEqual(max[6, result]!.Value, 3);
 
-			Assert.AreEqual(sum[0, result].Value, 3);
-			Assert.AreEqual(sum[1, result].Value, 3);
-			Assert.AreEqual(sum[2, result].Value, 3);
+			Assert.AreEqual(sum[0, result]!.Value, 3);
+			Assert.AreEqual(sum[1, result]!.Value, 3);
+			Assert.AreEqual(sum[2, result]!.Value, 3);
 
-			Assert.AreEqual(sum[3, result].Value, 4);
-			Assert.AreEqual(sum[4, result].Value, 4);
+			Assert.AreEqual(sum[3, result]!.Value, 4);
+			Assert.AreEqual(sum[4, result]!.Value, 4);
 
-			Assert.AreEqual(sum[5, result].Value, 6);
-			Assert.AreEqual(sum[6, result].Value, 6);
+			Assert.AreEqual(sum[5, result]!.Value, 6);
+			Assert.AreEqual(sum[6, result]!.Value, 6);
 
-			Assert.AreEqual(avg[0, result].Value, 1);
-			Assert.AreEqual(avg[1, result].Value, 1);
-			Assert.AreEqual(avg[2, result].Value, 1);
+			Assert.AreEqual(avg[0, result]!.Value, 1);
+			Assert.AreEqual(avg[1, result]!.Value, 1);
+			Assert.AreEqual(avg[2, result]!.Value, 1);
 
-			Assert.AreEqual(avg[3, result].Value, 2);
-			Assert.AreEqual(avg[4, result].Value, 2);
+			Assert.AreEqual(avg[3, result]!.Value, 2);
+			Assert.AreEqual(avg[4, result]!.Value, 2);
 
-			Assert.AreEqual(avg[5, result].Value, 3);
-			Assert.AreEqual(avg[6, result].Value, 3);
+			Assert.AreEqual(avg[5, result]!.Value, 3);
+			Assert.AreEqual(avg[6, result]!.Value, 3);
 
-			Assert.AreEqual(rowNumber[0, result].Value, 1);
-			Assert.AreEqual(rowNumber[1, result].Value, 2);
-			Assert.AreEqual(rowNumber[2, result].Value, 3);
+			Assert.AreEqual(rowNumber[0, result]!.Value, 1);
+			Assert.AreEqual(rowNumber[1, result]!.Value, 2);
+			Assert.AreEqual(rowNumber[2, result]!.Value, 3);
 
-			Assert.AreEqual(rowNumber[3, result].Value, 4);
-			Assert.AreEqual(rowNumber[4, result].Value, 5);
+			Assert.AreEqual(rowNumber[3, result]!.Value, 4);
+			Assert.AreEqual(rowNumber[4, result]!.Value, 5);
 
-			Assert.AreEqual(rowNumber[5, result].Value, 6);
-			Assert.AreEqual(rowNumber[6, result].Value, 7);
-
-
-			Assert.AreEqual(rank[0, result].Value, 1);
-			Assert.AreEqual(rank[1, result].Value, 1);
-			Assert.AreEqual(rank[2, result].Value, 1);
-
-			Assert.AreEqual(rank[3, result].Value, 4);
-			Assert.AreEqual(rank[4, result].Value, 4);
-
-			Assert.AreEqual(rank[5, result].Value, 6);
-			Assert.AreEqual(rank[6, result].Value, 6);
+			Assert.AreEqual(rowNumber[5, result]!.Value, 6);
+			Assert.AreEqual(rowNumber[6, result]!.Value, 7);
 
 
-			Assert.AreEqual(denseRank[0, result].Value, 1);
-			Assert.AreEqual(denseRank[1, result].Value, 1);
-			Assert.AreEqual(denseRank[2, result].Value, 1);
+			Assert.AreEqual(rank[0, result]!.Value, 1);
+			Assert.AreEqual(rank[1, result]!.Value, 1);
+			Assert.AreEqual(rank[2, result]!.Value, 1);
 
-			Assert.AreEqual(denseRank[3, result].Value, 2);
-			Assert.AreEqual(denseRank[4, result].Value, 2);
+			Assert.AreEqual(rank[3, result]!.Value, 4);
+			Assert.AreEqual(rank[4, result]!.Value, 4);
 
-			Assert.AreEqual(denseRank[5, result].Value, 3);
-			Assert.AreEqual(denseRank[6, result].Value, 3);
+			Assert.AreEqual(rank[5, result]!.Value, 6);
+			Assert.AreEqual(rank[6, result]!.Value, 6);
+
+			Assert.AreEqual(denseRank[0, result]!.Value, 1);
+			Assert.AreEqual(denseRank[1, result]!.Value, 1);
+			Assert.AreEqual(denseRank[2, result]!.Value, 1);
+
+			Assert.AreEqual(denseRank[3, result]!.Value, 2);
+			Assert.AreEqual(denseRank[4, result]!.Value, 2);
+
+			Assert.AreEqual(denseRank[5, result]!.Value, 3);
+			Assert.AreEqual(denseRank[6, result]!.Value, 3);
 		}
 
 		[TestMethod]

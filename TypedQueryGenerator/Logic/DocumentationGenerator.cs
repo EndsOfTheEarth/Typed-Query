@@ -120,11 +120,11 @@ table, th, td {
 
                 if(typeof(AColumn).IsAssignableFrom(fieldInfo.PropertyType)) {
 
-                    AColumn column = (AColumn)fieldInfo.GetValue(pTable);
+                    AColumn column = (AColumn)fieldInfo.GetValue(pTable)!;
 
                     object[] columnAttributes = fieldInfo.GetCustomAttributes(true);
 
-                    string columnComment = null;
+                    string? columnComment = null;
 
                     string valuesText = string.Empty;
 
@@ -172,12 +172,12 @@ table, th, td {
 
             StringBuilder text = new StringBuilder();
 
-            foreach(object enumValue in enumValues) {
+            foreach(object? enumValue in enumValues) {
 
                 if(text.Length > 0) {
                     text.Append(", ");
                 }
-                text.Append(enumValue.ToString()).Append(" = ").Append(((int)enumValue).ToString());
+                text.Append(enumValue!.ToString()).Append(" = ").Append(((int)enumValue).ToString());
             }
             return text.ToString();
         }

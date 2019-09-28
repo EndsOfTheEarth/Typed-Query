@@ -224,7 +224,7 @@ namespace Sql.Tests {
 
 			Assert.AreEqual(1, result.Count);
 			CompareDates(table, mDateTime1, table[0, result].Dt);
-			Assert.AreEqual(2, count[0, result].Value);
+			Assert.AreEqual(2, count[0, result]!.Value);
 
 			result = Query.Select(table.Dt, count)
 				.From(table)
@@ -234,7 +234,7 @@ namespace Sql.Tests {
 
 			Assert.AreEqual(1, result.Count);
 			CompareDates(table, mDateTime1, table[0, result].Dt);
-			Assert.AreEqual(2, count[0, result].Value);
+			Assert.AreEqual(2, count[0, result]!.Value);
 
 			result = Query.Select(table.Dt, count)
 				.From(table)
@@ -342,7 +342,7 @@ namespace Sql.Tests {
 				}
 				else {
 
-					bool areEqual = pD1.Value.Year == pD2.Value.Year &&
+					bool areEqual = pD1!.Value.Year == pD2!.Value.Year &&
 						pD1.Value.Month == pD2.Value.Month &&
 						pD1.Value.Day == pD2.Value.Day &&
 						pD1.Value.Hour == pD2.Value.Hour &&

@@ -40,7 +40,7 @@ namespace Sql {
                 throw new NullReferenceException($"{nameof(pTransaction)} cannot be null");
             }
 
-            DbConnection connection = null;
+            DbConnection? connection = null;
 
             string sql = string.Empty;
             DateTime? start = null;

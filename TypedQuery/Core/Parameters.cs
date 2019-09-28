@@ -36,13 +36,13 @@ namespace Sql.Core {
             mCommand = pCommand;
         }
 
-        public string AddParameter(System.Data.DbType pDbType, object pValue) {
+        public string AddParameter(System.Data.DbType pDbType, object? pValue) {
 
             if(mCommand.Parameters.Count < 15) {    //If there aren't too many parameters then check to see if pValue is a duplicate value that already has a parameter
 
-                foreach(DbParameter param in mCommand.Parameters) {
+                foreach(DbParameter? param in mCommand.Parameters) {
 
-                    if(param.Value.Equals(pValue) && param.DbType == pDbType) {
+                    if(param!.Value.Equals(pValue) && param.DbType == pDbType) {
                         return param.ParameterName;
                     }
                 }

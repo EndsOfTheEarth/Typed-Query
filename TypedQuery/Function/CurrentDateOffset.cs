@@ -36,7 +36,7 @@ namespace Sql.Function {
 
         public DateTimeOffset this[int pIndex, IResult pResult] {
             get {
-                return (DateTimeOffset)pResult.GetValue(this, pIndex);
+                return (DateTimeOffset)pResult.GetValue(this, pIndex)!;
             }
         }
         public override string GetFunctionSql(ADatabase pDatabase, bool pUseAlias, Sql.Database.IAliasManager pAliasManager) {

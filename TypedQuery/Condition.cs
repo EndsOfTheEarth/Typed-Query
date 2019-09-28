@@ -29,7 +29,7 @@ namespace Sql {
 
         private readonly object mLeft;
         private readonly Operator mOperator;
-        private readonly object mRight;
+        private readonly object? mRight;
         private readonly System.Data.DbType mRightDbType;
 
         internal object Left {
@@ -38,14 +38,14 @@ namespace Sql {
         internal Operator Operator {
             get { return mOperator; }
         }
-        internal object Right {
+        internal object? Right {
             get { return mRight; }
         }
         internal System.Data.DbType RightDbType {
             get { return mRightDbType; }
         }
 
-        internal Condition(object pLeft, Operator pOperator, object pRight) {
+        internal Condition(object pLeft, Operator pOperator, object? pRight) {
 
             mLeft = pLeft;
             mOperator = pOperator;
@@ -140,11 +140,11 @@ namespace Sql {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -168,7 +168,7 @@ namespace Sql {
             }
         }
 
-        internal ColumnCondition(AColumn pLeft, Operator pOperator, object pRight) : base(pLeft, pOperator, pRight) {
+        internal ColumnCondition(AColumn pLeft, Operator pOperator, object? pRight) : base(pLeft, pOperator, pRight) {
 
             if(pLeft == null) {
                 throw new NullReferenceException($"{nameof(pLeft)} column cannot be null");
@@ -179,7 +179,7 @@ namespace Sql {
             }
         }
 
-        internal ColumnCondition(Interfaces.IFunction pLeft, Operator pOperator, object pRight) : base(pLeft, pOperator, pRight) {
+        internal ColumnCondition(Interfaces.IFunction pLeft, Operator pOperator, object? pRight) : base(pLeft, pOperator, pRight) {
 
             if(pLeft == null) {
                 throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
@@ -190,7 +190,7 @@ namespace Sql {
             }
         }
 
-        internal ColumnCondition(INumericCondition pLeft, Operator pOperator, object pRight) : base(pLeft, pOperator, pRight) {
+        internal ColumnCondition(INumericCondition pLeft, Operator pOperator, object? pRight) : base(pLeft, pOperator, pRight) {
 
             if(pLeft == null) {
                 throw new NullReferenceException($"{nameof(pLeft)} cannot be null");
@@ -455,14 +455,14 @@ namespace Sql {
         NumericOperator Operator { get; }
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        object Right { get; }
+        object? Right { get; }
     }
 
     public class NumericCondition<COLUMN, NCOLUMN, TYPE> : INumericCondition {
 
         private readonly object mLeft;
         private readonly NumericOperator mOperator;
-        private readonly object mRight;
+        private readonly object? mRight;
 
         public object Left {
             get { return mLeft; }
@@ -470,11 +470,11 @@ namespace Sql {
         public NumericOperator Operator {
             get { return mOperator; }
         }
-        public object Right {
+        public object? Right {
             get { return mRight; }
         }
 
-        internal NumericCondition(object pLeft, NumericOperator pOperator, object pRight) {
+        internal NumericCondition(object pLeft, NumericOperator pOperator, object? pRight) {
             mLeft = pLeft;
             mOperator = pOperator;
             mRight = pRight;
@@ -589,11 +589,11 @@ namespace Sql {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

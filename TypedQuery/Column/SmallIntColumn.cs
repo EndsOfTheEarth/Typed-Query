@@ -194,23 +194,21 @@ namespace Sql.Column {
                 if(dataType != typeof(Int16)) {
                     throw new Exception($"Row column data is not of the correct type. Expected Int16 value instead got '{ dataType.ToString() }'. This probably means that the database and table column data types are not matching. Please run the definition tester to check table columns are of the correct type. Table: '{ Table.TableName }' Column: '{ ColumnName }'");
                 }
-
                 intValue = pReader.GetInt16(pColumnIndex);
             }
-
             return intValue;
         }
         public Int16 ValueOf(ARow pRow) {
-            return (Int16)pRow.GetValue(this);
+            return (Int16)pRow.GetValue(this)!;
         }
         public void SetValue(ARow pRow, Int16 pValue) {
             pRow.SetValue(this, pValue);
         }
 
-        internal override void TestSetValue(ARow pRow, object pValue) {
-            SetValue(pRow, (Int16)pValue);
+        internal override void TestSetValue(ARow pRow, object? pValue) {
+            SetValue(pRow, (Int16)pValue!);
         }
-        internal override object TestGetValue(ARow pRow) {
+        internal override object? TestGetValue(ARow pRow) {
             return ValueOf(pRow);
         }
 
@@ -219,17 +217,17 @@ namespace Sql.Column {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         public override System.Data.DbType DbType {
             get { return System.Data.DbType.Int16; }
         }
-        public override object GetDefaultType() {
+        public override object? GetDefaultType() {
             return (Int16)0;
         }
     }

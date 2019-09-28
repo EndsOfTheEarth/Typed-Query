@@ -40,18 +40,18 @@ namespace Sql {
         /// <summary>
         /// Holds the committed row data
         /// </summary>
-        private object[] mRowData;
+        private object?[]? mRowData;
 
         /// <summary>
         /// Holds the current row data that is not yet committed to the database
         /// </summary>
-        private object[] mCurrentData;
+        private object?[]? mCurrentData;
 
         /// <summary>
         /// Holds the row data that has been updated to database but not yet committed.
         /// This is used to help with commit and rollback actions.
         /// </summary>
-        private object[] mPersistedData;
+        private object?[]? mPersistedData;
 
         /// <summary>
         /// Place holder object used to indicate if a value has not been set or selected.
@@ -190,7 +190,7 @@ namespace Sql {
 
             for(int index = 0; index < mTable.Columns.Count; index++) {
 
-                object value = mRowData[index];
+                object? value = mRowData![index];
 
                 if(value != NOT_SET && value != null) {
                     isRowNull = false;
@@ -205,7 +205,7 @@ namespace Sql {
         /// </summary>
         /// <param name="pColumn"></param>
         /// <returns></returns>
-        internal object GetValue(AColumn pColumn) {
+        internal object? GetValue(AColumn pColumn) {
 
             if(!mIsInit) {
                 Init();
@@ -217,7 +217,7 @@ namespace Sql {
                 throw new Exception($"Column does not exist in table class. Table: {mTable.TableName}, column name: {pColumn.ColumnName}");
             }
 
-            object value = mCurrentData[index];
+            object? value = mCurrentData![index];
 
             if(value == NOT_SET) {
 
@@ -249,7 +249,7 @@ namespace Sql {
         /// </summary>
         /// <param name="pColumn"></param>
         /// <param name="pValue"></param>
-        internal void SetValue(AColumn pColumn, object pValue) {
+        internal void SetValue(AColumn pColumn, object? pValue) {
 
             if(!mIsInit) {
                 Init();
@@ -264,7 +264,7 @@ namespace Sql {
             if(mRowState == RowStateEnum.DeletePending || mRowState == RowStateEnum.DeletePerformedNotYetCommitted || mRowState == RowStateEnum.DeletedAndCommitted) {
                 throw new Exception($"Cannot set columns data when row is deleted. Table: {mTable.TableName}, column name: {pColumn.ColumnName}");
             }
-            mCurrentData[index] = pValue;
+            mCurrentData![index] = pValue;
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace Sql {
         /// <summary>
         /// Stores the transaction used to call Update() row with. This is used for checked the row isn't being updated to different transactions e.t.c.
         /// </summary>
-        private Transaction mUpdateTransaction;
+        private Transaction? mUpdateTransaction;
 
         /// <summary>
         /// Updates row changes to database. Adds new rows, updates existing rows with changes and deletes rows that are marked to be deleted.
@@ -368,13 +368,13 @@ namespace Sql {
                     }
                     else {
 
-                        object value = mCurrentData[index];
+                        object? value = mCurrentData![index];
 
                         if(value == NOT_SET) {
                             value = null;
                         }
                         insert.SetInternal(column, value);
-                        mPersistedData[index] = value;
+                        mPersistedData![index] = value;
                     }
                 }
 
@@ -395,8 +395,8 @@ namespace Sql {
 
                         int colIndex = mTable.Columns.IndexOf(column);
 
-                        mCurrentData[colIndex] = result.GetRow(column.Table, 0).GetValue(column);
-                        mPersistedData[colIndex] = mCurrentData[colIndex];
+                        mCurrentData![colIndex] = result.GetRow(column.Table, 0).GetValue(column);
+                        mPersistedData![colIndex] = mCurrentData[colIndex];
                     }
                 }
                 mRowState = RowStateEnum.AddPerformedNotYetCommitted;
@@ -405,7 +405,7 @@ namespace Sql {
 
                 Core.DeleteBuilder delete = new Sql.Core.DeleteBuilder(mTable);
 
-                Condition condition = null;
+                Condition? condition = null;
 
                 bool useConcurrenyChecking = mTable.UseConcurrenyChecking != null ? mTable.UseConcurrenyChecking.Value : Settings.UseConcurrenyChecking;
 
@@ -419,10 +419,10 @@ namespace Sql {
 
                         conditionCreated = true;
 
-                        object value = mPersistedData[index];
+                        object? value = mPersistedData![index];
 
                         if(value == NOT_SET) {
-                            value = mRowData[index];
+                            value = mRowData![index];
                         }
 
                         if(condition == null) {
@@ -438,6 +438,9 @@ namespace Sql {
                     throw new Exception("There are no primary keys set on row and use concurrency checking is turned off. Unable to delete.");
                 }
 
+                if(condition == null) {
+                    throw new Exception("Where condition is null. Maybe there are no primary keys set on row and use concurrency checking is turned off. Unable to delete.");
+                }
                 delete.Where(condition);
                 IResult result = delete.Execute(pTransaction);
 
@@ -451,18 +454,32 @@ namespace Sql {
 
                 bool rowChanged = false;
 
-                for(int index = 0; index < mRowData.Length; index++) {
+                for(int index = 0; index < mRowData!.Length; index++) {
 
                     if(mRowData[index] is NotSet) {
                         throw new Exception("Not all columns were loaded in row. Unable to update.");
                     }
 
-                    if(!(mPersistedData[index] == null && mCurrentData[index] == null)) {
+                    object? persistedValue = mPersistedData![index];
+                    object? currentValue = mCurrentData![index];
 
-                        if((mPersistedData[index] == null && mCurrentData[index] != null) || (mPersistedData[index] != null && mCurrentData[index] == null) || (!mPersistedData[index].Equals(mCurrentData[index]))) {
+                    if(persistedValue == null) {
+
+                        if(currentValue != null) {
                             rowChanged = true;
                             break;
                         }
+                    }
+                    else if(currentValue == null) {
+
+                        if(persistedValue != null) {
+                            rowChanged = true;
+                            break;
+                        }
+                    }
+                    else if(!persistedValue.Equals(currentValue)) {
+                        rowChanged = true;
+                        break;
                     }
                 }
 
@@ -470,7 +487,7 @@ namespace Sql {
 
                     Core.UpdateBuilder update = new Core.UpdateBuilder(mTable);
 
-                    Condition condition = null;
+                    Condition? condition = null;
 
                     bool useConcurrenyChecking = mTable.UseConcurrenyChecking != null ? mTable.UseConcurrenyChecking.Value : Settings.UseConcurrenyChecking;
 
@@ -480,18 +497,18 @@ namespace Sql {
 
                         AColumn column = mTable.Columns[index];
 
-                        if(!column.IsAutoId && mPersistedData[index] != mCurrentData[index]) {
-                            update.SetInternal(column, mCurrentData[index]);
+                        if(!column.IsAutoId && mPersistedData![index] != mCurrentData![index]) {
+                            update.SetInternal(column, mCurrentData![index]);
                         }
 
                         if(useConcurrenyChecking || column.IsPrimaryKey) {
 
                             conditionCreated = true;
 
-                            object value = mPersistedData[index];   //When updating no columns should have the NOT_SET place holder set
+                            object? value = mPersistedData![index];   //When updating no columns should have the NOT_SET place holder set
 
                             if(value == NOT_SET) {
-                                value = mRowData[index];
+                                value = mRowData![index];
                             }
 
                             if(condition == null) {
@@ -501,10 +518,10 @@ namespace Sql {
                                 condition = condition & (value != null ? new ColumnCondition(column, Operator.EQUALS, value) : (Condition)new IsNullCondition(column));
                             }
                         }
-                        mPersistedData[index] = mCurrentData[index];
+                        mPersistedData![index] = mCurrentData![index];
                     }
 
-                    if(!conditionCreated) {
+                    if(!conditionCreated || condition == null) {
                         throw new Exception("There are no primary keys set on row and use concurrency checking is turned off. Unable to update.");
                     }
 
@@ -539,6 +556,16 @@ namespace Sql {
             }
             else {
 
+                if(mRowData == null) {
+                    throw new NullReferenceException($"{ nameof(mRowData) } should is null. This is a bug");
+                }
+                if(mPersistedData == null) {
+                    throw new NullReferenceException($"{ nameof(mPersistedData) } should is null. This is a bug");
+                }
+                if(mCurrentData == null) {
+                    throw new NullReferenceException($"{ nameof(mCurrentData) } should is null. This is a bug");
+                }
+
                 for(int index = 0; index < mRowData.Length; index++) {
 
                     mRowData[index] = mPersistedData[index];
@@ -565,9 +592,9 @@ namespace Sql {
                 AColumn column = mTable.Columns[index];
 
                 if(mPreviousRowState == RowStateEnum.AddPending && column.IsAutoId) {
-                    mCurrentData[index] = NOT_SET;
+                    mCurrentData![index] = NOT_SET;
                 }
-                mPersistedData[index] = NOT_SET;
+                mPersistedData![index] = NOT_SET;
             }
 
             if(mRowState == RowStateEnum.AddPerformedNotYetCommitted) {
@@ -599,9 +626,9 @@ namespace Sql {
 
             int bytes = 0;
 
-            for(int index = 0; index < mRowData.Length; index++) {
+            for(int index = 0; index < mRowData!.Length; index++) {
 
-                object value = mRowData[index];
+                object? value = mRowData![index];
 
                 if(value != null && value != NOT_SET) {
                     bytes += SqlHelper.GetAproxByteSizeOf(value);
@@ -616,11 +643,11 @@ namespace Sql {
             return base.GetHashCode();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return base.Equals(obj);
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public override string ToString() {
+        public override string? ToString() {
             return base.ToString();
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
