@@ -204,10 +204,10 @@ namespace Sql.Column {
         }
         public void SetValue(ARow pRow, StringKey<TABLE>? pValue) {
 
-            if(pValue != null && pValue.Value != null && pValue.Value.Value.Length > MaxLength) {
-                throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Value.Value.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
+            if(pValue != null && pValue.Value != null && pValue.Value.Length > MaxLength) {
+                throw new Exception($"string value is too long. Max Length = { MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table: { Table.ToString() }, Column = { ColumnName }");
             }
-            pRow.SetValue(this, pValue != null ? pValue.Value.Value : null);
+            pRow.SetValue(this, pValue != null ? pValue.Value : null);
         }
 
         internal override void TestSetValue(ARow pRow, object? pValue) {

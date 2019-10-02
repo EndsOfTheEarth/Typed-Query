@@ -210,7 +210,7 @@ namespace Sql.Column {
             return value != null ? new Int64Key<TABLE>((long)value) : (Int64Key<TABLE>?)null;
         }
         public void SetValue(ARow pRow, Int64Key<TABLE>? pValue) {
-            pRow.SetValue(this, pValue != null ? pValue.Value.Value : (long?)null);
+            pRow.SetValue(this, pValue != null ? pValue.Value : (long?)null);
         }
 
         internal override void TestSetValue(ARow pRow, object? pValue) {

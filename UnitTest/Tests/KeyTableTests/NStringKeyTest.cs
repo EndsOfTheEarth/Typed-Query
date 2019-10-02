@@ -55,7 +55,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id!.Value));
+                Assert.IsTrue(list.Contains(row.Id!));
             }
 
             result = Sql.Query
@@ -68,7 +68,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id!.Value));
+                Assert.IsTrue(list.Contains(row.Id!));
             }
 
             list.Clear();
@@ -87,7 +87,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id!.Value.Value != int.MaxValue.ToString());
+                Assert.IsTrue(row.Id!.Value != int.MaxValue.ToString());
             }
 
             result = Sql.Query
@@ -100,7 +100,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id!.Value.Value != int.MaxValue.ToString());
+                Assert.IsTrue(row.Id!.Value != int.MaxValue.ToString());
             }
         }
 
@@ -302,7 +302,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id!.Value));
+                Assert.IsTrue(list.Contains(row.Id!));
             }
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {

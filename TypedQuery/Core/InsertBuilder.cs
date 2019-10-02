@@ -214,13 +214,8 @@ namespace Sql.Core {
             return this;
         }
 
-        public IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue.Value));
-            return this;
-        }
-
         public IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (Guid?)null));
+            mSetValueList.Add(new SetValue(pColumn, (pValue != null) ? (Guid?)pValue.Value : null));            
             return this;
         }
 
@@ -229,13 +224,8 @@ namespace Sql.Core {
             return this;
         }
 
-        public IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue.Value));
-            return this;
-        }
-
         public IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (short?)null));
+            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value : (short?)null));
             return this;
         }
 
@@ -244,13 +234,8 @@ namespace Sql.Core {
             return this;
         }
 
-        public IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue.Value));
-            return this;
-        }
-
         public IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (int?)null));
+            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value : (int?)null));
             return this;
         }
 
@@ -259,19 +244,14 @@ namespace Sql.Core {
             return this;
         }
 
-        public IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue.Value));
-            return this;
-        }
-
         public IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue) {
-            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : (long?)null));
+            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value : (long?)null));
             return this;
         }
 
         public IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue) {
 
-            if(pValue != null && pValue.Value.Length > pColumn.MaxLength) {
+            if(pValue.Value.Length > pColumn.MaxLength) {
                 throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
             }
             mSetValueList.Add(new SetValue(pColumn, pValue.Value));
@@ -280,10 +260,10 @@ namespace Sql.Core {
 
         public IInsertSet Set<TABLE>(Column.NStringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue) {
 
-            if(pValue != null && pValue.Value.Value.Length > pColumn.MaxLength) {
-                throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
+            if(pValue != null && pValue.Value.Length > pColumn.MaxLength) {
+                throw new Exception($"{ pColumn.ColumnName } column string value is too long. Max length = { pColumn.MaxLength.ToString() }. Actual length = { pValue.Value.Length.ToString() }. Table = { pColumn.Table.TableName }");
             }
-            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value.Value : null));
+            mSetValueList.Add(new SetValue(pColumn, pValue != null ? pValue.Value : null));
             return this;
         }
 

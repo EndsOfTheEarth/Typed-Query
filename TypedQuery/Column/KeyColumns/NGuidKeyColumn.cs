@@ -117,7 +117,7 @@ namespace Sql.Column {
             return value != null ? new GuidKey<TABLE>((Guid)value) : (GuidKey<TABLE>?)null;
         }
         public void SetValue(ARow pRow, GuidKey<TABLE>? pValue) {
-            pRow.SetValue(this, pValue != null ? pValue.Value.Value : (Guid?)null);
+            pRow.SetValue(this, pValue != null ? pValue.Value : (Guid?)null);
         }
 
         internal override void TestSetValue(ARow pRow, object? pValue) {

@@ -20,7 +20,7 @@ using System;
 
 namespace Sql.Types {
 
-    public struct Int16Key<TABLE> {
+    public sealed class Int16Key<TABLE> {
 
         public Int16 Value { get; private set; }
 
@@ -28,11 +28,11 @@ namespace Sql.Types {
             Value = pValue;
         }
 
-        public static bool operator ==(Int16Key<TABLE> pA, Int16Key<TABLE> pB) {
-            return pA.Equals(pB);
+        public static bool operator ==(Int16Key<TABLE>? pA, Int16Key<TABLE>? pB) {
+            return pA!.Equals(pB);
         }
-        public static bool operator !=(Int16Key<TABLE> pA, Int16Key<TABLE> pB) {
-            return !pA.Equals(pB);
+        public static bool operator !=(Int16Key<TABLE>? pA, Int16Key<TABLE>? pB) {
+            return !pA!.Equals(pB);
         }
 
         public override bool Equals(object? obj) {

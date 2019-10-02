@@ -35,9 +35,9 @@ namespace Sql.Tests {
 
                 for(int index = 0; index < iterations; index++) {
 
-                    Types.GuidKey<Table>? id = new Types.GuidKey<Table>(Guid.NewGuid());
+                    GuidKey<Table> id = new GuidKey<Table>(Guid.NewGuid());
 
-                    list.Add(id.Value);
+                    list.Add(id);
                     Row row = new Row();
                     row.Id = id;
                     row.Update(transaction);
@@ -55,7 +55,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id!.Value));
+                Assert.IsTrue(list.Contains(row.Id!));
             }
 
             result = Sql.Query
@@ -68,7 +68,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id!.Value));
+                Assert.IsTrue(list.Contains(row.Id!));
             }
 
             list.Clear();
@@ -87,7 +87,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id!.Value.Value != Guid.Empty);
+                Assert.IsTrue(row.Id!.Value != Guid.Empty);
             }
 
             result = Sql.Query
@@ -100,7 +100,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(row.Id!.Value.Value != Guid.Empty);
+                Assert.IsTrue(row.Id!.Value != Guid.Empty);
             }
         }
 
@@ -302,7 +302,7 @@ namespace Sql.Tests {
 
             for(int index = 0; index < result.Count; index++) {
                 Row row = table.GetRow(index, result);
-                Assert.IsTrue(list.Contains(row.Id!.Value));
+                Assert.IsTrue(list.Contains(row.Id!));
             }
 
             using(Transaction transaction = new Transaction(DB.TestDB)) {

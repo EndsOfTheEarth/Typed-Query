@@ -20,7 +20,7 @@ using System;
 
 namespace Sql.Types {
 
-    public struct StringKey<TABLE> {
+    public sealed class StringKey<TABLE> {
 
         private string mValue;
 
@@ -37,11 +37,11 @@ namespace Sql.Types {
             mValue = pValue ?? string.Empty;
         }
 
-        public static bool operator ==(StringKey<TABLE> pA, StringKey<TABLE> pB) {
-            return pA.Equals(pB);
+        public static bool operator ==(StringKey<TABLE>? pA, StringKey<TABLE>? pB) {
+            return pA!.Equals(pB);
         }
-        public static bool operator !=(StringKey<TABLE> pA, StringKey<TABLE> pB) {
-            return !pA.Equals(pB);
+        public static bool operator !=(StringKey<TABLE>? pA, StringKey<TABLE>? pB) {
+            return !pA!.Equals(pB);
         }
 
         public override bool Equals(object? obj) {

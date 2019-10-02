@@ -20,7 +20,7 @@ using System;
 
 namespace Sql.Types {
 
-    public struct GuidKey<TABLE> {
+    public sealed class GuidKey<TABLE> {
 
         public Guid Value { get; private set; }
 
@@ -28,11 +28,11 @@ namespace Sql.Types {
             Value = pValue;
         }
 
-        public static bool operator ==(GuidKey<TABLE> pA, GuidKey<TABLE> pB) {
-            return pA.Equals(pB);
+        public static bool operator ==(GuidKey<TABLE>? pA, GuidKey<TABLE>? pB) {
+            return pA!.Equals(pB);
         }
-        public static bool operator !=(GuidKey<TABLE> pA, GuidKey<TABLE> pB) {
-            return !pA.Equals(pB);
+        public static bool operator !=(GuidKey<TABLE>? pA, GuidKey<TABLE>? pB) {
+            return !pA!.Equals(pB);
         }
 
         public override bool Equals(object? obj) {

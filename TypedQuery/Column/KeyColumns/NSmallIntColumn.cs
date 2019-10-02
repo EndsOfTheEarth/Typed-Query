@@ -206,7 +206,7 @@ namespace Sql.Column {
             return value != null ? new Int16Key<TABLE>((short)value) : (Int16Key<TABLE>?)null;
         }
         public void SetValue(ARow pRow, Int16Key<TABLE>? pValue) {
-            pRow.SetValue(this, pValue != null ? (short?)pValue.Value.Value : null);
+            pRow.SetValue(this, pValue != null ? (short?)pValue.Value : null);
         }
 
         internal override void TestSetValue(ARow pRow, object? pValue) {
