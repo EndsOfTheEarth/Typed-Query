@@ -211,7 +211,7 @@ namespace TypedQuery.Logic {
         public static string GenerateClassCode(ITableDetails pTableDetails, string pNamespace, string pColumnPrefix, bool pRemoveUnderscores, bool pGenerateKeyTypes) {
 
             string endl = Environment.NewLine;
-            string tab = "\t";
+            string tab = "    ";
 
             if(string.IsNullOrEmpty(pNamespace)) {
                 pNamespace = "Logic";
