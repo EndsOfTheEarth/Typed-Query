@@ -697,10 +697,7 @@ namespace TypedQuery.Logic {
             }
             else if(pDbType == DbType.Guid) {
 
-                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
-                    value = $"GuidKey<{ (pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
-                }
-                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
                     if(matchingKeyColumns.Count == 1) {
                         value = $"GuidKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
@@ -709,16 +706,16 @@ namespace TypedQuery.Logic {
                         value = $"GuidKey<{matchingKeyColumns[0].PrimaryKeyTableName}<??? Column Belongs to multipule foreign keys ???>.Table>" + (pIsNullable ? "?" : string.Empty);
                     }
                 }
+                else if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"GuidKey<{ (pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
                 else {
                     value = !pIsNullable ? "Guid" : "Guid?";
                 }
             }
             else if(pDbType == DbType.Int16) {
 
-                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
-                    value = $"Int16Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
-                }
-                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
                     if(matchingKeyColumns.Count == 1) {
                         value = $"Int16Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
@@ -727,16 +724,16 @@ namespace TypedQuery.Logic {
                         value = $"Int16Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
                     }
                 }
+                else if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"Int16Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
                 else {
                     value = !pIsNullable ? "short" : "short?";
                 }
             }
             else if(pDbType == DbType.Int32) {
-
-                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
-                    value = $"Int32Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
-                }
-                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                
+                if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
                     if(matchingKeyColumns.Count == 1) {
                         value = $"Int32Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
@@ -745,16 +742,16 @@ namespace TypedQuery.Logic {
                         value = $"Int32Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
                     }
                 }
+                else if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"Int32Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
                 else {
                     value = !pIsNullable ? "int" : "int?";
                 }
             }
             else if(pDbType == DbType.Int64) {
 
-                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
-                    value = $"Int64Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
-                }
-                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
                     if(matchingKeyColumns.Count == 1) {
                         value = $"Int64Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
@@ -763,16 +760,16 @@ namespace TypedQuery.Logic {
                         value = $"Int64Key<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
                     }
                 }
+                else if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"Int64Key<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
+                }
                 else {
                     value = !pIsNullable ? "long" : "long?";
                 }
             }
             else if(pDbType == DbType.String) {
 
-                if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
-                    value = $"StringKey<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
-                }
-                else if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
+                if(pGenerateKeyTypes && matchingKeyColumns.Count > 0) {
 
                     if(matchingKeyColumns.Count == 1) {
                         value = $"StringKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table>" + (pIsNullable ? "?" : string.Empty);
@@ -780,6 +777,9 @@ namespace TypedQuery.Logic {
                     else {
                         value = $"StringKey<{matchingKeyColumns[0].PrimaryKeyTableName}.Table><??? Column Belongs to multipule foreign keys ???>" + (pIsNullable ? "?" : string.Empty);
                     }
+                }
+                else if(pGenerateKeyTypes && pColumn != null && pColumn.IsPrimaryKey) {
+                    value = $"StringKey<{(pTable != null ? pTable.TableName : "???")}.Table>" + (pIsNullable ? "?" : string.Empty);
                 }
                 else {
                     value = !pIsNullable ? "string" : "string?";
