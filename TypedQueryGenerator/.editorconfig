@@ -44,3 +44,6 @@ dotnet_diagnostic.CS8620.severity = error
 
 # CS8614: Nullability of reference types in type of parameter doesn't match implicitly implemented member.
 dotnet_diagnostic.CS8614.severity = error
+
+# CS8601: Possible null reference assignment.
+dotnet_diagnostic.CS8601.severity = error

@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  **/
- 
+
+using Sql.Types;
 using System;
 using System.Collections.Generic;
 
@@ -25,12 +26,12 @@ namespace Sql.Tables.BigIntTable {
 
 		public static readonly Table INSTANCE = new Table();
 
-		public readonly Sql.Column.BigIntegerColumn Id;
-		public readonly Sql.Column.NBigIntegerColumn IntValue;
+		public Sql.Column.BigIntegerKeyColumn<Table> Id { get; private set; }
+		public Sql.Column.NBigIntegerColumn IntValue { get; private set; }
 
 		public Table() : base("BigIntTable", "", false, typeof(Row)) {
 
-			Id = new Sql.Column.BigIntegerColumn(this, "Id", true, true);
+			Id = new Sql.Column.BigIntegerKeyColumn<Table>(this, "Id", true, true);
 			IntValue = new Sql.Column.NBigIntegerColumn(this, "IntValue", false);
 
 			AddColumns(Id,IntValue);
@@ -50,7 +51,7 @@ namespace Sql.Tables.BigIntTable {
 		public Row() : base(Table.INSTANCE) {
 		}
 
-		public Int64 Id {
+		public Int64Key<Table> Id {
 			get { return Tbl.Id.ValueOf(this); }
 		}
 

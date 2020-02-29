@@ -75,7 +75,7 @@ namespace TypedQuery.Logic {
                 Sql.IResult result = Sql.Query
                     .Select(tablesTable.Table_name, tablesTable.Table_schema, tablesTable.Table_type)
                     .From(tablesTable)
-                    .Where(tablesTable.Table_name == pTableName & tablesTable.Table_schema == pSchemaName)
+                    .Where(tablesTable.Table_name == pTableName.ToLower() & tablesTable.Table_schema == pSchemaName.ToLower())
                     .OrderBy(tablesTable.Table_schema, tablesTable.Table_name)
                     .Execute(pDatabase);
 
@@ -116,7 +116,7 @@ namespace TypedQuery.Logic {
             Sql.IResult result = Sql.Query
                 .Select(columnsTable.Column_name, columnsTable.Udt_name, columnsTable.Is_nullable, columnsTable.Column_default, columnsTable.Character_maximum_length)
                 .From(columnsTable)
-                .Where(columnsTable.Table_name == pTableName & columnsTable.Table_schema == pSchemaName)
+                .Where(columnsTable.Table_name == pTableName.ToLower() & columnsTable.Table_schema == pSchemaName.ToLower())
                 .OrderBy(columnsTable.Ordinal_position)
                 .Execute(pDatabase);
 
@@ -145,7 +145,7 @@ namespace TypedQuery.Logic {
                 .Select(tcTable.Constraint_name, ccuTable.Column_name)
                 .From(tcTable)
                 .Join(ccuTable, ccuTable.Table_schema == tcTable.Table_schema & ccuTable.Table_name == tcTable.Table_name & ccuTable.Constraint_name == tcTable.Constraint_name)
-                .Where(tcTable.Table_name == pTableName & tcTable.Table_schema == pSchemaName & tcTable.Constraint_type == "PRIMARY KEY")
+                .Where(tcTable.Table_name == pTableName.ToLower() & tcTable.Table_schema == pSchemaName.ToLower() & tcTable.Constraint_type == "PRIMARY KEY")
                 .Execute(pDatabase);
 
             PrimaryKey? primaryKey = null;
@@ -184,7 +184,7 @@ namespace TypedQuery.Logic {
                 .Join(rcTable, rcTable.Constraint_name == tcTable.Constraint_name)
                 .Join(kcuForeignTable, kcuForeignTable.Constraint_name == rcTable.Constraint_name)
                 .Join(kcuPrimaryTable, kcuPrimaryTable.Ordinal_position == kcuForeignTable.Position_in_unique_constraint & rcTable.Unique_constraint_name == kcuPrimaryTable.Constraint_name)
-                .Where(tcTable.Table_name == pTableName & tcTable.Table_schema == pSchemaName)
+                .Where(tcTable.Table_name == pTableName.ToLower() & tcTable.Table_schema == pSchemaName.ToLower())
                 .OrderBy(rcTable.Constraint_name, kcuForeignTable.Ordinal_position)
                 .Execute(pDatabase);
 
@@ -238,7 +238,7 @@ namespace TypedQuery.Logic {
                 .From(tablesTable)
                 .Join(pgClassTable, tablesTable.Table_name == pgClassTable.Name & pgClassTable.Kind == "r")
                 .Join(pgDescTable, pgDescTable.ObjOid == pgClassTable.Oid & pgDescTable.ObjSubId == 0)
-                .Where(tablesTable.Table_schema == pSchemaName & tablesTable.Table_name == pTableName)
+                .Where(tablesTable.Table_schema == pSchemaName.ToLower() & tablesTable.Table_name == pTableName.ToLower())
                 .Execute(pDatabase);
 
             if(result.Count == 1) {
@@ -255,7 +255,7 @@ namespace TypedQuery.Logic {
                 .From(pgAttributeTable)
                 .Join(pgClassTable, pgClassTable.Oid == pgAttributeTable.Relid)
                 .Join(pgDescTable, pgClassTable.Oid == pgDescTable.ObjOid & pgAttributeTable.Num == pgDescTable.ObjSubId)
-                .Where(pgClassTable.Name == pTableName)
+                .Where(pgClassTable.Name == pTableName.ToLower())
                 .Execute(pDatabase);
 
             for(int index = 0; index < result.Count; index++) {

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sql.Types;
 
 namespace Sql.Tests {
 	
@@ -53,7 +54,7 @@ namespace Sql.Tests {
 		[TestMethod]
 		public void Test_01(){
 			
-			Int64 id = -1;
+			Int64Key<Tables.BigIntTable.Table> id = new Int64Key<Tables.BigIntTable.Table>(-1);
 			
 			using(Transaction transaction = new Transaction(DB.TestDB)){
 				
@@ -68,10 +69,11 @@ namespace Sql.Tests {
 			
 			Tables.BigIntTable.Table autoTable = Tables.BigIntTable.Table.INSTANCE;
 			
-			IResult result = Query.Select(autoTable.Id, autoTable.IntValue)
-										.From(autoTable)
-										.Where(autoTable.Id == id)
-										.Execute(DB.TestDB);
+			IResult result = Query
+				.Select(autoTable.Id, autoTable.IntValue)
+									.From(autoTable)
+									.Where(autoTable.Id == id)
+									.Execute(DB.TestDB);
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(id, autoTable[0, result].Id);
@@ -86,8 +88,8 @@ namespace Sql.Tests {
 				Tables.BigIntTable.Row row = new Sql.Tables.BigIntTable.Row();
 				
 				row.Update(transaction);
-				
-				Int64 id = row.Id;
+
+				Int64Key<Tables.BigIntTable.Table> id = row.Id;
 				
 				transaction.Commit();
 			}
@@ -95,9 +97,11 @@ namespace Sql.Tests {
 
 		[TestMethod]
 		public void Test_03(){
+
 			Tables.BigIntTable.Row row = new Sql.Tables.BigIntTable.Row();
+
 			try {
-				Int64 id = row.Id;
+				Int64Key<Tables.BigIntTable.Table> id = row.Id;
 			}
 			catch(Exception e){
 				if(e.Message != "Auto id on column 'Id' has not been set. Row probably hasn't been persisted to database")
@@ -113,8 +117,8 @@ namespace Sql.Tests {
 			Tables.BigIntTable.Row row = new Sql.Tables.BigIntTable.Row();
 			
 			for(int index = 0; index < 5; index++){
-				
-				Int64 id = -1;
+
+				Int64Key<Tables.BigIntTable.Table> id = new Int64Key<Tables.BigIntTable.Table>(-1);
 				
 				using(Transaction transaction = new Transaction(DB.TestDB)) {
 					

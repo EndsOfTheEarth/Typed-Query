@@ -39,7 +39,7 @@ namespace Sql.Tests {
 			
 			rows.Add(new Tables.BigIntTable.Row());
 			rows.Add(new Sql.Tables.AutoTable.Row());
-			
+
 			rows.Add(new Sql.Tables.BinaryTable.Row());
 			rows.Add(new Sql.Tables.BooleanTable.Row());
 			rows.Add(new Sql.Tables.DateTime2Table.Row());
@@ -58,7 +58,7 @@ namespace Sql.Tests {
 			rows.Add(new Sql.Tables.NIntTable.Row());
 			rows.Add(new Sql.Tables.SmallIntTable.Row());
 			rows.Add(new Sql.Tables.StringTable.Row());
-			
+
 			Sql.ADatabase database = DB.TestDB;
 			
 			StringBuilder output = new StringBuilder();

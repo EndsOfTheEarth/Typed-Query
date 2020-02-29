@@ -583,6 +583,102 @@ namespace TypedQuery.Logic {
                 return true;
             }
 
+            if(pType == typeof(byte)) {
+
+                Random random = new Random();
+
+                byte[] bytes = new byte[1];
+                random.NextBytes(bytes);
+                pValue = bytes[0];
+
+                random.NextBytes(bytes);
+                pSecondValue = bytes[0];
+                return true;
+            }
+
+            if(pType == typeof(byte?)) {
+
+                Random random = new Random();
+
+                byte[] bytes = new byte[1];
+                random.NextBytes(bytes);
+                pValue = bytes[0];
+
+                random.NextBytes(bytes);
+                pSecondValue = bytes[0];
+                return true;
+            }
+
+            if(pType == typeof(byte[])) {   //TODO: Check byte array length when that property is added to the column
+
+                Random random = new Random();
+
+                byte[] bytes = new byte[10];
+                random.NextBytes(bytes);
+                pValue = bytes;
+
+                random.NextBytes(bytes);
+                pSecondValue = bytes;
+                return true;
+            }
+
+            if(pType == typeof(byte?[])) {  //TODO: Check byte array length when that property is added to the column
+
+                Random random = new Random();
+
+                byte[] bytes = new byte[10];
+                random.NextBytes(bytes);
+                pValue = bytes;
+
+                random.NextBytes(bytes);
+                pSecondValue = bytes;
+                return true;
+            }
+
+            if(pType.Name == "GuidKey`1") {
+                Random random = new Random();
+                pValue = Activator.CreateInstance(pType, Guid.NewGuid())!;
+                pSecondValue = Activator.CreateInstance(pType, Guid.NewGuid())!;
+                return true;
+            }
+            if(pType.Name == "Int16Key`1") {
+                Random random = new Random();
+                pValue = Activator.CreateInstance(pType, random.Next(short.MinValue, short.MaxValue))!;
+                pSecondValue = Activator.CreateInstance(pType, random.Next(short.MinValue, short.MaxValue))!;
+                return true;
+            }
+            if(pType.Name == "Int32Key`1") {
+                Random random = new Random();
+                pValue = Activator.CreateInstance(pType, random.Next())!;
+                pSecondValue = Activator.CreateInstance(pType, random.Next())!;
+                return true;
+            }
+            if(pType.Name == "Int64Key`1") {
+                Random random = new Random();
+                pValue = Activator.CreateInstance(pType, (long)random.Next())!;
+                pSecondValue = Activator.CreateInstance(pType, (long)random.Next())!;
+                return true;
+            }
+            if(pType.Name == "StringKey`1") {
+
+
+                int? maxLength = null;
+
+                if(pColumn is Sql.IColumnLength) {
+                    maxLength = ((Sql.IColumnLength)pColumn).MaxLength;
+                }
+
+                string value = Guid.NewGuid().ToString();
+                value = maxLength != null && maxLength < value.Length ? value.Substring(0, maxLength.Value) : value;
+
+                string secondValue = Guid.NewGuid().ToString();
+                secondValue = maxLength != null && maxLength < secondValue.Length ? secondValue.Substring(0, maxLength.Value) : secondValue;
+
+                pValue = Activator.CreateInstance(pType, value)!;
+                pSecondValue = Activator.CreateInstance(pType, secondValue)!;
+                return true;
+            }
+
             //TODO: Implement the remaining types
 
             pValue = new object();
