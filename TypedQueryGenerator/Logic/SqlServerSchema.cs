@@ -313,7 +313,7 @@ namespace TypedQuery.Logic {
                 sTypeLookup.Add("datetimeoffset", System.Data.DbType.DateTimeOffset);
                 sTypeLookup.Add("float", System.Data.DbType.Double);
                 sTypeLookup.Add("real", System.Data.DbType.Single);
-                sTypeLookup.Add("image", System.Data.DbType.Byte);
+                sTypeLookup.Add("image", System.Data.DbType.Binary);
                 sTypeLookup.Add("int", System.Data.DbType.Int32);
                 sTypeLookup.Add("ntext", System.Data.DbType.String);
                 sTypeLookup.Add("numeric", System.Data.DbType.Decimal);

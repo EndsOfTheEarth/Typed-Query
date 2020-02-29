@@ -27,7 +27,7 @@ namespace Sql.Column {
 
         public int MaxLength { get; private set; }
 
-        public NStringKeyColumn(ATable pTable, string pColumnName, int pMaxLength) : base(pTable, pColumnName, false, false) {
+        public NStringKeyColumn(ATable pTable, string pColumnName, int pMaxLength) : base(pTable, pColumnName, false, true) {
 
             if(pMaxLength <= 0) {
                 throw new Exception($"{nameof(pMaxLength)} must be >= 1");
@@ -35,7 +35,7 @@ namespace Sql.Column {
 
             MaxLength = pMaxLength;
         }
-        public NStringKeyColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength) : base(pTable, pColumnName, pIsPrimaryKey, false) {
+        public NStringKeyColumn(ATable pTable, string pColumnName, bool pIsPrimaryKey, int pMaxLength) : base(pTable, pColumnName, pIsPrimaryKey, true) {
 
             if(pMaxLength <= 0) {
                 throw new Exception($"{nameof(pMaxLength)} must be >= 1");

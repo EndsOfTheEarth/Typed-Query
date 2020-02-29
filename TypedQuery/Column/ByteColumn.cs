@@ -152,7 +152,7 @@ namespace Sql.Column {
             return base.ToString();
         }
         public override System.Data.DbType DbType {
-            get { return System.Data.DbType.Int32; }
+            get { return System.Data.DbType.Byte; }
         }
         public override object? GetDefaultType() {
             return (byte)0;
