@@ -312,7 +312,7 @@ namespace TypedQuery.Logic {
                             issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Row property can not be set and table is not a view and table column is not an AutoId. Something is wrong with the row column setter."));
                         }
 
-                        if(!GetValueForType(rowProperty.PropertyType, out object? value, out object? secondValue)) {
+                        if(!GetValueForType(column, rowProperty.PropertyType, out object? value, out object? secondValue)) {
                             issues.Add(new ValidationError(pTable.Schema, pTable.TableName, column.ColumnName, "Cannot test setting Row property as Type is not supported by tester. Type = " + rowProperty.PropertyType.ToString()));
                             continue;
                         }
@@ -457,11 +457,21 @@ namespace TypedQuery.Logic {
             return issues;
         }
 
-        private static bool GetValueForType(Type pType, [MaybeNullWhen(false)] out object pValue, [MaybeNullWhen(false)] out object pSecondValue) {
+        private static bool GetValueForType(Sql.AColumn pColumn, Type pType, [MaybeNullWhen(false)] out object pValue, [MaybeNullWhen(false)] out object pSecondValue) {
 
             if(pType == typeof(string)) {
-                pValue = Guid.NewGuid().ToString();
-                pSecondValue = Guid.NewGuid().ToString();
+
+                int? maxLength = null;
+
+                if(pColumn is Sql.IColumnLength) {
+                    maxLength = ((Sql.IColumnLength)pColumn).MaxLength;
+                }
+
+                string value = Guid.NewGuid().ToString();
+                pValue = maxLength != null && maxLength < value.Length ? value.Substring(0, maxLength.Value) : value;
+
+                string secondValue = Guid.NewGuid().ToString();
+                pSecondValue = maxLength != null && maxLength < secondValue.Length ? secondValue.Substring(0, maxLength.Value) : secondValue;
                 return true;
             }
 
