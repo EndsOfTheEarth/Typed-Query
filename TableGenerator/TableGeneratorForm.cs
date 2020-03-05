@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using TypedQueryGenerator.Logic.CodeGeneration;
 
 namespace TypedQuery {
 
@@ -197,8 +198,9 @@ namespace TypedQuery {
                     if(tableDetails == null) {
                         throw new Exception($"Table: { table.TableName }. Unable to find table details in database");
                     }
-                    txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
-                    txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
+                    
+                    txtTableDefinition.Text = new TableAndRowCodeGenerator().Generate(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
+                    txtClassCode.Text = new ClassCodeGenerator().Generate(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
                 }
                 else if(table.DatabaseType == Sql.DatabaseType.Mssql) {
 
@@ -211,8 +213,8 @@ namespace TypedQuery {
                     if(tableDetails == null) {
                         throw new Exception($"Table: { table.TableName }. Unable to find table details in database");
                     }
-                    txtTableDefinition.Text = Logic.CodeGenerator.GenerateTableAndRowCode(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
-                    txtClassCode.Text = Logic.CodeGenerator.GenerateClassCode(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
+                    txtTableDefinition.Text = new TableAndRowCodeGenerator().Generate(tableDetails, txtNamespace.Text, ref columnPrefix, chkIncludeSchema.Checked, guessPrefix, chkGenerateCommentMetaData.Checked, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
+                    txtClassCode.Text = new ClassCodeGenerator().Generate(tableDetails, txtNamespace.Text, columnPrefix, chkRemoveUnderscores.Checked, chkGenerateKeyTypes.Checked);
                 }
                 else {
                     throw new Exception("Unnknown database type: " + table.DatabaseType.ToString());
@@ -227,7 +229,7 @@ namespace TypedQuery {
                 Logic.IStoredProcedureDetail spDetail = ((StoredProcedureNode)tvwSchema.SelectedNode).StoredProcedure;
 
                 string columnPrefix = string.Empty;
-                txtTableDefinition.Text = Logic.CodeGenerator.GenerateStoredProcedureCode(spDetail, txtColumnPrefix.Text, chkIncludeSchema.Checked);
+                txtTableDefinition.Text = new StoredProcedureCodeGenerator().Generate(spDetail, txtColumnPrefix.Text, chkIncludeSchema.Checked);
                 txtClassCode.Text = "Note: Class code is not generated for stored procedures";
                 txtColumnPrefix.Text = string.Empty;
             }
