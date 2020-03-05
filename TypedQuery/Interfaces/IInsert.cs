@@ -18,8 +18,6 @@
 
 using Sql.Types;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sql.Interfaces {
 
@@ -82,52 +80,8 @@ namespace Sql.Interfaces {
         #endregion
     }
 
-    public interface IInsertSet : IInsertUseParams {
+    public interface IInsertSet : IInsertUseParams, IInsert {
 
-        IInsertSet Set(Column.SmallIntegerColumn pColumn, Int16 pValue);
-        IInsertSet Set(Column.NSmallIntegerColumn pColumn, Int16? pValue);
-        IInsertSet Set(Column.IntegerColumn pColumn, int pValue);
-        IInsertSet Set(Column.NIntegerColumn pColumn, int? pValue);
-        IInsertSet Set(Column.BigIntegerColumn pColumn, Int64 pValue);
-        IInsertSet Set(Column.NBigIntegerColumn pColumn, Int64? pValue);
-        IInsertSet Set(Column.StringColumn pColumn, string pValue);
-        IInsertSet Set(Column.DecimalColumn pColumn, decimal pValue);
-        IInsertSet Set(Column.NDecimalColumn pColumn, decimal? pValue);
-        IInsertSet Set(Column.DateTimeColumn pColumn, DateTime pValue);
-        IInsertSet Set(Column.DateTimeColumn pColumn, Function.CurrentDateTime pValue);
-        IInsertSet Set(Column.NDateTimeColumn pColumn, DateTime? pValue);
-        IInsertSet Set(Column.NDateTimeColumn pColumn, Function.CurrentDateTime pValue);
-
-        IInsertSet Set(Column.DateTime2Column pColumn, DateTime pValue);
-        IInsertSet Set(Column.DateTime2Column pColumn, Function.CurrentDateTime pValue);
-        IInsertSet Set(Column.NDateTime2Column pColumn, DateTime? pValue);
-        IInsertSet Set(Column.NDateTime2Column pColumn, Function.CurrentDateTime pValue);
-
-        IInsertSet Set(Column.DateTimeOffsetColumn pColumn, DateTimeOffset pValue);
-        IInsertSet Set(Column.DateTimeOffsetColumn pColumn, Function.CurrentDateTimeOffset pValue);
-
-        IInsertSet Set(Column.NDateTimeOffsetColumn pColumn, DateTimeOffset? pValue);
-        IInsertSet Set(Column.NDateTimeOffsetColumn pColumn, Function.CurrentDateTimeOffset pValue);
-
-        IInsertSet Set(Column.BoolColumn pColumn, bool pValue);
-        IInsertSet Set(Column.NBoolColumn pColumn, bool? pValue);
-        IInsertSet Set(Column.GuidColumn pColumn, Guid pValue);
-        IInsertSet Set(Column.NGuidColumn pColumn, Guid? pValue);
-        IInsertSet Set(Column.BinaryColumn pColumn, byte[] pValue);
-        IInsertSet Set(Column.NBinaryColumn pColumn, byte[]? pValue);
-        IInsertSet Set<ENUM>(Column.EnumColumn<ENUM> pColumn, ENUM pValue) where ENUM : notnull;
-        IInsertSet Set(AColumn pColumn, Sql.Function.CustomSql pValue);
-
-        IInsertSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
-        IInsertSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue);
-        IInsertSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
-        IInsertSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue);
-        IInsertSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
-        IInsertSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue);
-        IInsertSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
-        IInsertSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue);
-        IInsertSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue);
-        IInsertSet Set<TABLE>(Column.NStringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue);
     }
 
     public interface IInsertUseParams : IInsertTimeout {

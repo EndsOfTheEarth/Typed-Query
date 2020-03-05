@@ -18,8 +18,6 @@
 
 using Sql.Types;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sql.Interfaces {
 
@@ -81,51 +79,8 @@ namespace Sql.Interfaces {
         #endregion
     }
 
-    public interface IUpdateSet : IUpdateJoin {
+    public interface IUpdateSet : IUpdateJoin, IUpdate {
 
-        IUpdateSet Set<COLUMN>(COLUMN pColumn, COLUMN pValue) where COLUMN : AColumn;
-
-        IUpdateSet Set(Column.SmallIntegerColumn pColumn, Int16 pValue);
-        IUpdateSet Set(Column.NSmallIntegerColumn pColumn, Int16? pValue);
-        IUpdateSet Set(Column.IntegerColumn pColumn, int pValue);
-        IUpdateSet Set(Column.NIntegerColumn pColumn, int? pValue);
-        IUpdateSet Set(Column.BigIntegerColumn pColumn, Int64 pValue);
-        IUpdateSet Set(Column.NBigIntegerColumn pColumn, Int64? pValue);
-        IUpdateSet Set(Column.StringColumn pColumn, string pValue);
-        IUpdateSet Set(Column.DecimalColumn pColumn, decimal pValue);
-        IUpdateSet Set(Column.NDecimalColumn pColumn, decimal? pValue);
-        IUpdateSet Set(Column.DateTimeColumn pColumn, DateTime pValue);
-        IUpdateSet Set(Column.DateTimeColumn pColumn, Function.CurrentDateTime pValue);
-        IUpdateSet Set(Column.NDateTimeColumn pColumn, DateTime? pValue);
-        IUpdateSet Set(Column.NDateTimeColumn pColumn, Function.CurrentDateTime pValue);
-
-        IUpdateSet Set(Column.DateTime2Column pColumn, DateTime pValue);
-        IUpdateSet Set(Column.DateTime2Column pColumn, Function.CurrentDateTime pValue);
-        IUpdateSet Set(Column.NDateTime2Column pColumn, DateTime? pValue);
-        IUpdateSet Set(Column.NDateTime2Column pColumn, Function.CurrentDateTime pValue);
-
-        IUpdateSet Set(Column.DateTimeOffsetColumn pColumn, DateTimeOffset pValue);
-        IUpdateSet Set(Column.DateTimeOffsetColumn pColumn, Function.CurrentDateTimeOffset pValue);
-        IUpdateSet Set(Column.NDateTimeOffsetColumn pColumn, DateTimeOffset? pValue);
-        IUpdateSet Set(Column.NDateTimeOffsetColumn pColumn, Function.CurrentDateTimeOffset pValue);
-
-        IUpdateSet Set(Column.BoolColumn pColumn, bool pValue);
-        IUpdateSet Set(Column.NBoolColumn pColumn, bool? pValue);
-        IUpdateSet Set(Column.GuidColumn pColumn, Guid pValue);
-        IUpdateSet Set(Column.NGuidColumn pColumn, Guid? pValue);
-        IUpdateSet Set(Column.BinaryColumn pColumn, byte[] pValue);
-        IUpdateSet Set(Column.NBinaryColumn pColumn, byte[] pValue);
-
-        IUpdateSet Set<TABLE>(Column.GuidKeyColumn<TABLE> pColumn, GuidKey<TABLE> pValue);
-        IUpdateSet Set<TABLE>(Column.NGuidKeyColumn<TABLE> pColumn, GuidKey<TABLE>? pValue);
-        IUpdateSet Set<TABLE>(Column.SmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE> pValue);
-        IUpdateSet Set<TABLE>(Column.NSmallIntegerKeyColumn<TABLE> pColumn, Int16Key<TABLE>? pValue);
-        IUpdateSet Set<TABLE>(Column.IntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE> pValue);
-        IUpdateSet Set<TABLE>(Column.NIntegerKeyColumn<TABLE> pColumn, Int32Key<TABLE>? pValue);
-        IUpdateSet Set<TABLE>(Column.BigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE> pValue);
-        IUpdateSet Set<TABLE>(Column.NBigIntegerKeyColumn<TABLE> pColumn, Int64Key<TABLE>? pValue);
-        IUpdateSet Set<TABLE>(Column.StringKeyColumn<TABLE> pColumn, StringKey<TABLE> pValue);
-        IUpdateSet Set<TABLE>(Column.NStringKeyColumn<TABLE> pColumn, StringKey<TABLE>? pValue);
     }
 
     public interface IUpdateJoin : IUpdateWhere {
@@ -133,6 +88,7 @@ namespace Sql.Interfaces {
     }
 
     public interface IUpdateWhere {
+
         IUpdateUseParams NoWhereCondition();
         IUpdateUseParams Where(Condition pCondition);
 
