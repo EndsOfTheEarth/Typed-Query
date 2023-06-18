@@ -1,3 +1,8 @@
+
+# Please Note: Typed-Query is no longer actively developed and has been replaced by the newer library called 'Query Lite'
+
+# Please Use => [https://github.com/EndsOfTheEarth/QueryLite](https://github.com/EndsOfTheEarth/QueryLite)
+
 # Typed Query
 Typed Query (TQ) is a C# API for querying databases in a type safe manor. The aim of TQ is to closely follow standard sql, be fully in code (i.e. No configuration files) and have helpful debugging features.
 
